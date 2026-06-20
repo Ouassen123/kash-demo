@@ -16,7 +16,7 @@ RUN python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords'); 
 
 COPY . .
 
-ENV PYTHONPATH=/app/src
+ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 
 EXPOSE 7860
