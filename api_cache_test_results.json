@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-03-09T10:04:08.155154",
+  "test_results": {
+    "cache_service": true,
+    "api_service": true,
+    "integration": true
+  },
+  "summary": {
+    "total_tests": 3,
+    "passed_tests": 3,
+    "success_rate": 1.0
+  },
+  "features_tested": [
+    "cache_storage_and_retrieval",
+    "cache_invalidation",
+    "cache_statistics",
+    "api_endpoints",
+    "score_calculation",
+    "provenance_tracking",
+    "weight_management",
+    "error_handling",
+    "integration_workflow"
+  ]
+}

@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont;
+}
+
+.glass-panel {
+  @apply backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl shadow-panel;
+}
+
+.section-heading {
+  @apply text-sm uppercase tracking-[0.3em] text-mist/70 mb-4;
+}

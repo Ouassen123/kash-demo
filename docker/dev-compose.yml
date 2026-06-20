@@ -1,0 +1,64 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: kash-postgres
+    environment:
+      POSTGRES_DB: kash_db
+      POSTGRES_USER: kash_user
+      POSTGRES_PASSWORD: kash_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - kash-network
+    restart: unless-stopped
+
+  # pgAdmin - Interface web pour gérer PostgreSQL
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: kash-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@kash.dev
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: 5050
+    ports:
+      - "5050:5050"
+    depends_on:
+      - postgres
+    networks:
+      - kash-network
+    restart: unless-stopped
+
+  # FastAPI Application
+  api:
+    build:
+      context: ..
+      dockerfile: Dockerfile.dev
+    container_name: kash-api
+    environment:
+      - DATABASE_URL=postgresql://kash_user:kash_password@postgres:5432/kash_db
+      - REDIS_URL=
+      - DEBUG=true
+    ports:
+      - "8000:8000"
+    volumes:
+      - ..:/app
+      - ../logs:/app/logs
+      - ../models:/app/models
+      - ../data:/app/data
+    depends_on:
+      - postgres
+    networks:
+      - kash-network
+    restart: unless-stopped
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  postgres_data:
+
+networks:
+  kash-network:
+    driver: bridge

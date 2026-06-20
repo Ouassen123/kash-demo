@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-03-12T09:13:52.906049",
+  "test_results": {
+    "models": true,
+    "service": true,
+    "qa_tools": true,
+    "integration": true
+  },
+  "summary": {
+    "total_tests": 4,
+    "passed_tests": 4,
+    "success_rate": 1.0
+  },
+  "features_tested": [
+    "explanation_models",
+    "feature_contributions",
+    "standardized_explanations",
+    "shap_integration",
+    "explanation_caching",
+    "query_functionality",
+    "explanation_comparison",
+    "qa_validation",
+    "history_analysis",
+    "anomaly_detection",
+    "batch_processing",
+    "dashboard_integration",
+    "performance_monitoring"
+  ]
+}

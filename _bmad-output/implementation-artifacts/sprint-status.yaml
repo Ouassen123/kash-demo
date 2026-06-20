@@ -1,0 +1,77 @@
+# generated: 2026-02-16T22:49:00Z
+# project: yes
+# project_key: yes
+# tracking_system: file-system
+# story_location: c:/Users/viet/Desktop/projet KASH/yes/_bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-02-16T22:49:00Z
+project: yes
+project_key: yes
+tracking_system: file-system
+story_location: c:/Users/viet/Desktop/projet KASH/yes/_bmad-output/implementation-artifacts
+
+development_status:
+  epic-1: in-progress
+  1-1-nlp-cv-analysis-engine: done
+  1-2-esco-onet-integration: in-progress
+  1-3-adaptive-quiz-algorithm: in-progress
+  1-4-knowledge-scoring-calculation: ready-for-dev
+  1-5-frontend-evaluation-interface: ready-for-dev
+  epic-1-retrospective: optional
+
+  epic-2: in-progress
+  2-1-text-based-cognitive-tests: ready-for-dev
+  2-2-voice-recording-interface: ready-for-dev
+  2-3-multimodal-fusion-algorithm: ready-for-dev
+  2-4-speech-to-text-integration: ready-for-dev
+  epic-2-retrospective: optional
+
+  epic-3: in-progress
+  3-1-mini-projects-evaluation: review
+  3-2-github-api-integration: in-progress
+  3-3-code-analysis-algorithm: ready-for-dev
+  3-4-code-analysis-algorithm: ready-for-dev
+  epic-3-retrospective: optional
+
+  epic-4: in-progress
+  4-1-kash-job-mapping: ready-for-dev
+  4-2-compatibility-score-calculation: ready-for-dev
+  4-3-predictive-model-for-success: ready-for-dev
+  4-4-explainability-integration: ready-for-dev
+  epic-4-retrospective: optional
+
+  epic-5: done
+  5-1-admin-panel-reporting: done
+  5-2-final-validation-qa: done
+  5-3-optimization-performance-tuning: done
+  5-4-pilot-deployment-2-schools: done
+  epic-5-retrospective: optional

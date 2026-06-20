@@ -1,0 +1,32 @@
+{
+  "reviewer_override_system": {
+    "test_timestamp": "2024-01-01T12:00:00Z",
+    "schemas_tested": [
+      "FindingOverride",
+      "ScoreOverride",
+      "GradeOverride",
+      "ReviewerOverrideRequest"
+    ],
+    "service_functionality": {
+      "create_override": true,
+      "get_history": true,
+      "create_template": true,
+      "get_templates": true,
+      "validate_override": true
+    },
+    "api_endpoints": [
+      "create_override",
+      "override_history",
+      "reviewer_dashboard",
+      "create_template",
+      "get_templates",
+      "validate_override"
+    ],
+    "security_features": {
+      "authentication_required": true,
+      "instructor_only": true,
+      "override_tracking": true,
+      "validation_system": true
+    }
+  }
+}

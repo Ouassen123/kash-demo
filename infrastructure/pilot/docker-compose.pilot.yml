@@ -1,0 +1,166 @@
+version: '3.9'
+
+services:
+  school_a_postgres:
+    image: postgres:15-alpine
+    container_name: kash-school-a-postgres
+    env_file:
+      - ../../deploy/pilot/.env.school-a
+    environment:
+      POSTGRES_DB: ${SCHOOL_A_DB_NAME:-kash_school_a}
+      POSTGRES_USER: ${SCHOOL_A_DB_USER:-kash_school_a_user}
+      POSTGRES_PASSWORD: ${SCHOOL_A_DB_PASSWORD}
+    volumes:
+      - school_a_postgres_data:/var/lib/postgresql/data
+    networks:
+      - school_a_net
+    restart: unless-stopped
+
+  school_a_redis:
+    image: redis:7-alpine
+    container_name: kash-school-a-redis
+    command: redis-server --appendonly yes --requirepass ${SCHOOL_A_REDIS_PASSWORD}
+    volumes:
+      - school_a_redis_data:/data
+    networks:
+      - school_a_net
+    restart: unless-stopped
+
+  school_a_api:
+    build:
+      context: ../..
+      dockerfile: Dockerfile.dev
+    container_name: kash-school-a-api
+    env_file:
+      - ../../deploy/pilot/.env.school-a
+    environment:
+      DATABASE_URL: postgresql://${SCHOOL_A_DB_USER:-kash_school_a_user}:${SCHOOL_A_DB_PASSWORD}@school_a_postgres:5432/${SCHOOL_A_DB_NAME:-kash_school_a}
+      REDIS_URL: redis://:${SCHOOL_A_REDIS_PASSWORD}@school_a_redis:6379/0
+      SCHOOL_ID: school-a
+      PILOT_ENV: true
+      ENABLE_TRACING: true
+      ENABLE_METRICS: true
+      OTEL_SERVICE_NAME: kash-school-a-api
+      OTEL_EXPORTER_ENDPOINT: http://jaeger:4318/v1/traces
+    ports:
+      - "8100:8000"
+    depends_on:
+      - school_a_postgres
+      - school_a_redis
+    networks:
+      - school_a_net
+      - observability_net
+    restart: unless-stopped
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000
+
+  school_b_postgres:
+    image: postgres:15-alpine
+    container_name: kash-school-b-postgres
+    env_file:
+      - ../../deploy/pilot/.env.school-b
+    environment:
+      POSTGRES_DB: ${SCHOOL_B_DB_NAME:-kash_school_b}
+      POSTGRES_USER: ${SCHOOL_B_DB_USER:-kash_school_b_user}
+      POSTGRES_PASSWORD: ${SCHOOL_B_DB_PASSWORD}
+    volumes:
+      - school_b_postgres_data:/var/lib/postgresql/data
+    networks:
+      - school_b_net
+    restart: unless-stopped
+
+  school_b_redis:
+    image: redis:7-alpine
+    container_name: kash-school-b-redis
+    command: redis-server --appendonly yes --requirepass ${SCHOOL_B_REDIS_PASSWORD}
+    volumes:
+      - school_b_redis_data:/data
+    networks:
+      - school_b_net
+    restart: unless-stopped
+
+  school_b_api:
+    build:
+      context: ../..
+      dockerfile: Dockerfile.dev
+    container_name: kash-school-b-api
+    env_file:
+      - ../../deploy/pilot/.env.school-b
+    environment:
+      DATABASE_URL: postgresql://${SCHOOL_B_DB_USER:-kash_school_b_user}:${SCHOOL_B_DB_PASSWORD}@school_b_postgres:5432/${SCHOOL_B_DB_NAME:-kash_school_b}
+      REDIS_URL: redis://:${SCHOOL_B_REDIS_PASSWORD}@school_b_redis:6379/0
+      SCHOOL_ID: school-b
+      PILOT_ENV: true
+      ENABLE_TRACING: true
+      ENABLE_METRICS: true
+      OTEL_SERVICE_NAME: kash-school-b-api
+      OTEL_EXPORTER_ENDPOINT: http://jaeger:4318/v1/traces
+    ports:
+      - "8200:8000"
+    depends_on:
+      - school_b_postgres
+      - school_b_redis
+    networks:
+      - school_b_net
+      - observability_net
+    restart: unless-stopped
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: kash-pilot-prometheus
+    volumes:
+      - ./prometheus.pilot.yml:/etc/prometheus/prometheus.yml
+      - ./pilot-alert-rules.yml:/etc/prometheus/alerts/pilot-alert-rules.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=15d'
+    ports:
+      - "9190:9090"
+    networks:
+      - observability_net
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: kash-pilot-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+    volumes:
+      - pilot_grafana_data:/var/lib/grafana
+      - ../../docker/grafana-provisioning:/etc/grafana/provisioning
+    ports:
+      - "3200:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - observability_net
+    restart: unless-stopped
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.55
+    container_name: kash-pilot-jaeger
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "17686:16686"
+      - "5317:4317"
+      - "5318:4318"
+    networks:
+      - observability_net
+    restart: unless-stopped
+
+volumes:
+  school_a_postgres_data:
+  school_a_redis_data:
+  school_b_postgres_data:
+  school_b_redis_data:
+  pilot_grafana_data:
+
+networks:
+  school_a_net:
+    driver: bridge
+  school_b_net:
+    driver: bridge
+  observability_net:
+    driver: bridge

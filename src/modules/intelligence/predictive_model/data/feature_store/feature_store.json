@@ -1,0 +1,21 @@
+{
+  "store_id": "4ec55590-33fd-4170-88a3-dedca7a42bc9",
+  "store_name": "kash_predictive_features",
+  "version": "1.0",
+  "feature_definitions": [],
+  "active_features": [],
+  "data_sources": {
+    "compatibility_scores": "Compatibility scoring service",
+    "historical_performance": "LMS and assessment data",
+    "demographics": "User profile data",
+    "behavioral": "Platform interaction data"
+  },
+  "refresh_schedule": "daily",
+  "quality_thresholds": {},
+  "monitoring_enabled": true,
+  "access_permissions": {},
+  "description": "Feature store for KASH predictive modeling",
+  "created_by": "feature_engineering_service",
+  "created_at": "2026-03-09 12:45:04.439237",
+  "updated_at": "2026-03-09 12:45:04.439237"
+}

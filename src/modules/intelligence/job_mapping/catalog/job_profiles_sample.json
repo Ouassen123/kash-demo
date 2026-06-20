@@ -1,0 +1,525 @@
+{
+  "metadata": {
+    "catalog_version": "1.0",
+    "total_profiles": 50,
+    "last_updated": "2024-01-01T12:00:00",
+    "description": "KASH job profile catalog for career mapping"
+  },
+  "job_profiles": {
+    "software_developer_001": {
+      "job_id": "software_developer_001",
+      "title": "Software Developer",
+      "description": "Design, develop, and maintain software applications and systems",
+      "metadata": {
+        "sectors": ["technology"],
+        "seniority_levels": ["entry_level", "junior", "mid_level"],
+        "regional_availability": ["global"],
+        "typical_experience_years": "0-5 years",
+        "education_requirements": "Bachelor's degree in Computer Science or related field",
+        "salary_range": {"min": 60000, "max": 120000, "currency": "USD"},
+        "growth_potential": "High - can progress to senior developer, architect, or management roles",
+        "demand_level": "Very High"
+      },
+      "knowledge_competencies": [
+        {
+          "domain": "knowledge",
+          "category": "computer_science",
+          "name": "algorithms_and_data_structures",
+          "required_level": "intermediate",
+          "weight": 0.8,
+          "description": "Understanding of fundamental algorithms and data structures",
+          "success_signals": ["Can implement common algorithms", "Understands time/space complexity", "Can choose appropriate data structures"]
+        },
+        {
+          "domain": "knowledge",
+          "category": "software_engineering",
+          "name": "software_development_lifecycle",
+          "required_level": "intermediate",
+          "weight": 0.6,
+          "description": "Knowledge of SDLC methodologies and practices",
+          "success_signals": ["Understands agile/scrum", "Knows testing methodologies", "Familiar with CI/CD concepts"]
+        }
+      ],
+      "abilities_competencies": [
+        {
+          "domain": "abilities",
+          "category": "cognitive",
+          "name": "logical_reasoning",
+          "required_level": "advanced",
+          "weight": 0.9,
+          "description": "Ability to think logically and solve complex problems",
+          "success_signals": ["Can break down complex problems", "Identifies patterns", "Makes sound technical decisions"]
+        },
+        {
+          "domain": "abilities",
+          "category": "learning",
+          "name": "continuous_learning",
+          "required_level": "advanced",
+          "weight": 0.7,
+          "description": "Ability to quickly learn new technologies and concepts",
+          "success_signals": ["Learns new languages quickly", "Stays updated with tech trends", "Adapts to new tools"]
+        }
+      ],
+      "skills_competencies": [
+        {
+          "domain": "skills",
+          "category": "programming",
+          "name": "programming_languages",
+          "required_level": "intermediate",
+          "weight": 0.9,
+          "description": "Proficiency in at least one programming language",
+          "success_signals": ["Writes clean, efficient code", "Understands language paradigms", "Can debug effectively"]
+        },
+        {
+          "domain": "skills",
+          "category": "development_tools",
+          "name": "version_control",
+          "required_level": "intermediate",
+          "weight": 0.7,
+          "description": "Proficiency with version control systems (Git)",
+          "success_signals": ["Uses Git workflows effectively", "Understands branching strategies", "Can resolve conflicts"]
+        }
+      ],
+      "habits_competencies": [
+        {
+          "domain": "habits",
+          "category": "work_ethic",
+          "name": "attention_to_detail",
+          "required_level": "advanced",
+          "weight": 0.8,
+          "description": "Careful attention to code quality and details",
+          "success_signals": ["Writes well-documented code", "Catches edge cases", "Performs thorough testing"]
+        },
+        {
+          "domain": "habits",
+          "category": "collaboration",
+          "name": "team_collaboration",
+          "required_level": "intermediate",
+          "weight": 0.7,
+          "description": "Ability to work effectively in a team environment",
+          "success_signals": ["Communicates clearly", "Participates in code reviews", "Helps team members"]
+        }
+      ],
+      "success_criteria": [
+        "Delivers high-quality, maintainable code",
+        "Collaborates effectively with team members",
+        "Continuously learns and adapts to new technologies",
+        "Meets project deadlines and requirements"
+      ],
+      "rationale": "Software developers are essential for building digital solutions that drive business innovation and user experiences in today's technology-driven world.",
+      "career_path": "Junior Developer → Mid-level Developer → Senior Developer → Tech Lead/Architect → Engineering Manager"
+    },
+    "data_scientist_002": {
+      "job_id": "data_scientist_002",
+      "title": "Data Scientist",
+      "description": "Analyze complex data to help organizations make better decisions",
+      "metadata": {
+        "sectors": ["technology", "finance", "healthcare"],
+        "seniority_levels": ["mid_level", "senior"],
+        "regional_availability": ["global"],
+        "typical_experience_years": "2-7 years",
+        "education_requirements": "Master's degree in Data Science, Statistics, or related field",
+        "salary_range": {"min": 90000, "max": 160000, "currency": "USD"},
+        "growth_potential": "Very High - can progress to Senior Data Scientist, ML Engineer, or Data Science Manager",
+        "demand_level": "Very High"
+      },
+      "knowledge_competencies": [
+        {
+          "domain": "knowledge",
+          "category": "mathematics",
+          "name": "statistics_and_probability",
+          "required_level": "advanced",
+          "weight": 0.9,
+          "description": "Strong foundation in statistical methods and probability theory",
+          "success_signals": ["Applies statistical tests correctly", "Understands probability distributions", "Can design experiments"]
+        },
+        {
+          "domain": "knowledge",
+          "category": "machine_learning",
+          "name": "ml_algorithms",
+          "required_level": "advanced",
+          "weight": 0.8,
+          "description": "Knowledge of various machine learning algorithms and techniques",
+          "success_signals": ["Selects appropriate algorithms", "Understands model limitations", "Can optimize hyperparameters"]
+        }
+      ],
+      "abilities_competencies": [
+        {
+          "domain": "abilities",
+          "category": "analytical",
+          "name": "data_analysis",
+          "required_level": "expert",
+          "weight": 0.9,
+          "description": "Ability to analyze and interpret complex datasets",
+          "success_signals": ["Identifies patterns in data", "Makes data-driven decisions", "Communicates insights clearly"]
+        },
+        {
+          "domain": "abilities",
+          "category": "problem_solving",
+          "name": "business_acumen",
+          "required_level": "intermediate",
+          "weight": 0.6,
+          "description": "Understanding of business context and problem framing",
+          "success_signals": ["Translates business problems to data questions", "Considers business impact", "Aligns with company goals"]
+        }
+      ],
+      "skills_competencies": [
+        {
+          "domain": "skills",
+          "category": "programming",
+          "name": "python_r_programming",
+          "required_level": "advanced",
+          "weight": 0.9,
+          "description": "Proficiency in Python or R for data analysis",
+          "success_signals": ["Writes efficient data processing code", "Uses relevant libraries effectively", "Can optimize performance"]
+        },
+        {
+          "domain": "skills",
+          "category": "data_tools",
+          "name": "data_visualization",
+          "required_level": "intermediate",
+          "weight": 0.7,
+          "description": "Ability to create effective data visualizations",
+          "success_signals": ["Creates clear, informative charts", "Chooses appropriate visualization types", "Tells stories with data"]
+        }
+      ],
+      "habits_competencies": [
+        {
+          "domain": "habits",
+          "category": "analytical",
+          "name": "critical_thinking",
+          "required_level": "advanced",
+          "weight": 0.8,
+          "description": "Critical approach to data analysis and interpretation",
+          "success_signals": ["Questions assumptions", "Validates findings", "Considers alternative explanations"]
+        },
+        {
+          "domain": "habits",
+          "category": "communication",
+          "name": "technical_communication",
+          "required_level": "intermediate",
+          "weight": 0.7,
+          "description": "Ability to communicate technical concepts to non-technical audiences",
+          "success_signals": ["Explains complex concepts simply", "Tailors communication to audience", "Uses visual aids effectively"]
+        }
+      ],
+      "success_criteria": [
+        "Delivers actionable insights from data analysis",
+        "Builds accurate and reliable predictive models",
+        "Communicates findings effectively to stakeholders",
+        "Continuously improves analytical methodologies"
+      ],
+      "rationale": "Data scientists unlock valuable insights from data, helping organizations make informed decisions and gain competitive advantages in the data-driven economy.",
+      "career_path": "Junior Data Scientist → Data Scientist → Senior Data Scientist → Principal Data Scientist → Data Science Manager/Head of Data"
+    },
+    "product_manager_003": {
+      "job_id": "product_manager_003",
+      "title": "Product Manager",
+      "description": "Lead product strategy and development to deliver value to customers",
+      "metadata": {
+        "sectors": ["technology", "consulting", "finance"],
+        "seniority_levels": ["mid_level", "senior", "lead"],
+        "regional_availability": ["global"],
+        "typical_experience_years": "3-8 years",
+        "education_requirements": "Bachelor's degree in Business, Engineering, or related field",
+        "salary_range": {"min": 80000, "max": 150000, "currency": "USD"},
+        "growth_potential": "High - can progress to Senior Product Manager, Director of Product, or VP of Product",
+        "demand_level": "High"
+      },
+      "knowledge_competencies": [
+        {
+          "domain": "knowledge",
+          "category": "business",
+          "name": "market_analysis",
+          "required_level": "intermediate",
+          "weight": 0.7,
+          "description": "Understanding of market dynamics and competitive analysis",
+          "success_signals": ["Conducts market research", "Identifies market opportunities", "Analyzes competitor strategies"]
+        },
+        {
+          "domain": "knowledge",
+          "category": "product",
+          "name": "product_development",
+          "required_level": "intermediate",
+          "weight": 0.8,
+          "description": "Knowledge of product development methodologies and lifecycle",
+          "success_signals": ["Understands agile development", "Knows product management frameworks", "Can create product roadmaps"]
+        }
+      ],
+      "abilities_competencies": [
+        {
+          "domain": "abilities",
+          "category": "leadership",
+          "name": "strategic_thinking",
+          "required_level": "advanced",
+          "weight": 0.9,
+          "description": "Ability to think strategically and plan long-term",
+          "success_signals": ["Develops clear product vision", "Aligns product with business goals", "Anticipates market trends"]
+        },
+        {
+          "domain": "abilities",
+          "category": "communication",
+          "name": "stakeholder_management",
+          "required_level": "advanced",
+          "weight": 0.8,
+          "description": "Ability to manage relationships with various stakeholders",
+          "success_signals": ["Builds strong stakeholder relationships", "Manages conflicting priorities", "Communicates effectively across levels"]
+        }
+      ],
+      "skills_competencies": [
+        {
+          "domain": "skills",
+          "category": "analytical",
+          "name": "data_analysis",
+          "required_level": "intermediate",
+          "weight": 0.6,
+          "description": "Ability to analyze product metrics and user data",
+          "success_signals": ["Interprets user analytics", "Makes data-driven decisions", "Defines meaningful KPIs"]
+        },
+        {
+          "domain": "skills",
+          "category": "technical",
+          "name": "technical_understanding",
+          "required_level": "intermediate",
+          "weight": 0.7,
+          "description": "Understanding of technical concepts and limitations",
+          "success_signals": ["Understands technical feasibility", "Communicates with engineering team", "Makes informed technical trade-offs"]
+        }
+      ],
+      "habits_competencies": [
+        {
+          "domain": "habits",
+          "category": "leadership",
+          "name": "decision_making",
+          "required_level": "advanced",
+          "weight": 0.9,
+          "description": "Ability to make informed decisions under uncertainty",
+          "success_signals": ["Makes timely decisions", "Balances competing priorities", "Takes calculated risks"]
+        },
+        {
+          "domain": "habits",
+          "category": "user_focus",
+          "name": "customer_empathy",
+          "required_level": "advanced",
+          "weight": 0.8,
+          "description": "Deep understanding and empathy for customer needs",
+          "success_signals": ["Advocates for users", "Conducts user research", "Incorporates feedback into product decisions"]
+        }
+      ],
+      "success_criteria": [
+        "Delivers products that meet customer needs",
+        "Achieves business objectives and KPIs",
+        "Maintains strong stakeholder relationships",
+        "Continuously improves product processes"
+      ],
+      "rationale": "Product managers bridge the gap between business needs and customer solutions, ensuring that products deliver value and drive business success.",
+      "career_path": "Associate Product Manager → Product Manager → Senior Product Manager → Principal Product Manager → Director/VP of Product"
+    },
+    "ux_designer_004": {
+      "job_id": "ux_designer_004",
+      "title": "UX Designer",
+      "description": "Design user-centered experiences for digital products and services",
+      "metadata": {
+        "sectors": ["technology", "media", "consulting"],
+        "seniority_levels": ["entry_level", "junior", "mid_level", "senior"],
+        "regional_availability": ["global"],
+        "typical_experience_years": "1-6 years",
+        "education_requirements": "Bachelor's degree in Design, HCI, or related field",
+        "salary_range": {"min": 65000, "max": 120000, "currency": "USD"},
+        "growth_potential": "High - can progress to Senior UX Designer, UX Lead, or Design Director",
+        "demand_level": "High"
+      },
+      "knowledge_competencies": [
+        {
+          "domain": "knowledge",
+          "category": "design",
+          "name": "design_principles",
+          "required_level": "advanced",
+          "weight": 0.8,
+          "description": "Understanding of fundamental design principles and theory",
+          "success_signals": ["Applies design principles consistently", "Creates visually appealing designs", "Understands design systems"]
+        },
+        {
+          "domain": "knowledge",
+          "category": "user_research",
+          "name": "user_experience_research",
+          "required_level": "intermediate",
+          "weight": 0.7,
+          "description": "Knowledge of user research methodologies",
+          "success_signals": ["Conducts effective user interviews", "Designs usability tests", "Analyzes user behavior data"]
+        }
+      ],
+      "abilities_competencies": [
+        {
+          "domain": "abilities",
+          "category": "creative",
+          "name": "design_thinking",
+          "required_level": "advanced",
+          "weight": 0.9,
+          "description": "Ability to approach problems with design thinking methodology",
+          "success_signals": ["Empathizes with users", "Ideates creative solutions", "Prototypes and iterates quickly"]
+        },
+        {
+          "domain": "abilities",
+          "category": "analytical",
+          "name": "user_empathy",
+          "required_level": "advanced",
+          "weight": 0.8,
+          "description": "Ability to understand and empathize with user needs and pain points",
+          "success_signals": ["Identifies user pain points", "Advocates for user needs", "Creates user-centered solutions"]
+        }
+      ],
+      "skills_competencies": [
+        {
+          "domain": "skills",
+          "category": "design_tools",
+          "name": "design_software",
+          "required_level": "intermediate",
+          "weight": 0.8,
+          "description": "Proficiency with design tools (Figma, Sketch, Adobe Creative Suite)",
+          "success_signals": ["Creates professional designs", "Uses tools efficiently", "Maintains design consistency"]
+        },
+        {
+          "domain": "skills",
+          "category": "prototyping",
+          "name": "interactive_prototyping",
+          "required_level": "intermediate",
+          "weight": 0.7,
+          "description": "Ability to create interactive prototypes and wireframes",
+          "success_signals": ["Builds clickable prototypes", "Tests design concepts", "Iterates based on feedback"]
+        }
+      ],
+      "habits_competencies": [
+        {
+          "domain": "habits",
+          "category": "collaboration",
+          "name": "cross_functional_collaboration",
+          "required_level": "intermediate",
+          "weight": 0.8,
+          "description": "Ability to work effectively with developers, product managers, and stakeholders",
+          "success_signals": ["Communicates design rationale", "Incorporates technical constraints", "Facilitates design discussions"]
+        },
+        {
+          "domain": "habits",
+          "category": "continuous_improvement",
+          "name": "design_iteration",
+          "required_level": "advanced",
+          "weight": 0.7,
+          "description": "Habit of continuously iterating and improving designs based on feedback",
+          "success_signals": ["Seeks and incorporates feedback", "Tests and validates designs", "Stays updated with design trends"]
+        }
+      ],
+      "success_criteria": [
+        "Creates intuitive and user-friendly designs",
+        "Conducts effective user research and testing",
+        "Collaborates successfully with development teams",
+        "Delivers designs that meet business and user needs"
+      ],
+      "rationale": "UX designers ensure that digital products are usable, enjoyable, and valuable to users, directly impacting user satisfaction and business success.",
+      "career_path": "Junior UX Designer → UX Designer → Senior UX Designer → UX Lead → Design Director/Head of Design"
+    },
+    "cybersecurity_analyst_005": {
+      "job_id": "cybersecurity_analyst_005",
+      "title": "Cybersecurity Analyst",
+      "description": "Protect organization's digital assets and infrastructure from security threats",
+      "metadata": {
+        "sectors": ["technology", "finance", "government", "healthcare"],
+        "seniority_levels": ["entry_level", "junior", "mid_level", "senior"],
+        "regional_availability": ["global"],
+        "typical_experience_years": "1-7 years",
+        "education_requirements": "Bachelor's degree in Cybersecurity, IT, or related field",
+        "salary_range": {"min": 70000, "max": 130000, "currency": "USD"},
+        "growth_potential": "Very High - can progress to Security Engineer, Security Architect, or CISO",
+        "demand_level": "Very High"
+      },
+      "knowledge_competencies": [
+        {
+          "domain": "knowledge",
+          "category": "security",
+          "name": "security_fundamentals",
+          "required_level": "advanced",
+          "weight": 0.9,
+          "description": "Understanding of cybersecurity principles and best practices",
+          "success_signals": ["Understands security frameworks", "Knows common vulnerabilities", "Applies security controls"]
+        },
+        {
+          "domain": "knowledge",
+          "category": "networking",
+          "name": "network_security",
+          "required_level": "intermediate",
+          "weight": 0.8,
+          "description": "Knowledge of network security concepts and protocols",
+          "success_signals": ["Understands network protocols", "Identifies network threats", "Configures security devices"]
+        }
+      ],
+      "abilities_competencies": [
+        {
+          "domain": "abilities",
+          "category": "analytical",
+          "name": "threat_analysis",
+          "required_level": "advanced",
+          "weight": 0.9,
+          "description": "Ability to analyze and assess security threats and vulnerabilities",
+          "success_signals": ["Identifies potential threats", "Assesses risk levels", "Prioritizes security issues"]
+        },
+        {
+          "domain": "abilities",
+          "category": "problem_solving",
+          "name": "incident_response",
+          "required_level": "advanced",
+          "weight": 0.8,
+          "description": "Ability to respond effectively to security incidents",
+          "success_signals": ["Responds quickly to incidents", "Contains security breaches", "Documents incident response"]
+        }
+      ],
+      "skills_competencies": [
+        {
+          "domain": "skills",
+          "category": "security_tools",
+          "name": "security_software",
+          "required_level": "intermediate",
+          "weight": 0.8,
+          "description": "Proficiency with security tools and software",
+          "success_signals": ["Uses SIEM tools effectively", "Configures firewalls", "Implements security monitoring"]
+        },
+        {
+          "domain": "skills",
+          "category": "technical",
+          "name": "scripting_automation",
+          "required_level": "intermediate",
+          "weight": 0.6,
+          "description": "Ability to write scripts for security automation",
+          "success_signals": ["Automates security tasks", "Writes security scripts", "Implements security workflows"]
+        }
+      ],
+      "habits_competencies": [
+        {
+          "domain": "habits",
+          "category": "security_mindset",
+          "name": "security_vigilance",
+          "required_level": "expert",
+          "weight": 0.9,
+          "description": "Constant awareness and attention to security concerns",
+          "success_signals": ["Thinks security-first", "Identifies potential risks", "Follows security protocols"]
+        },
+        {
+          "domain": "habits",
+          "category": "learning",
+          "name": "continuous_security_learning",
+          "required_level": "advanced",
+          "weight": 0.8,
+          "description": "Commitment to staying updated with security threats and trends",
+          "success_signals": ["Follows security news", "Learns new attack vectors", "Updates security knowledge"]
+        }
+      ],
+      "success_criteria": [
+        "Maintains strong security posture for organization",
+        "Detects and responds to security threats effectively",
+        "Implements appropriate security controls and measures",
+        "Stays current with emerging security threats and technologies"
+      ],
+      "rationale": "Cybersecurity analysts are critical for protecting organizations from increasingly sophisticated cyber threats and ensuring business continuity.",
+      "career_path": "Junior Security Analyst → Security Analyst → Senior Security Analyst → Security Engineer → Security Architect/CISO"
+    }
+  }
+}

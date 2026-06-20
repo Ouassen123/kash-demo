@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KASH UX Design Directions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1E3A8A;
+            --success-green: #10B981;
+            --warning-orange: #F59E0B;
+            --accent-purple: #8B5CF6;
+            --neutral-light: #F3F4F6;
+            --neutral-dark: #374151;
+            --text-primary: #374151;
+            --text-secondary: #6B7280;
+            --border: #E5E7EB;
+            --shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .directions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .direction-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .direction-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .direction-header {
+            padding: 20px;
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .direction-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .direction-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .direction-content {
+            padding: 20px;
+        }
+
+        .mockup {
+            background: var(--neutral-light);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+        }
+
+        /* Direction 1: Clean & Minimal */
+        .direction-1 .dashboard {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .direction-1 .score-header {
+            background: var(--primary-blue);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .direction-1 .score-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .direction-1 .score-card {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .direction-1 .score-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 4px;
+        }
+
+        .direction-1 .score-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Direction 2: Data-Rich */
+        .direction-2 .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 16px;
+        }
+
+        .direction-2 .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .direction-2 .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .direction-2 .metric-card {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .direction-2 .metric-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--success-green);
+        }
+
+        .direction-2 .metric-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* Direction 3: Gamified */
+        .direction-3 .dashboard {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .direction-3 .progress-section {
+            background: linear-gradient(135deg, var(--success-green), var(--primary-blue));
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .direction-3 .progress-bar {
+            background: rgba(255,255,255,0.3);
+            height: 8px;
+            border-radius: 4px;
+            margin: 12px 0;
+            overflow: hidden;
+        }
+
+        .direction-3 .progress-fill {
+            background: white;
+            height: 100%;
+            width: 65%;
+            border-radius: 4px;
+        }
+
+        .direction-3 .badges {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 12px;
+        }
+
+        .direction-3 .badge {
+            background: var(--warning-orange);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Direction 4: Professional */
+        .direction-4 .dashboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .direction-4 .kash-card {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .direction-4 .kash-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .direction-4 .kash-score {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .direction-4 .kash-progress {
+            background: var(--neutral-light);
+            height: 4px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .direction-4 .kash-fill {
+            height: 100%;
+            border-radius: 2px;
+        }
+
+        .direction-4 .knowledge { color: var(--primary-blue); }
+        .direction-4 .abilities { color: var(--success-green); }
+        .direction-4 .skills { color: var(--warning-orange); }
+        .direction-4 .intelligence { color: var(--accent-purple); }
+
+        /* Direction 5: Mobile-First */
+        .direction-5 .dashboard {
+            max-width: 375px;
+            margin: 0 auto;
+        }
+
+        .direction-5 .mobile-header {
+            background: var(--primary-blue);
+            color: white;
+            padding: 16px;
+            border-radius: 8px 8px 0 0;
+            text-align: center;
+        }
+
+        .direction-5 .mobile-content {
+            background: white;
+            padding: 16px;
+            border-radius: 0 0 8px 8px;
+            border: 1px solid var(--border);
+        }
+
+        .direction-5 .mobile-score {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 16px;
+        }
+
+        .direction-5 .mobile-score-item {
+            text-align: center;
+        }
+
+        .direction-5 .mobile-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .direction-5 .mobile-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        /* Direction 6: Dark Mode */
+        .direction-6 .dashboard {
+            background: #1F2937;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .direction-6 .dark-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .direction-6 .dark-scores {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .direction-6 .dark-score-card {
+            background: #374151;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #4B5563;
+        }
+
+        .direction-6 .dark-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--success-green);
+            margin-bottom: 4px;
+        }
+
+        .direction-6 .dark-label {
+            font-size: 12px;
+            color: #9CA3AF;
+        }
+
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 30px;
+        }
+
+        .controls h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .control-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .control-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .evaluation-criteria {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .evaluation-criteria h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .criteria-list {
+            list-style: none;
+        }
+
+        .criteria-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .criteria-list li:last-child {
+            border-bottom: none;
+        }
+
+        .criteria-list li::before {
+            content: "✅ ";
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .directions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>KASH Career Intelligence</h1>
+            <p>Directions de Design UX - Explorez les différentes approches visuelles</p>
+        </div>
+
+        <div class="controls">
+            <h3>🎛️ Contrôles d'Exploration</h3>
+            <div class="control-buttons">
+                <button class="control-btn active" onclick="showAllDirections()">Toutes les Directions</button>
+                <button class="control-btn" onclick="filterDirections('student')">Vue Lina (Étudiante)</button>
+                <button class="control-btn" onclick="filterDirections('counselor')">Vue M. Karim (Conseiller)</button>
+                <button class="control-btn" onclick="filterDirections('mobile')">Mobile-First</button>
+                <button class="control-btn" onclick="filterDirections('desktop')">Desktop-Rich</button>
+            </div>
+        </div>
+
+        <div class="directions-grid">
+            <!-- Direction 1: Clean & Minimal -->
+            <div class="direction-card" data-type="student desktop">
+                <div class="direction-header">
+                    <h3>Direction 1: Clean & Minimal</h3>
+                    <p>Aéré, clair, focus sur l'essentiel</p>
+                </div>
+                <div class="direction-content">
+                    <div class="mockup">
+                        <div class="dashboard direction-1">
+                            <div class="score-header">
+                                <h4>Votre Score KASH</h4>
+                                <p>Vue d'ensemble de vos compétences</p>
+                            </div>
+                            <div class="score-grid">
+                                <div class="score-card">
+                                    <div class="score-value">78%</div>
+                                    <div class="score-label">Knowledge</div>
+                                </div>
+                                <div class="score-card">
+                                    <div class="score-value">82%</div>
+                                    <div class="score-label">Abilities</div>
+                                </div>
+                                <div class="score-card">
+                                    <div class="score-value">65%</div>
+                                    <div class="score-label">Skills</div>
+                                </div>
+                                <div class="score-card">
+                                    <div class="score-value">71%</div>
+                                    <div class="score-label">Intelligence</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p><strong>Points forts:</strong> Très lisible, idéal pour Lina, focus sur clarté</p>
+                    <p><strong>Points faibles:</strong> Peut manquer de détails pour M. Karim</p>
+                </div>
+            </div>
+
+            <!-- Direction 2: Data-Rich -->
+            <div class="direction-card" data-type="counselor desktop">
+                <div class="direction-header">
+                    <h3>Direction 2: Data-Rich</h3>
+                    <p>Dense, informatif, pour conseillers</p>
+                </div>
+                <div class="direction-content">
+                    <div class="mockup">
+                        <div class="dashboard direction-2">
+                            <div class="sidebar">
+                                <div class="metric-card">
+                                    <div class="metric-value">24</div>
+                                    <div class="metric-label">Étudiants actifs</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-value">3</div>
+                                    <div class="metric-label">Alertes prioritaires</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-value">89%</div>
+                                    <div class="metric-label">Taux complétion</div>
+                                </div>
+                            </div>
+                            <div class="main-content">
+                                <div class="metric-card">
+                                    <div class="metric-value">Lina B.</div>
+                                    <div class="metric-label">Score: 74% - Besoin: Skills</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-value">Marc D.</div>
+                                    <div class="metric-label">Score: 81% - Progression stable</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p><strong>Points forts:</strong> Parfait pour M. Karim, données complètes</p>
+                    <p><strong>Points faibles:</strong> Trop dense pour Lina, risque surcharge</p>
+                </div>
+            </div>
+
+            <!-- Direction 3: Gamified -->
+            <div class="direction-card" data-type="student mobile">
+                <div class="direction-header">
+                    <h3>Direction 3: Gamified</h3>
+                    <p>Engageant, progression visible, badges</p>
+                </div>
+                <div class="direction-content">
+                    <div class="mockup">
+                        <div class="dashboard direction-3">
+                            <div class="progress-section">
+                                <h4>🎯 Votre Progression</h4>
+                                <p>Continuez comme ça !</p>
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                                <p>65% complété</p>
+                                <div class="badges">
+                                    <span class="badge">🏆 Débutant</span>
+                                    <span class="badge">⚡ Rapide</span>
+                                    <span class="badge">🎯 Focus</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p><strong>Points forts:</strong> Très motivateur pour Lina, engagement élevé</p>
+                    <p><strong>Points faibles:</strong> Peut sembler moins sérieux pour M. Karim</p>
+                </div>
+            </div>
+
+            <!-- Direction 4: Professional -->
+            <div class="direction-card" data-type="counselor desktop student">
+                <div class="direction-header">
+                    <h3>Direction 4: Professional</h3>
+                    <p>Équilibré, corporate, dashboards structurés</p>
+                </div>
+                <div class="direction-content">
+                    <div class="mockup">
+                        <div class="dashboard direction-4">
+                            <div class="kash-card">
+                                <div class="kash-title">Knowledge</div>
+                                <div class="kash-score knowledge">78%</div>
+                                <div class="kash-progress">
+                                    <div class="kash-fill" style="width: 78%; background: var(--primary-blue);"></div>
+                                </div>
+                            </div>
+                            <div class="kash-card">
+                                <div class="kash-title">Abilities</div>
+                                <div class="kash-score abilities">82%</div>
+                                <div class="kash-progress">
+                                    <div class="kash-fill" style="width: 82%; background: var(--success-green);"></div>
+                                </div>
+                            </div>
+                            <div class="kash-card">
+                                <div class="kash-title">Skills</div>
+                                <div class="kash-score skills">65%</div>
+                                <div class="kash-progress">
+                                    <div class="kash-fill" style="width: 65%; background: var(--warning-orange);"></div>
+                                </div>
+                            </div>
+                            <div class="kash-card">
+                                <div class="kash-title">Intelligence</div>
+                                <div class="kash-score intelligence">71%</div>
+                                <div class="kash-progress">
+                                    <div class="kash-fill" style="width: 71%; background: var(--accent-purple);"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p><strong>Points forts:</strong> Bon équilibre, fonctionne pour les deux personas</p>
+                    <p><strong>Points faibles:</strong> Manque d'originalité, peu différenciant</p>
+                </div>
+            </div>
+
+            <!-- Direction 5: Mobile-First -->
+            <div class="direction-card" data-type="student mobile">
+                <div class="direction-header">
+                    <h3>Direction 5: Mobile-First</h3>
+                    <p>Optimisé mobile, swipe-friendly, compact</p>
+                </div>
+                <div class="direction-content">
+                    <div class="mockup">
+                        <div class="dashboard direction-5">
+                            <div class="mobile-header">
+                                <h4>📱 KASH Mobile</h4>
+                                <p>Votre progression en poche</p>
+                            </div>
+                            <div class="mobile-content">
+                                <div class="mobile-score">
+                                    <div class="mobile-score-item">
+                                        <div class="mobile-value">78</div>
+                                        <div class="mobile-label">Know</div>
+                                    </div>
+                                    <div class="mobile-score-item">
+                                        <div class="mobile-value">82</div>
+                                        <div class="mobile-label">Abil</div>
+                                    </div>
+                                    <div class="mobile-score-item">
+                                        <div class="mobile-value">65</div>
+                                        <div class="mobile-label">Skill</div>
+                                    </div>
+                                    <div class="mobile-score-item">
+                                        <div class="mobile-value">71</div>
+                                        <div class="mobile-label">Intel</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p><strong>Points forts:</strong> Parfait pour Lina mobile, très accessible</p>
+                    <p><strong>Points faibles:</strong> Limité pour desktop, pas idéal pour M. Karim</p>
+                </div>
+            </div>
+
+            <!-- Direction 6: Dark Mode -->
+            <div class="direction-card" data-type="student counselor desktop">
+                <div class="direction-header">
+                    <h3>Direction 6: Dark Mode</h3>
+                    <p>Moderne, réduction fatigue, contraste élevé</p>
+                </div>
+                <div class="direction-content">
+                    <div class="mockup">
+                        <div class="dashboard direction-6">
+                            <div class="dark-header">
+                                <h4>🌙 KASH Dark Mode</h4>
+                                <p>Focus sur les données</p>
+                            </div>
+                            <div class="dark-scores">
+                                <div class="dark-score-card">
+                                    <div class="dark-value">78%</div>
+                                    <div class="dark-label">Knowledge</div>
+                                </div>
+                                <div class="dark-score-card">
+                                    <div class="dark-value">82%</div>
+                                    <div class="dark-label">Abilities</div>
+                                </div>
+                                <div class="dark-score-card">
+                                    <div class="dark-value">65%</div>
+                                    <div class="dark-label">Skills</div>
+                                </div>
+                                <div class="dark-score-card">
+                                    <div class="dark-value">71%</div>
+                                    <div class="dark-label">Intelligence</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p><strong>Points forts:</strong> Moderne, réduction fatigue oculaire</p>
+                    <p><strong>Points faibles:</strong> Peut sembler moins accessible, préférences variables</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="evaluation-criteria">
+            <h3>📋 Critères d'Évaluation</h3>
+            <ul class="criteria-list">
+                <li><strong>Layout Intuitif:</strong> Quelle hiérarchie correspond à Lina et M. Karim ?</li>
+                <li><strong>Poids Visuel:</strong> Quelle densité visuelle match la personnalité KASH ?</li>
+                <li><strong>Style Interaction:</strong> Quel pattern supporte le dashboard central ?</li>
+                <li><strong>Navigation:</strong> Quelle approche correspond aux attentes utilisateurs ?</li>
+                <li><strong>Usage Composants:</strong> Comment les composants supportent les parcours ?</li>
+                <li><strong>Alignement Marque:</strong> Quelle direction soutient les objectifs émotionnels ?</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function showAllDirections() {
+            const cards = document.querySelectorAll('.direction-card');
+            cards.forEach(card => {
+                card.style.display = 'block';
+            });
+            
+            // Update active button
+            document.querySelectorAll('.control-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function filterDirections(type) {
+            const cards = document.querySelectorAll('.direction-card');
+            cards.forEach(card => {
+                if (card.dataset.type && card.dataset.type.includes(type)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Update active button
+            document.querySelectorAll('.control-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Add hover effects for interactive exploration
+        document.querySelectorAll('.direction-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Add click to expand functionality
+        document.querySelectorAll('.direction-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // This could open a modal with more details
+                console.log('Direction clicked:', this.querySelector('h3').textContent);
+            });
+        });
+    </script>
+</body>
+</html>

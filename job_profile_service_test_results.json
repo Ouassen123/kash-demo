@@ -1,0 +1,28 @@
+{
+  "job_profile_service_test": {
+    "timestamp": "2024-01-01T12:00:00Z",
+    "catalog_loaded": true,
+    "total_profiles": 5,
+    "features_tested": [
+      "catalog_loading",
+      "profile_retrieval",
+      "sector_filtering",
+      "seniority_filtering",
+      "region_filtering",
+      "search_functionality",
+      "kash_domain_filtering",
+      "competency_statistics",
+      "similarity_analysis",
+      "profile_validation",
+      "catalog_export"
+    ],
+    "sample_profile_structure": {
+      "job_id": "software_developer_001",
+      "title": "Software Developer",
+      "total_competencies": 8,
+      "sectors": [
+        "technology"
+      ]
+    }
+  }
+}

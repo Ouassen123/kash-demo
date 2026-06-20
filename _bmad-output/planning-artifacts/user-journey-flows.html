@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KASH User Journey Flows</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --primary-blue: #1E3A8A;
+            --success-green: #10B981;
+            --warning-orange: #F59E0B;
+            --accent-purple: #8B5CF6;
+            --neutral-light: #F3F4F6;
+            --neutral-dark: #374151;
+            --text-primary: #374151;
+            --text-secondary: #6B7280;
+            --border: #E5E7EB;
+            --shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .journey-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .journey-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .journey-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .journey-header {
+            padding: 24px;
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .journey-header h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .journey-header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .journey-content {
+            padding: 24px;
+        }
+
+        .flow-diagram {
+            background: var(--neutral-light);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            min-height: 400px;
+        }
+
+        .flow-steps {
+            margin-top: 20px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .step-number {
+            background: var(--primary-blue);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .step-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .key-points {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 30px;
+        }
+
+        .key-points h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--primary-blue);
+        }
+
+        .key-points-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .key-point {
+            padding: 12px;
+            background: var(--neutral-light);
+            border-radius: 8px;
+            border-left: 4px solid var(--success-green);
+        }
+
+        .key-point-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .key-point-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .optimization-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .optimization-section h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--accent-purple);
+        }
+
+        .optimization-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: var(--neutral-light);
+            border-radius: 6px;
+        }
+
+        .optimization-icon {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .optimization-text {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 768px) {
+            .journey-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>KASH User Journey Flows</h1>
+            <p>Parcours Utilisateurs Critiques - Onboarding Lina & Monitoring M. Karim</p>
+        </div>
+
+        <div class="key-points">
+            <h3>🎯 Points Clés des Parcours KASH</h3>
+            <div class="key-points-grid">
+                <div class="key-point">
+                    <div class="key-point-title">Point d'Entrée</div>
+                    <div class="key-point-desc">Landing page / email invitation / login Firebase</div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-title">Infos Requises</div>
+                    <div class="key-point-desc">CV, réponses quiz, scoring KASH, profil utilisateur</div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-title">Décisions Clés</div>
+                    <div class="key-point-desc">Choix métiers, validations recommandations, priorisation alertes</div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-title">Feedback Progression</div>
+                    <div class="key-point-desc">Barres progression, micro-achievements, alertes visuelles</div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-title">Succès Final</div>
+                    <div class="key-point-desc">Dashboard KASH complet, plan d'action clair, interventions conseillées</div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-title">Récupération Erreurs</div>
+                    <div class="key-point-desc">Messages clairs, suggestions correctives, redo facile</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="journey-grid">
+            <!-- Journey 1: Lina Onboarding -->
+            <div class="journey-card">
+                <div class="journey-header">
+                    <h3>👩‍🎓 Parcours Onboarding Lina</h3>
+                    <p>Self-Discovery Student - Découverte → Dashboard KASH</p>
+                </div>
+                <div class="journey-content">
+                    <div class="flow-diagram">
+                        <div class="mermaid">
+                            graph TD
+                                A[Point d'Entrée] --> B{Landing Page}
+                                B --> C[Inscription Firebase]
+                                C --> D[Welcome Tour]
+                                D --> E{Upload CV}
+                                E -->|Succès| F[Extraction NLP]
+                                E -->|Échec| G[Message Erreur]
+                                G --> E
+                                F --> H[Quiz Adaptatif]
+                                H --> I{Questions 1-27}
+                                I -->|Complété| J[Calcul Scores KASH]
+                                I -->|Incomplet| K[Reprise Quiz]
+                                K --> I
+                                J --> L[Dashboard KASH]
+                                L --> M{Scores + Écarts}
+                                M --> N[Recommandations]
+                                N --> O[Plan d'Action]
+                                O --> P[Succès Onboarding]
+                                
+                                style A fill:#e1f5fe
+                                style P fill:#c8e6c9
+                                style G fill:#fff3e0
+                                style K fill:#fff3e0
+                        </div>
+                    </div>
+                    
+                    <div class="flow-steps">
+                        <div class="flow-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <div class="step-title">Découverte & Inscription</div>
+                                <div class="step-description">Landing page engageante avec promesse "Transformez votre incertitude en plan d'action clair". Inscription via Firebase (Google/LinkedIn) en 30 secondes.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <div class="step-title">Upload CV Intelligent</div>
+                                <div class="step-description">Drag & drop CV avec feedback immédiat. Extraction NLP automatique, mapping compétences KASH. Messages encourageants pendant traitement.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <div class="step-title">Quiz Adaptatif Gamifié</div>
+                                <div class="step-description">27 questions Vrai/Faux + Classement. Progress bar visible, micro-achievements chaque 5 questions. Ton encourageant, pas de pression.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <div class="step-title">Révélation Dashboard KASH</div>
+                                <div class="step-description">Moment "wow" avec scores Knowledge/Abilities/Skills/Intelligence. Visualisation écarts comme opportunités. SHAP explainability simplifiée.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <div class="step-title">Plan d'Action Personnalisé</div>
+                                <div class="step-description">Recommandations métiers + formations concrètes. Actions cliquables, prochaines étapes claires. Sentiment "Je sais quoi faire maintenant".</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Journey 2: M. Karim Monitoring -->
+            <div class="journey-card">
+                <div class="journey-header">
+                    <h3>👨‍🏫 Parcours Monitoring M. Karim</h3>
+                    <p>Pilot Admin/Counselor - Vue Cohortes → Interventions</p>
+                </div>
+                <div class="journey-content">
+                    <div class="flow-diagram">
+                        <div class="mermaid">
+                            graph TD
+                                A[Point d'Entrée] --> B{Login Admin}
+                                B --> C[Dashboard Principal]
+                                C --> D{Vue Cohortes}
+                                D --> E[Étudiants Actifs]
+                                E --> F{Alertes Prioritaires}
+                                F -->|3 Alertes| G[Intervention Immédiate]
+                                F -->|Pas d'Alerte| H[Monitoring Routine]
+                                G --> I[Fiche Étudiant]
+                                I --> J[Analyse KASH]
+                                J --> K[Plan Intervention]
+                                K --> L[Contact Étudiant]
+                                L --> M[Suivi Progrès]
+                                H --> N{Filtres Rapides}
+                                N --> O[Par Performance]
+                                N --> P[Par Progression]
+                                O --> Q[Actions Prioritaires]
+                                P --> Q
+                                Q --> R[Interventions Ciblées]
+                                R --> S[Succès Monitoring]
+                                
+                                style A fill:#e1f5fe
+                                style S fill:#c8e6c9
+                                style G fill:#fff3e0
+                                style F fill:#fff3e0
+                        </div>
+                    </div>
+                    
+                    <div class="flow-steps">
+                        <div class="flow-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <div class="step-title">Dashboard Conseiller Central</div>
+                                <div class="step-description">Vue d'ensemble immédiate : 24 étudiants actifs, 3 alertes prioritaires, 89% taux complétion. Interface dense mais organisée.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <div class="step-title">Alertes Intelligentes</div>
+                                <div class="step-description">Système priorisation basé sur écarts compétences + inactivité. Alertes contextuelles avec actions suggérées. "Lina B. - Skills 65% - Suggérer formation Python".</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <div class="step-title">Fiche Étudiant Complète</div>
+                                <div class="step-description">Vue détaillée KASH + historique + recommandations. SHAP explainability pour comprendre scores. Notes personnelles + plan intervention.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <div class="step-title">Filtres et Priorisation</div>
+                                <div class="step-description">Filtres rapides par performance, progression, métiers cibles. Vue cohortes avec comparaisons. Export rapports pour réunions.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flow-step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <div class="step-title">Interventions Efficaces</div>
+                                <div class="step-description">Actions ciblées basées sur données KASH. Suivi automatique progrès post-intervention. Sentiment "Je peux guider chaque étudiant efficacement".</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="optimization-section">
+            <h3>⚡ Optimisations des Flux</h3>
+            
+            <div class="optimization-item">
+                <div class="optimization-icon">🚀</div>
+                <div class="optimization-text">
+                    <strong>Minimiser Time-to-Value:</strong> Dashboard KASH en 3-5 secondes post-upload CV + quiz
+                </div>
+            </div>
+            
+            <div class="optimization-item">
+                <div class="optimization-icon">🧠</div>
+                <div class="optimization-text">
+                    <strong>Réduire Charge Cognitive:</strong> Une action principale par écran, guidance contextuelle
+                </div>
+            </div>
+            
+            <div class="optimization-item">
+                <div class="optimization-icon">✨</div>
+                <div class="optimization-text">
+                    <strong>Micro-Achievements:</strong> Badges progression, feedback immédiat, moments "aha"
+                </div>
+            </div>
+            
+            <div class="optimization-item">
+                <div class="optimization-icon">🔄</div>
+                <div class="optimization-text">
+                    <strong>Récupération Erreurs:</strong> Messages clairs, suggestions correctives, retry facile
+                </div>
+            </div>
+            
+            <div class="optimization-item">
+                <div class="optimization-icon">📊</div>
+                <div class="optimization-text">
+                    <strong>Feedback Progression:</strong> Barres visibles, pourcentages, étapes restantes
+                </div>
+            </div>
+            
+            <div class="optimization-item">
+                <div class="optimization-icon">🎯</div>
+                <div class="optimization-text">
+                    <strong>Success States Clairs:</strong> Dashboard complet, plan actionnable, interventions prioritaires
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#1E3A8A',
+                primaryTextColor: '#374151',
+                primaryBorderColor: '#1E3A8A',
+                lineColor: '#6B7280',
+                secondaryColor: '#10B981',
+                tertiaryColor: '#F59E0B'
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // Add interactive elements
+        document.querySelectorAll('.flow-step').forEach((step, index) => {
+            step.style.opacity = '0';
+            step.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                step.style.transition = 'all 0.5s ease';
+                step.style.opacity = '1';
+                step.style.transform = 'translateY(0)';
+            }, index * 200);
+        });
+
+        // Add hover effects for journey cards
+        document.querySelectorAll('.journey-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(-5px) scale(1)';
+            });
+        });
+
+        // Add click to expand functionality
+        document.querySelectorAll('.journey-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const journeyName = this.querySelector('h3').textContent;
+                console.log('Journey clicked:', journeyName);
+                // Could open modal with more details
+            });
+        });
+    </script>
+</body>
+</html>

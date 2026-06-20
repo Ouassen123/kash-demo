@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KASH UX Patterns Library</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1E3A8A;
+            --success-green: #10B981;
+            --warning-orange: #F59E0B;
+            --accent-purple: #8B5CF6;
+            --error-red: #EF4444;
+            --neutral-light: #F3F4F6;
+            --neutral-dark: #374151;
+            --text-primary: #374151;
+            --text-secondary: #6B7280;
+            --border: #E5E7EB;
+            --shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .patterns-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .pattern-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .pattern-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .pattern-header {
+            padding: 20px;
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .pattern-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .pattern-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .pattern-content {
+            padding: 20px;
+        }
+
+        .pattern-section {
+            margin-bottom: 20px;
+        }
+
+        .pattern-section h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+        }
+
+        .pattern-section h4::before {
+            content: "🎯";
+            margin-right: 8px;
+        }
+
+        .pattern-list {
+            list-style: none;
+        }
+
+        .pattern-list li {
+            background: var(--neutral-light);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            border-left: 4px solid var(--success-green);
+        }
+
+        .pattern-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .button-examples {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1e40af;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--accent-purple);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7c3aed;
+            transform: translateY(-1px);
+        }
+
+        .btn-destructive {
+            background: var(--error-red);
+            color: white;
+        }
+
+        .btn-destructive:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-blue);
+            border: 1px solid var(--primary-blue);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .feedback-examples {
+            display: grid;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .feedback-message {
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feedback-success {
+            background: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid var(--success-green);
+        }
+
+        .feedback-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid var(--error-red);
+        }
+
+        .feedback-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border-left: 4px solid var(--warning-orange);
+        }
+
+        .feedback-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .form-example {
+            background: var(--neutral-light);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-top: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 2px rgba(30, 58, 138, 0.1);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-blue);
+            background: var(--neutral-light);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--success-green);
+            background: #d1fae5;
+        }
+
+        .navigation-example {
+            background: var(--neutral-light);
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+        }
+
+        .nav-tab {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-tab.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .nav-content {
+            background: white;
+            padding: 16px;
+            border-radius: 0 0 6px 6px;
+            border: 1px solid var(--border);
+            border-top: none;
+        }
+
+        .guidelines-section {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 30px;
+        }
+
+        .guidelines-section h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--accent-purple);
+        }
+
+        .guideline-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--neutral-light);
+            border-radius: 8px;
+        }
+
+        .guideline-icon {
+            margin-right: 12px;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .guideline-text {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .patterns-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>KASH UX Patterns Library</h1>
+            <p>Patterns de Cohérence - Button Hierarchy, Feedback, Forms, Navigation</p>
+        </div>
+
+        <div class="patterns-grid">
+            <!-- Button Hierarchy Pattern -->
+            <div class="pattern-card">
+                <div class="pattern-header">
+                    <h3>🔘 Button Hierarchy & Actions</h3>
+                    <p>Hiérarchie des boutons et actions principales/secondaires</p>
+                </div>
+                <div class="pattern-content">
+                    <div class="pattern-section">
+                        <h4>Primary Actions (CTA)</h4>
+                        <ul class="pattern-list">
+                            <li><strong>Dashboard KASH:</strong> "Voir mon plan", "Télécharger mon rapport", "Commencer quiz"</li>
+                            <li><strong>Couleur:</strong> Bleu principal (#1E3A8A)</li>
+                            <li><strong>Taille:</strong> Large, position visible, sticky si nécessaire</li>
+                            <li><strong>Usage:</strong> Actions principales, conversion, engagement</li>
+                        </ul>
+                        <div class="button-examples">
+                            <button class="btn btn-primary">Voir mon plan</button>
+                            <button class="btn btn-primary">Commencer quiz</button>
+                        </div>
+                    </div>
+                    
+                    <div class="pattern-section">
+                        <h4>Secondary Actions</h4>
+                        <ul class="pattern-list">
+                            <li><strong>Actions complémentaires:</strong> "Partager", "Sauvegarder", "Filtrer"</li>
+                            <li><strong>Couleur:</strong> Gris ou violet (#8B5CF6)</li>
+                            <li><strong>Taille:</strong> Medium, moins proéminentes</li>
+                            <li><strong>Usage:</strong> Options, configuration, navigation secondaire</li>
+                        </ul>
+                        <div class="button-examples">
+                            <button class="btn btn-secondary">Partager</button>
+                            <button class="btn btn-secondary">Filtrer</button>
+                        </div>
+                    </div>
+                    
+                    <div class="pattern-section">
+                        <h4>Destructive Actions</h4>
+                        <ul class="pattern-list">
+                            <li><strong>Actions irréversibles:</strong> "Supprimer", "Annuler", "Dismiss"</li>
+                            <li><strong>Couleur:</strong> Rouge (#EF4444) ou Orange (#F59E0B)</li>
+                            <li><strong>Confirmation:</strong> Modal de confirmation si irreversible</li>
+                            <li><strong>Usage:</strong> Actions critiques, suppression, annulation</li>
+                        </ul>
+                        <div class="button-examples">
+                            <button class="btn btn-destructive">Supprimer</button>
+                            <button class="btn btn-outline">Annuler</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback Patterns -->
+            <div class="pattern-card">
+                <div class="pattern-header">
+                    <h3>💬 Feedback Patterns</h3>
+                    <p>Success, Error, Warning, Info messages encourageants</p>
+                </div>
+                <div class="pattern-content">
+                    <div class="pattern-section">
+                        <h4>Success Feedback</h4>
+                        <ul class="pattern-list">
+                            <li><strong>Lina:</strong> Badges, micro-animation, texte positif</li>
+                            <li><strong>Messages:</strong> "Super ! Votre CV est analysé", "Quiz complété avec succès !"</li>
+                            <li><strong>M. Karim:</strong> Alertes vertes, messages concis</li>
+                            <li><strong>Messages:</strong> "Cohorte mise à jour", "Intervention planifiée"</li>
+                        </ul>
+                        <div class="feedback-examples">
+                            <div class="feedback-message feedback-success">
+                                ✅ Super ! Votre CV est analysé et vos scores KASH sont prêts
+                            </div>
+                            <div class="feedback-message feedback-success">
+                                ✅ Cohorte mise à jour - 3 nouvelles alertes traitées
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pattern-section">
+                        <h4>Error & Warning Feedback</h4>
+                        <ul class="pattern-list">
+                            <li><strong>Lina:</strong> Guidance immédiate + encouragement</li>
+                            <li><strong>Messages:</strong> "CV invalide, réessayez facilement", "Quiz en pause - continuez plus tard"</li>
+                            <li><strong>M. Karim:</strong> Alertes critiques, possibilité correction rapide</li>
+                            <li><strong>Messages:</strong> "Erreur synchronisation - réessayer", "Attention: 5 étudiants nécessitent intervention"</li>
+                        </ul>
+                        <div class="feedback-examples">
+                            <div class="feedback-message feedback-warning">
+                                ⚠️ CV invalide - vérifiez le format et réessayez
+                            </div>
+                            <div class="feedback-message feedback-error">
+                                🚨 Erreur synchronisation - données non sauvegardées
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pattern-section">
+                        <h4>Info Feedback</h4>
+                        <ul class="pattern-list">
+                            <li><strong>Format:</strong> Tooltips ou notifications non disruptives</li>
+                            <li><strong>Accessibilité:</strong> Screen reader compatible, clavier accessible</li>
+                            <li><strong>Cohérence:</strong> Style uniforme, timing approprié</li>
+                            <li><strong>Usage:</strong> Aide contextuelle, informations supplémentaires</li>
+                        </ul>
+                        <div class="feedback-examples">
+                            <div class="feedback-message feedback-info">
+                                ℹ️ Cliquez sur un score pour voir les détails
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Patterns -->
+            <div class="pattern-card">
+                <div class="pattern-header">
+                    <h3>📝 Form Patterns & Validation</h3>
+                    <p>Upload CV, Quiz adaptatif, Validation encourageante</p>
+                </div>
+                <div class="pattern-content">
+                    <div class="pattern-section">
+                        <h4>Upload CV Pattern</h4>
+                        <ul class="pattern-list">
+                            <li><strong>Interface:</strong> Drag & drop + bouton upload</li>
+                            <li><strong>Feedback:</strong> Visuel immédiat (success/error)</li>
+                            <li><strong>Progress:</strong> Barre pour gros fichiers</li>
+                            <li><strong>Validation:</strong> Format, taille, contenu avec messages clairs</li>
+                        </ul>
+                        <div class="form-example">
+                            <div class="upload-area">
+                                <div>📄 Glissez votre CV ici ou</div>
+                                <button class="btn btn-primary">Choisir un fichier</button>
+                                <div style="font-size: 12px; margin-top: 8px; color: var(--text-secondary);">
+                                    PDF, DOC, DOCX (max 5MB)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pattern-section">
+                        <h4>Quiz Adaptatif Pattern</h4>
+                        <ul class="pattern-list">
+                            <li><strong>Structure:</strong> Question par question, micro-feedback après chaque réponse</li>
+                            <li><strong>Progression:</strong> Visualisation gamifiée (ProgressRing)</li>
+                            <li><strong>Navigation:</strong> Previous/Next, sauvegarde automatique</li>
+                            <li><strong>Encouragement:</strong> Messages positifs, pas de pression temporelle</li>
+                        </ul>
+                        <div class="form-example">
+                            <div class="form-group">
+                                <label class="form-label">Question 5/27</label>
+                                <div style="font-size: 14px; margin-bottom: 12px;">
+                                    Vous préférez travailler en équipe ou seul ?
+                                </div>
+                                <div class="button-examples">
+                                    <button class="btn btn-outline">En équipe</button>
+                                    <button class="btn btn-outline">Seul</button>
+                                </div>
+                            </div>
+                            <div class="feedback-message feedback-success">
+                                ✅ Réponse enregistrée - Continuez comme ça !
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pattern-section">
+                        <h4>Validation Pattern</h4>
+                        <ul class="pattern-list">
+                            <li><strong>Approche:</strong> Inline validation, non-blocking</li>
+                            <li><strong>Messages:</strong> Clairs, positifs, orientés vers l'action</li>
+                            <li><strong>Encouragement:</strong> "Presque terminé !", "Excellent progression"</li>
+                            <li><strong>Récupération:</strong> Suggestions spécifiques pour corriger erreurs</li>
+                        </ul>
+                        <div class="form-example">
+                            <div class="form-group">
+                                <label class="form-label">Nom complet</label>
+                                <input type="text" class="form-input" placeholder="Entrez votre nom" />
+                                <div class="feedback-message feedback-warning">
+                                    ⚠️ Le nom doit contenir au moins 2 caractères
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Patterns -->
+            <div class="pattern-card">
+                <div class="pattern-header">
+                    <h3>🧭 Navigation Patterns</h3>
+                    <p>Double audience, Mobile vs Desktop, Cohérence dashboards</p>
+                </div>
+                <div class="pattern-content">
+                    <div class="pattern-section">
+                        <h4>Double Audience Navigation</h4>
+                        <ul class="pattern-list">
+                            <li><strong>Lina:</strong> Dashboard simplifié, mobile-first</li>
+                            <li><strong>M. Karim:</strong> Dashboard data-rich, desktop optimisé</li>
+                            <li><strong>Bascule:</strong> Toggle facile, cohérence UI maintenue</li>
+                            <li><strong>Role-based:</strong> Navigation adaptée selon permissions</li>
+                        </ul>
+                        <div class="navigation-example">
+                            <div class="nav-tabs">
+                                <div class="nav-tab active">Vue Étudiant</div>
+                                <div class="nav-tab">Vue Conseiller</div>
+                            </div>
+                            <div class="nav-content">
+                                <div style="font-size: 14px;">
+                                    Contenu adapté selon le rôle sélectionné...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pattern-section">
+                        <h4>Mobile vs Desktop Navigation</h4>
+                        <ul class="pattern-list">
+                            <li><strong>Mobile (Lina):</strong> Bottom navigation, swipe gestures, compact view</li>
+                            <li><strong>Desktop (M. Karim):</strong> Sidebar navigation, keyboard shortcuts, dense view</li>
+                            <li><strong>Responsive:</strong> Mobile-first approach, progressive enhancement</li>
+                            <li><strong>Cohérence:</strong> Mêmes couleurs, typographie, boutons primaires</li>
+                        </ul>
+                        <div class="navigation-example">
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">
+                                Mobile (320px) → Desktop (1200px+)
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <div style="flex: 1; padding: 8px; background: var(--neutral-light); border-radius: 4px; text-align: center; font-size: 12px;">
+                                    Mobile<br>Compact
+                                </div>
+                                <div style="flex: 2; padding: 8px; background: var(--neutral-light); border-radius: 4px; text-align: center; font-size: 12px;">
+                                    Desktop<br>Data-rich
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pattern-section">
+                        <h4>Dashboard Cohérence</h4>
+                        <ul class="pattern-list">
+                            <li><strong>Couleurs:</strong> Palette partagée, bleu confiance pour actions principales</li>
+                            <li><strong>Typographie:</strong> Hiérarchie consistente, Inter partout</li>
+                            <li><strong>Boutons:</strong> Mêmes styles primaires pour actions clés</li>
+                            <li><strong>Layout:</strong> Grille 8px base, espacement modulaire</li>
+                        </ul>
+                        <div class="navigation-example">
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                                <div style="padding: 8px; background: var(--primary-blue); color: white; border-radius: 4px; text-align: center; font-size: 12px;">
+                                    Action
+                                </div>
+                                <div style="padding: 8px; background: var(--success-green); color: white; border-radius: 4px; text-align: center; font-size: 12px;">
+                                    Score
+                                </div>
+                                <div style="padding: 8px; background: var(--accent-purple); color: white; border-radius: 4px; text-align: center; font-size: 12px;">
+                                    Filter
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="guidelines-section">
+            <h2>📚 Guidelines d'Implémentation</h2>
+            
+            <div class="guideline-item">
+                <div class="guideline-icon">🎯</div>
+                <div class="guideline-text">
+                    <strong>Button Hierarchy:</strong> Utiliser le bleu principal pour les actions de conversion, violet pour les options secondaires, et rouge/orange uniquement pour les actions destructives avec confirmation modale.
+                </div>
+            </div>
+            
+            <div class="guideline-item">
+                <div class="guideline-icon">💬</div>
+                <div class="guideline-text">
+                    <strong>Feedback Messages:</strong> Toujours positifs et encourageants pour Lina, concis et actionnables pour M. Karim. Utiliser des icônes cohérentes et des couleurs sémantiques.
+                </div>
+            </div>
+            
+            <div class="guideline-item">
+                <div class="guideline-icon">📝</div>
+                <div class="guideline-text">
+                    <strong>Form Validation:</strong> Inline validation non-blocking avec messages constructifs. Sauvegarde automatique pour éviter la perte de données, micro-feedback pour chaque interaction.
+                </div>
+            </div>
+            
+            <div class="guideline-item">
+                <div class="guideline-icon">🧭</div>
+                <div class="guideline-text">
+                    <strong>Navigation Cohérence:</strong> Maintenir la même palette de couleurs et typographie entre les vues Lina et M. Karim. Mobile-first avec enhancement progressif pour desktop.
+                </div>
+            </div>
+            
+            <div class="guideline-item">
+                <div class="guideline-icon">♿</div>
+                <div class="guideline-text">
+                    <strong>Accessibilité Universelle:</strong> Tous les patterns doivent être keyboard navigables, screen reader compatibles, et respecter WCAG AA minimum avec AAA pour les éléments critiques.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add interactive elements
+        document.querySelectorAll('.pattern-card').forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+
+        // Add hover effects
+        document.querySelectorAll('.pattern-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(-5px) scale(1)';
+            });
+        });
+
+        // Button interactions
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                // Add ripple effect or other interaction
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 100);
+            });
+        });
+
+        // Tab navigation
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Upload area interactions
+        const uploadArea = document.querySelector('.upload-area');
+        if (uploadArea) {
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                // Handle file drop
+            });
+        }
+
+        // Form input interactions
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

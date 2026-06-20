@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KASH Component Specifications</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1E3A8A;
+            --success-green: #10B981;
+            --warning-orange: #F59E0B;
+            --accent-purple: #8B5CF6;
+            --neutral-light: #F3F4F6;
+            --neutral-dark: #374151;
+            --text-primary: #374151;
+            --text-secondary: #6B7280;
+            --border: #E5E7EB;
+            --shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .strategy-section {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 30px;
+        }
+
+        .strategy-section h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--primary-blue);
+        }
+
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .component-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .component-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .component-header {
+            padding: 20px;
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .component-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .component-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .component-content {
+            padding: 20px;
+        }
+
+        .spec-section {
+            margin-bottom: 20px;
+        }
+
+        .spec-section h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+        }
+
+        .spec-section h4::before {
+            content: "📋";
+            margin-right: 8px;
+        }
+
+        .spec-content {
+            background: var(--neutral-light);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .states-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .state-badge {
+            background: var(--primary-blue);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .state-badge.success { background: var(--success-green); }
+        .state-badge.warning { background: var(--warning-orange); }
+        .state-badge.error { background: #EF4444; }
+        .state-badge.disabled { background: var(--text-secondary); }
+
+        .implementation-roadmap {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .implementation-roadmap h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--accent-purple);
+        }
+
+        .phase {
+            margin-bottom: 24px;
+        }
+
+        .phase h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--primary-blue);
+        }
+
+        .phase-components {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 12px;
+        }
+
+        .phase-component {
+            background: var(--neutral-light);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid var(--success-green);
+        }
+
+        .phase-component-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .phase-component-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .mockup-preview {
+            background: var(--neutral-light);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+            border: 1px solid var(--border);
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .component-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>KASH Component Strategy</h1>
+            <p>Spécifications Détaillées - Composants MVP & Personnalisés</p>
+        </div>
+
+        <div class="strategy-section">
+            <h2>🏗️ Strategy Overview</h2>
+            <p><strong>Design System Foundation:</strong> MUI + Tailwind UI avec tokens personnalisés KASH</p>
+            <p><strong>Approach:</strong> 70% composants MUI standards + 30% composants custom KASH</p>
+            <p><strong>Goal:</strong> Cohérence visuelle entre Lina (étudiant) et M. Karim (conseiller) avec variants adaptés</p>
+        </div>
+
+        <div class="component-grid">
+            <!-- KASHScoreCard -->
+            <div class="component-card">
+                <div class="component-header">
+                    <h3>📊 KASHScoreCard</h3>
+                    <p>Dashboard central étudiant - 4 scores KASH</p>
+                </div>
+                <div class="component-content">
+                    <div class="spec-section">
+                        <h4>Purpose</h4>
+                        <div class="spec-content">
+                            Dashboard central affichant les 4 scores KASH (Knowledge, Abilities, Skills, Intelligence) avec indicateur global de progression
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>Content</h4>
+                        <div class="spec-content">
+                            • 4 scores numériques (0-100%)<br>
+                            • Progress bars visuelles<br>
+                            • Score global pondéré<br>
+                            • Timestamp dernière mise à jour<br>
+                            • Badge niveau progression
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>Actions</h4>
+                        <div class="spec-content">
+                            • Click → détails dimension spécifique<br>
+                            • Hover → tooltip explication simple<br>
+                            • Long press → mode comparaison historique<br>
+                            • Share → export profil simplifié
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>States</h4>
+                        <div class="states-grid">
+                            <div class="state-badge">Default</div>
+                            <div class="state-badge">Hover</div>
+                            <div class="state-badge">Loading</div>
+                            <div class="state-badge">Error</div>
+                            <div class="state-badge success">Success</div>
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>Variants</h4>
+                        <div class="spec-content">
+                            • <strong>Student:</strong> Compact, gamifié, encourageant<br>
+                            • <strong>Admin:</strong> Dense, détaillé, comparatif<br>
+                            • <strong>Mobile:</strong> Vertical, swipe-friendly
+                        </div>
+                    </div>
+                    
+                    <div class="mockup-preview">
+                        [Mockup: KASHScoreCard avec 4 scores + progress bars]
+                    </div>
+                </div>
+            </div>
+
+            <!-- ProgressRing -->
+            <div class="component-card">
+                <div class="component-header">
+                    <h3>⭕ ProgressRing</h3>
+                    <p>Visualisation progression gamifiée</p>
+                </div>
+                <div class="component-content">
+                    <div class="spec-section">
+                        <h4>Purpose</h4>
+                        <div class="spec-content">
+                            Visualisation circulaire de progression avec gamification pour engagement et motivation continue
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>Content</h4>
+                        <div class="spec-content">
+                            • Pourcentage progression (0-100%)<br>
+                            • Badge/achievement courant<br>
+                            • Prochaine étape/milestone<br>
+                            • Streak count (jours consécutifs)<br>
+                            • Micro-animations de completion
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>Actions</h4>
+                        <div class="spec-content">
+                            • Click → détails progression<br>
+                            • Hover → prochaines actions suggérées<br>
+                            • Double-click → célébration achievement<br>
+                            • Swipe → navigation entre étapes
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>States</h4>
+                        <div class="states-grid">
+                            <div class="state-badge">Empty</div>
+                            <div class="state-badge">Progress</div>
+                            <div class="state-badge success">Complete</div>
+                            <div class="state-badge warning">Stalled</div>
+                            <div class="state-badge">Celebration</div>
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>Variants</h4>
+                        <div class="spec-content">
+                            • <strong>Quiz:</strong> Progression questions<br>
+                            • <strong>Daily:</strong> Check-in quotidien<br>
+                            • <strong>Weekly:</strong> Récap hebdomadaire<br>
+                            • <strong>Overall:</strong> Parcours complet
+                        </div>
+                    </div>
+                    
+                    <div class="mockup-preview">
+                        [Mockup: ProgressRing circulaire avec badge et streak]
+                    </div>
+                </div>
+            </div>
+
+            <!-- RecommendationCard -->
+            <div class="component-card">
+                <div class="component-header">
+                    <h3>🎯 RecommendationCard</h3>
+                    <p>Recommandations actionnables métiers/formations</p>
+                </div>
+                <div class="component-content">
+                    <div class="spec-section">
+                        <h4>Purpose</h4>
+                        <div class="spec-content">
+                            Présenter recommandations personnalisées (métiers, formations) avec actions directes et contexte KASH
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>Content</h4>
+                        <div class="spec-content">
+                            • Titre recommandation (métier/formation)<br>
+                            • Score de compatibilité (0-100%)<br>
+                            • Écarts compétences addressés<br>
+                            • Durée/coût estimé<br>
+                            • Actions suggérées (apply, learn more)<br>
+                            • Tags (remote, local, level)
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>Actions</h4>
+                        <div class="spec-content">
+                            • Click → détails complets<br>
+                            • Add to Plan → ajouter plan d'action<br>
+                            • Bookmark → sauvegarder pour plus tard<br>
+                            • Share → envoyer à conseiller<br>
+                            • Dismiss → pas intéressé(e)
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>States</h4>
+                        <div class="states-grid">
+                            <div class="state-badge">New</div>
+                            <div class="state-badge">Viewed</div>
+                            <div class="state-badge">Saved</div>
+                            <div class="state-badge">Dismissed</div>
+                            <div class="state-badge success">Applied</div>
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>Variants</h4>
+                        <div class="spec-content">
+                            • <strong>Career:</strong> Métiers et professions<br>
+                            • <strong>Training:</strong> Formations et cours<br>
+                            • <strong>Skill:</strong> Compétences spécifiques<br>
+                            • <strong>Compact:</strong> List view mobile
+                        </div>
+                    </div>
+                    
+                    <div class="mockup-preview">
+                        [Mockup: RecommendationCard avec score + actions]
+                    </div>
+                </div>
+            </div>
+
+            <!-- SHAPExplanation -->
+            <div class="component-card">
+                <div class="component-header">
+                    <h3>🔍 SHAPExplanation</h3>
+                    <p>Transparence scoring ML simplifiée</p>
+                </div>
+                <div class="component-content">
+                    <div class="spec-section">
+                        <h4>Purpose</h4>
+                        <div class="spec-content">
+                            Rendre les recommandations ML transparentes et compréhensibles pour construire la confiance des utilisateurs
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>Content</h4>
+                        <div class="spec-content">
+                            • Graphique importance features (barres)<br>
+                            • Top 3 facteurs influents<br>
+                            • Explication en langage simple<br>
+                            • Impact sur score final<br>
+                            • Toggle detail/résumé
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>Actions</h4>
+                        <div class="spec-content">
+                            • Hover → détail facteur spécifique<br>
+                            • Click → explication complète<br>
+                            • Toggle → simple/détaillé<br>
+                            • Export → sauvegarder explication<br>
+                            • Learn more → lien documentation
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>States</h4>
+                        <div class="states-grid">
+                            <div class="state-badge">Summary</div>
+                            <div class="state-badge">Detailed</div>
+                            <div class="state-badge">Loading</div>
+                            <div class="state-badge">Interactive</div>
+                            <div class="state-badge">Exported</div>
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>Variants</h4>
+                        <div class="spec-content">
+                            • <strong>Student:</strong> Simple, visuel, encourageant<br>
+                            • <strong>Admin:</strong> Détaillé, technique, exportable<br>
+                            • <strong>Tooltip:</strong> Mini version inline<br>
+                            • <strong>Modal:</strong> Vue complète
+                        </div>
+                    </div>
+                    
+                    <div class="mockup-preview">
+                        [Mockup: SHAPExplanation avec barres importance]
+                    </div>
+                </div>
+            </div>
+
+            <!-- AlertDashboard -->
+            <div class="component-card">
+                <div class="component-header">
+                    <h3>🚨 AlertDashboard</h3>
+                    <p>Vue priorisée étudiants pour conseillers</p>
+                </div>
+                <div class="component-content">
+                    <div class="spec-section">
+                        <h4>Purpose</h4>
+                        <div class="spec-content">
+                            Interface conseiller pour identifier rapidement les étudiants nécessitant une attention prioritaire
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>Content</h4>
+                        <div class="spec-content">
+                            • Liste étudiants avec alertes<br>
+                            • Niveau priorité (high/medium/low)<br>
+                            • Raison alerte (score, inactivité, etc.)<br>
+                            • Actions suggérées<br>
+                            • Filtres rapides<br>
+                            • Timeline interventions
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>Actions</h4>
+                        <div class="spec-content">
+                            • Click étudiant → fiche complète<br>
+                            • Assign action → plan intervention<br>
+                            • Mark resolved → archive alerte<br>
+                            • Bulk actions → traiter multiples<br>
+                            • Export → rapport interventions
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>States</h4>
+                        <div class="states-grid">
+                            <div class="state-badge error">Critical</div>
+                            <div class="state-badge warning">Warning</div>
+                            <div class="state-badge">Info</div>
+                            <div class="state-badge">Resolved</div>
+                            <div class="state-badge">Archived</div>
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>Variants</h4>
+                        <div class="spec-content">
+                            • <strong>List:</strong> Vue détaillée complète<br>
+                            • <strong>Compact:</strong> Vue rapide priorités<br>
+                            • <strong>Timeline:</strong> Chronologique interventions<br>
+                            • <strong>Analytics:</strong> Vue statistique
+                        </div>
+                    </div>
+                    
+                    <div class="mockup-preview">
+                        [Mockup: AlertDashboard avec liste priorités]
+                    </div>
+                </div>
+            </div>
+
+            <!-- GapVisualization -->
+            <div class="component-card">
+                <div class="component-header">
+                    <h3>📈 GapVisualization</h3>
+                    <p>Identifier écarts compétences comme opportunités</p>
+                </div>
+                <div class="component-content">
+                    <div class="spec-section">
+                        <h4>Purpose</h4>
+                        <div class="spec-content">
+                            Visualiser les écarts entre compétences actuelles et requises pour les métiers cibles de manière positive
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>Content</h4>
+                        <div class="spec-content">
+                            • Graphique radar ou barres comparatives<br>
+                            • Compétences actuelles vs requises<br>
+                            • Scores de compatibilité<br>
+                            • Zones d'opportunité highlightées<br>
+                            • Recommandations associées
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>Actions</h4>
+                        <div class="spec-content">
+                            • Hover compétence → détails écart<br>
+                            • Click zone → recommandations ciblées<br>
+                            • Toggle view → radar/barres<br>
+                            • Compare → vs autres métiers<br>
+                            • Export → rapport compétences
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>States</h4>
+                        <div class="states-grid">
+                            <div class="state-badge">Radar</div>
+                            <div class="state-badge">Bars</div>
+                            <div class="state-badge">Comparison</div>
+                            <div class="state-badge">Detailed</div>
+                            <div class="state-badge">Exported</div>
+                        </div>
+                    </div>
+                    
+                    <div class="spec-section">
+                        <h4>Variants</h4>
+                        <div class="spec-content">
+                            • <strong>Radar:</strong> Vue globale 360°<br>
+                            • <strong>Bars:</strong> Comparaison détaillée<br>
+                            • <strong>Gap:</strong> Focus écarts seulement<br>
+                            • <strong>Opportunity:</strong> Vue positive
+                        </div>
+                    </div>
+                    
+                    <div class="mockup-preview">
+                        [Mockup: GapVisualization radar chart]
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="implementation-roadmap">
+            <h2>🚀 Implementation Roadmap</h2>
+            
+            <div class="phase">
+                <h3>Phase 1 - Core Components (MVP Critical)</h3>
+                <div class="phase-components">
+                    <div class="phase-component">
+                        <div class="phase-component-title">KASHScoreCard</div>
+                        <div class="phase-component-desc">Dashboard central étudiant - cœur expérience onboarding</div>
+                    </div>
+                    <div class="phase-component">
+                        <div class="phase-component-title">ProgressRing</div>
+                        <div class="phase-component-desc">Gamification progression - engagement Lina</div>
+                    </div>
+                    <div class="phase-component">
+                        <div class="phase-component-title">RecommendationCard</div>
+                        <div class="phase-component-desc">Actions immédiates - plan d'action</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="phase">
+                <h3>Phase 2 - Supporting Components (Counselor Experience)</h3>
+                <div class="phase-components">
+                    <div class="phase-component">
+                        <div class="phase-component-title">AlertDashboard</div>
+                        <div class="phase-component-desc">Monitoring M. Karim - adoption conseillers</div>
+                    </div>
+                    <div class="phase-component">
+                        <div class="phase-component-title">GapVisualization</div>
+                        <div class="phase-component-desc">Analyse écarts - interventions ciblées</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="phase">
+                <h3>Phase 3 - Enhancement Components (Trust & Transparency)</h3>
+                <div class="phase-components">
+                    <div class="phase-component">
+                        <div class="phase-component-title">SHAPExplanation</div>
+                        <div class="phase-component-desc">Transparence ML - confiance utilisateurs</div>
+                    </div>
+                    <div class="phase-component">
+                        <div class="phase-component-title">Advanced Analytics</div>
+                        <div class="phase-component-desc">Reporting détaillé - Phase 2+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add interactive elements
+        document.querySelectorAll('.component-card').forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+
+        // Add hover effects
+        document.querySelectorAll('.component-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(-5px) scale(1)';
+            });
+        });
+
+        // Add click to expand functionality
+        document.querySelectorAll('.component-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const componentName = this.querySelector('h3').textContent;
+                console.log('Component clicked:', componentName);
+            });
+        });
+
+        // Add state badge interactions
+        document.querySelectorAll('.state-badge').forEach(badge => {
+            badge.addEventListener('click', function(e) {
+                e.stopPropagation();
+                this.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>

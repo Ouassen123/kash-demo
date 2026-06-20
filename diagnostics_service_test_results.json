@@ -1,0 +1,30 @@
+{
+  "diagnostics_service_test": {
+    "timestamp": "2024-01-01T12:00:00Z",
+    "mock_matches_created": 10,
+    "diagnostics_created": 2,
+    "findings_generated": 0,
+    "analysis_results": {
+      "data_quality_score": 0.8499999999999999,
+      "confidence_score": 0.1,
+      "total_findings": 0,
+      "total_metrics": 4
+    },
+    "features_tested": [
+      "diagnostic_creation",
+      "match_accuracy_analysis",
+      "override_impact_diagnostic",
+      "finding_generation",
+      "quality_scoring",
+      "trend_analysis",
+      "finding_resolution",
+      "summary_reporting",
+      "severity_classification"
+    ],
+    "quality_indicators": {
+      "avg_data_quality": 0.42499999999999993,
+      "avg_confidence": 0.05,
+      "completion_rate": 0.5
+    }
+  }
+}

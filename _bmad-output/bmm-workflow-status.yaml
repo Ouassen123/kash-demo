@@ -1,0 +1,18 @@
+# BMM Workflow Status
+# Generated: 2026-02-14T22:25:00Z
+# Project: yes
+
+workflow_status:
+  product-brief: "c:/Users/viet/Desktop/projet KASH/yes/_bmad-output/planning-artifacts/product-brief-yes-2026-02-14.md"
+  
+completion_timestamps:
+  product-brief: "2026-02-14T22:25:00Z"
+
+metadata:
+  project_name: "yes"
+  user_name: "rida"
+  workflow_completed: "product-brief"
+  
+# Comments:
+# Product Brief workflow completed successfully
+# Ready for next phase: PRD creation or UX design

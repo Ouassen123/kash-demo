@@ -1,0 +1,15 @@
+.venv
+__pycache__
+*.pyc
+.pytest_cache
+frontend/node_modules
+frontend/.next
+.git
+.env
+*.egg-info
+dist
+build
+logs
+.docker-temp-config
+_bmad
+_bmad-output

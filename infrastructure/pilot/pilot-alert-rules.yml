@@ -1,0 +1,29 @@
+groups:
+  - name: kash-pilot-alerts
+    rules:
+      - alert: HighP95Latency
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_ms_bucket[5m])) by (le, school)) > 0.2
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High p95 latency on {{ $labels.school }}"
+          description: "P95 latency is above 200ms for more than 10 minutes."
+
+      - alert: ElevatedErrorRate
+        expr: (sum(rate(http_errors_total[5m])) by (school) / clamp_min(sum(rate(http_requests_total[5m])) by (school), 1)) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Error rate too high on {{ $labels.school }}"
+          description: "Error rate is above 5% over the last 5 minutes."
+
+      - alert: SchoolAPIUnavailable
+        expr: up{service="api"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "API unavailable for {{ $labels.school }}"
+          description: "Pilot API target is down and not scraping metrics."

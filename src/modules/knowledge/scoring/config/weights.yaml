@@ -1,0 +1,17 @@
+# Default weights for knowledge scoring components
+# Adjust values to tune influence of each signal
+components:
+  cv_insights: 0.35
+  taxonomy_confidence: 0.25
+  quiz_mastery: 0.40
+
+# Audit log for weight changes
+audit_log:
+  - timestamp: "2026-02-20T12:14:00Z"
+    change: "Initial weights set"
+    author: "system"
+    previous: null
+    new:
+      cv_insights: 0.35
+      taxonomy_confidence: 0.25
+      quiz_mastery: 0.40

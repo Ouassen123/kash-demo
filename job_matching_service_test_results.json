@@ -1,0 +1,28 @@
+{
+  "job_matching_service_test": {
+    "timestamp": "2024-01-01T12:00:00Z",
+    "learner_profile": {
+      "learner_id": "test_learner_001",
+      "total_competencies": 16
+    },
+    "matching_performance": {
+      "candidates_evaluated": 5,
+      "processing_time_ms": 4,
+      "total_matches": 5
+    },
+    "top_match": {
+      "job_title": "Software Developer",
+      "match_score": 0.9704918032786886,
+      "confidence_level": "very_high"
+    },
+    "features_tested": [
+      "individual_job_matching",
+      "comprehensive_matching_request",
+      "confidence_metrics_calculation",
+      "competency_gap_analysis",
+      "alternative_suggestions",
+      "domain_specific_scoring",
+      "processing_performance"
+    ]
+  }
+}

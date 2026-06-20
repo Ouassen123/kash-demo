@@ -1,0 +1,17 @@
+{
+  "1c290446-a548-446a-a6ac-e69b1eece865": {
+    "template_id": "1c290446-a548-446a-a6ac-e69b1eece865",
+    "name": "Educational Context - Learning Exercise",
+    "description": "For learning exercises where strict rules don't apply",
+    "reason": "educational_context",
+    "comment_template": "This is a learning exercise where {student_action} is acceptable. The learning objective focuses on {learning_objective} rather than strict adherence to {rule_type}.",
+    "common_findings": [
+      "naming_conventions",
+      "style_guidelines"
+    ],
+    "score_adjustment": 2.0,
+    "is_active": true,
+    "created_by": "reviewer-456",
+    "created_at": "2026-03-02 13:23:05.155924"
+  }
+}

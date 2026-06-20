@@ -1,0 +1,548 @@
+{
+  "27ded27d-c56d-4a94-8c7c-a24611ed3b97": {
+    "event_id": "27ded27d-c56d-4a94-8c7c-a24611ed3b97",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 09:55:05.114172",
+    "learner_id": "test_learner_001",
+    "score_id": null,
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation started for learner test_learner_001 in technology",
+    "details": {
+      "job_family": "technology",
+      "request_id": "7725ea37-5540-47f9-a32a-a35caf3bfbb2"
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "a6a27a6a-a9c7-46f1-a71e-1d76504371d6": {
+    "event_id": "a6a27a6a-a9c7-46f1-a71e-1d76504371d6",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 09:55:05.117174",
+    "learner_id": "test_learner_001",
+    "score_id": "5afc84c6-c3a4-4a8f-8fca-fe0342af7593",
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation completed for learner test_learner_001 with score 0.718",
+    "details": {
+      "overall_score": 0.7184333333333335,
+      "processing_time_ms": 3,
+      "signals_processed": 9
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "1f1e2c15-3103-4e32-ac09-18c9af56e01d": {
+    "event_id": "1f1e2c15-3103-4e32-ac09-18c9af56e01d",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 09:55:05.141594",
+    "learner_id": "test_learner_001",
+    "score_id": null,
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation started for learner test_learner_001 in healthcare",
+    "details": {
+      "job_family": "healthcare",
+      "request_id": "12735057-5094-4197-99a1-7770b95583c8"
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "9fd590eb-0c31-40ac-8cb8-c36d0615b760": {
+    "event_id": "9fd590eb-0c31-40ac-8cb8-c36d0615b760",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 09:55:05.144421",
+    "learner_id": "test_learner_001",
+    "score_id": "1da3d0bc-555a-4c7b-b429-280b0518d59d",
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation completed for learner test_learner_001 with score 0.714",
+    "details": {
+      "overall_score": 0.7141833333333335,
+      "processing_time_ms": 2,
+      "signals_processed": 9
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "3d4633c6-f56d-4560-a7b4-f761819bdee7": {
+    "event_id": "3d4633c6-f56d-4560-a7b4-f761819bdee7",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 09:55:05.146426",
+    "learner_id": "test_learner_001",
+    "score_id": null,
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation started for learner test_learner_001 in finance",
+    "details": {
+      "job_family": "finance",
+      "request_id": "cfbcfad5-0654-45fe-bc3a-6a0fe38cfb67"
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "386ed8f8-d129-41d3-85c3-449a5fa6f500": {
+    "event_id": "386ed8f8-d129-41d3-85c3-449a5fa6f500",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 09:55:05.148183",
+    "learner_id": "test_learner_001",
+    "score_id": "44f7fe41-660c-41b9-a65e-88a0b33e65c4",
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation completed for learner test_learner_001 with score 0.715",
+    "details": {
+      "overall_score": 0.7147833333333334,
+      "processing_time_ms": 1,
+      "signals_processed": 9
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "dc4450e2-7982-4337-8ad7-ca26eab1532a": {
+    "event_id": "dc4450e2-7982-4337-8ad7-ca26eab1532a",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 09:55:05.151311",
+    "learner_id": "test_learner_001",
+    "score_id": null,
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation started for learner test_learner_001 in sales",
+    "details": {
+      "job_family": "sales",
+      "request_id": "23f28309-3419-42bd-8855-53da9699c4df"
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "5538bba7-407e-46e3-9337-c63c21c014fc": {
+    "event_id": "5538bba7-407e-46e3-9337-c63c21c014fc",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 09:55:05.156217",
+    "learner_id": "test_learner_001",
+    "score_id": "543f4625-3483-4a59-b4d5-2bd8138507c8",
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation completed for learner test_learner_001 with score 0.706",
+    "details": {
+      "overall_score": 0.7060500000000001,
+      "processing_time_ms": 4,
+      "signals_processed": 9
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "413cb756-5087-4cc2-83af-5177d785c2bb": {
+    "event_id": "413cb756-5087-4cc2-83af-5177d785c2bb",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 09:55:05.168018",
+    "learner_id": "test_learner_001",
+    "score_id": null,
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation started for learner test_learner_001 in technology",
+    "details": {
+      "job_family": "technology",
+      "request_id": "fa3f30aa-6283-4d40-8b04-3d61ef8e67ec"
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "5c23eb14-028d-46b2-9e5f-d1b021a327d1": {
+    "event_id": "5c23eb14-028d-46b2-9e5f-d1b021a327d1",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 09:55:05.171021",
+    "learner_id": "test_learner_001",
+    "score_id": "ac9541dc-6d12-42c4-9cf3-bedc718587ff",
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation completed for learner test_learner_001 with score 0.721",
+    "details": {
+      "overall_score": 0.7206666666666668,
+      "processing_time_ms": 3,
+      "signals_processed": 9
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "0360ee7c-e620-45a9-83f2-4366925301de": {
+    "event_id": "0360ee7c-e620-45a9-83f2-4366925301de",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 09:55:05.178838",
+    "learner_id": "test_learner_001",
+    "score_id": null,
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation started for learner test_learner_001 in healthcare",
+    "details": {
+      "job_family": "healthcare",
+      "request_id": "63812165-2ba1-4634-bf86-326edeaf55b7"
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "7cc692d8-6898-4dbc-83ee-c7ca4f91abb8": {
+    "event_id": "7cc692d8-6898-4dbc-83ee-c7ca4f91abb8",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 09:55:05.181788",
+    "learner_id": "test_learner_001",
+    "score_id": "88224714-47d1-4956-bf7d-414481e71cdb",
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation completed for learner test_learner_001 with score 0.714",
+    "details": {
+      "overall_score": 0.7141833333333335,
+      "processing_time_ms": 2,
+      "signals_processed": 9
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "51c9127f-b955-4f23-9189-322a2b7c1f17": {
+    "event_id": "51c9127f-b955-4f23-9189-322a2b7c1f17",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 09:55:05.184782",
+    "learner_id": "test_learner_001",
+    "score_id": null,
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation started for learner test_learner_001 in finance",
+    "details": {
+      "job_family": "finance",
+      "request_id": "40ac760c-f09a-4d6d-bd4f-b2361cb062b6"
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "4234541d-458f-455f-8b91-8cd961c90f1b": {
+    "event_id": "4234541d-458f-455f-8b91-8cd961c90f1b",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 09:55:05.188781",
+    "learner_id": "test_learner_001",
+    "score_id": "223f3641-fc76-4ce2-8f9a-f7ef04217a21",
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation completed for learner test_learner_001 with score 0.715",
+    "details": {
+      "overall_score": 0.7147833333333334,
+      "processing_time_ms": 3,
+      "signals_processed": 9
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "d9dfc92f-54bc-4734-a0af-e913b85c1908": {
+    "event_id": "d9dfc92f-54bc-4734-a0af-e913b85c1908",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 09:55:05.190781",
+    "learner_id": "test_learner_001",
+    "score_id": null,
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation started for learner test_learner_001 in sales",
+    "details": {
+      "job_family": "sales",
+      "request_id": "fa3236bf-8d5a-4e53-a82a-d3f09dcc321f"
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "b1067eb6-35b7-4d3f-9819-61785fa77655": {
+    "event_id": "b1067eb6-35b7-4d3f-9819-61785fa77655",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 09:55:05.195790",
+    "learner_id": "test_learner_001",
+    "score_id": "3da140ff-e7b4-451d-a104-a55bca7b4f2c",
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation completed for learner test_learner_001 with score 0.706",
+    "details": {
+      "overall_score": 0.7060500000000001,
+      "processing_time_ms": 5,
+      "signals_processed": 9
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "dcf35fcb-9a3e-454e-9397-cb352e507d54": {
+    "event_id": "dcf35fcb-9a3e-454e-9397-cb352e507d54",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 10:03:00.828117",
+    "learner_id": "test_api_learner",
+    "score_id": null,
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation started for learner test_api_learner in technology",
+    "details": {
+      "job_family": "technology",
+      "request_id": "68db829f-6e9b-4775-b1d8-8d3c748f1966"
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "fd64ca6e-0c14-43b3-af93-e8f7c21eb47d": {
+    "event_id": "fd64ca6e-0c14-43b3-af93-e8f7c21eb47d",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 10:03:00.833111",
+    "learner_id": "test_api_learner",
+    "score_id": "1265c10d-d267-464b-8b8b-95bd27da904b",
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation completed for learner test_api_learner with score 0.425",
+    "details": {
+      "overall_score": 0.425,
+      "processing_time_ms": 4,
+      "signals_processed": 1
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "1dfce77a-b613-4a73-9aa7-c12a72f9fe67": {
+    "event_id": "1dfce77a-b613-4a73-9aa7-c12a72f9fe67",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 10:03:00.938177",
+    "learner_id": "integration_test_learner",
+    "score_id": null,
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation started for learner integration_test_learner in technology",
+    "details": {
+      "job_family": "technology",
+      "request_id": "e9d77f4d-b20c-47b7-976c-f059a0cd7a75"
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "ac437b07-dcbd-460d-926c-08e1b089357f": {
+    "event_id": "ac437b07-dcbd-460d-926c-08e1b089357f",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 10:03:00.943175",
+    "learner_id": "integration_test_learner",
+    "score_id": "44cf42b8-3f41-4831-a647-e5277f16e456",
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation completed for learner integration_test_learner with score 0.450",
+    "details": {
+      "overall_score": 0.45,
+      "processing_time_ms": 4,
+      "signals_processed": 1
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "fb62ed46-ade2-434e-8bb2-f9db79567eca": {
+    "event_id": "fb62ed46-ade2-434e-8bb2-f9db79567eca",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 10:03:49.144965",
+    "learner_id": "test_api_learner",
+    "score_id": null,
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation started for learner test_api_learner in technology",
+    "details": {
+      "job_family": "technology",
+      "request_id": "5238b186-71e8-4b42-a07f-cde48ca9d544"
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "6c8dd490-9742-4f2c-bb04-1483961b977f": {
+    "event_id": "6c8dd490-9742-4f2c-bb04-1483961b977f",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 10:03:49.149960",
+    "learner_id": "test_api_learner",
+    "score_id": "ed418894-efaa-46d7-8184-ddd56f79f47d",
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation completed for learner test_api_learner with score 0.425",
+    "details": {
+      "overall_score": 0.425,
+      "processing_time_ms": 4,
+      "signals_processed": 1
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "cae47b3d-b0f1-4b5f-8f84-1190bd5e09d3": {
+    "event_id": "cae47b3d-b0f1-4b5f-8f84-1190bd5e09d3",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 10:04:08.046836",
+    "learner_id": "test_api_learner",
+    "score_id": null,
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation started for learner test_api_learner in technology",
+    "details": {
+      "job_family": "technology",
+      "request_id": "4a6f7dde-ac64-48b7-84c1-fd74e99081ab"
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "10df8414-5244-4800-9645-5d250e358353": {
+    "event_id": "10df8414-5244-4800-9645-5d250e358353",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 10:04:08.051805",
+    "learner_id": "test_api_learner",
+    "score_id": "9ef46ebd-8a0d-46b7-8f1a-66510ac05761",
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation completed for learner test_api_learner with score 0.425",
+    "details": {
+      "overall_score": 0.425,
+      "processing_time_ms": 5,
+      "signals_processed": 1
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "b88f1e3c-6a62-4cb4-a140-e8ce0c642f4a": {
+    "event_id": "b88f1e3c-6a62-4cb4-a140-e8ce0c642f4a",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 10:04:08.100202",
+    "learner_id": "integration_test_learner",
+    "score_id": null,
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation started for learner integration_test_learner in technology",
+    "details": {
+      "job_family": "technology",
+      "request_id": "c9cb14e4-a894-40aa-9d2b-08b778e91346"
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "a0f0950e-d6c3-47a1-b4cb-302e019454f6": {
+    "event_id": "a0f0950e-d6c3-47a1-b4cb-302e019454f6",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 10:04:08.104515",
+    "learner_id": "integration_test_learner",
+    "score_id": "1e97f1ef-f097-4eee-8174-866fe5b2e88a",
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation completed for learner integration_test_learner with score 0.450",
+    "details": {
+      "overall_score": 0.45,
+      "processing_time_ms": 4,
+      "signals_processed": 1
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "ab021e57-4f5a-4dc2-b578-ec32d7cc2969": {
+    "event_id": "ab021e57-4f5a-4dc2-b578-ec32d7cc2969",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 10:04:08.135783",
+    "learner_id": "integration_test_learner",
+    "score_id": null,
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation started for learner integration_test_learner in technology",
+    "details": {
+      "job_family": "technology",
+      "request_id": "a2d6717d-7569-4c1e-8d3a-368bb7ee9fd2"
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  },
+  "fb5d09cb-1880-4ff8-8178-babcb47eb314": {
+    "event_id": "fb5d09cb-1880-4ff8-8178-babcb47eb314",
+    "event_type": "score_calculated",
+    "timestamp": "2026-03-09 10:04:08.142297",
+    "learner_id": "integration_test_learner",
+    "score_id": "929ceb84-c313-4db7-98fc-49933a777567",
+    "signal_id": null,
+    "batch_id": null,
+    "description": "Score calculation completed for learner integration_test_learner with score 0.450",
+    "details": {
+      "overall_score": 0.45,
+      "processing_time_ms": 6,
+      "signals_processed": 1
+    },
+    "source_system": "compatibility_service",
+    "user_id": null,
+    "session_id": null,
+    "algorithm_version": null,
+    "processing_time_ms": null
+  }
+}

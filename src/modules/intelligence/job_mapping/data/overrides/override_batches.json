@@ -1,0 +1,60 @@
+{
+  "f5fa403a-7028-4d8c-a616-e0c338c0fce1": {
+    "batch_id": "f5fa403a-7028-4d8c-a616-e0c338c0fce1",
+    "learner_id": "test_learner_001",
+    "job_id": "software_developer_001",
+    "sme_id": "sme_expert_001",
+    "sme_name": "Dr. Jane Smith",
+    "overrides": [
+      {
+        "override_id": "bfa966c7-3b37-4930-b1bc-270e7eb7b37e",
+        "learner_id": "test_learner_001",
+        "job_id": "software_developer_001",
+        "sme_id": "sme_expert_001",
+        "sme_name": "Dr. Jane Smith",
+        "override_type": "competency_level",
+        "reason": "expert_judgment",
+        "original_value": "basic",
+        "new_value": "intermediate",
+        "target_domain": "abilities",
+        "target_competency": "logical_reasoning",
+        "comment": "Strong problem-solving skills demonstrated",
+        "evidence": [
+          "Technical interview results",
+          "Problem-solving assessment"
+        ],
+        "temporary": false,
+        "expires_at": null,
+        "created_at": "2026-03-02 13:33:07.219396",
+        "applied_at": null,
+        "is_active": true
+      },
+      {
+        "override_id": "4c307595-86f4-40eb-bf7b-8303c32ff84c",
+        "learner_id": "test_learner_001",
+        "job_id": "software_developer_001",
+        "sme_id": "sme_expert_001",
+        "sme_name": "Dr. Jane Smith",
+        "override_type": "weight_adjustment",
+        "reason": "emerging_trends",
+        "original_value": 0.6,
+        "new_value": 0.8,
+        "target_domain": "knowledge",
+        "target_competency": "algorithms_and_data_structures",
+        "comment": "This skill is becoming more important in the industry",
+        "evidence": [],
+        "temporary": false,
+        "expires_at": null,
+        "created_at": "2026-03-02 13:33:07.220967",
+        "applied_at": null,
+        "is_active": true
+      }
+    ],
+    "batch_reason": "Adjusting for demonstrated skills and market trends",
+    "original_match_score": 0.75,
+    "modified_match_score": 0.75,
+    "created_at": "2026-03-02 13:33:07.222511",
+    "applied_at": null,
+    "is_active": true
+  }
+}

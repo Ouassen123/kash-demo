@@ -1,0 +1,33 @@
+{
+  "sme_override_service_test": {
+    "timestamp": "2024-01-01T12:00:00Z",
+    "overrides_created": 7,
+    "batches_created": 1,
+    "override_types_tested": [
+      "competency_level",
+      "overall_score",
+      "confidence_level",
+      "domain_score",
+      "weight_adjustment"
+    ],
+    "features_tested": [
+      "individual_override_creation",
+      "override_validation",
+      "batch_operations",
+      "history_tracking",
+      "sme_statistics",
+      "temporary_overrides",
+      "permission_control",
+      "override_deactivation"
+    ],
+    "sme_stats": {
+      "total_overrides": 4,
+      "active_overrides": 4,
+      "override_types": [
+        "competency_level",
+        "overall_score",
+        "weight_adjustment"
+      ]
+    }
+  }
+}
