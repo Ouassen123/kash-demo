@@ -1,3 +1,9 @@
+---
+title: kash-demo
+sdk: docker
+app_port: 7860
+---
+
 - **Skills Deep Dive UI**
   - `frontend/app/(dashboard)/skills/deep-dive` exposes the end-to-end view backed by `GET /skills/profile` with fallbacks.
   - Dashboard CTA (“View Skills Deep Dive”) links into the module for seamless navigation.
