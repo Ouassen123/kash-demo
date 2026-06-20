@@ -46,7 +46,7 @@ export default async function KnowledgeDeepDivePage() {
         <CareerSuggestionsPanel suggestions={view.careerSuggestions} />
       </section>
 
-      <LatestKnowledgeAssessment assessment={view.latestAssessment} />
+      <LatestKnowledgeAssessment assessment={view.latestAssessment ?? null} />
 
       <section className="glass-panel p-6">
         <p className="text-sm uppercase tracking-[0.3em] text-mist/70">Learning plan</p>
