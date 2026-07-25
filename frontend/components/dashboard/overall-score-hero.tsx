@@ -33,14 +33,14 @@ export function OverallScoreHero({ overallScore, confidence, careerStage, stageT
   const stage = stageTokens[careerStage] ?? stageTokens.explorer;
 
   return (
-    <section className="glass-panel relative overflow-hidden">
+    <section className="glass-panel relative overflow-hidden animate-fade-in">
       <div className="absolute inset-0 opacity-70" style={{ background: 'radial-gradient(circle at top, rgba(76,91,255,0.35), transparent 55%)' }} />
       <div className="relative z-10 flex flex-col gap-6 p-6">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <p className="text-sm uppercase tracking-[0.3em] text-mist/70">Intelligence Overview</p>
             <div className="flex items-baseline gap-3 mt-1">
-              <span className="text-6xl font-semibold tracking-tight">{Math.round(overallScore)}</span>
+              <span className="text-6xl font-bold tracking-tight gradient-text">{Math.round(overallScore)}</span>
               <span className="text-white/60">/ 100</span>
             </div>
           </div>
@@ -53,19 +53,19 @@ export function OverallScoreHero({ overallScore, confidence, careerStage, stageT
         <p className="text-lg text-white/80 max-w-2xl leading-relaxed">{stageTagline}</p>
 
         <div className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl border border-white/10 p-4 bg-white/5">
-            <p className="text-xs uppercase tracking-[0.25em] text-white/50">Confidence</p>
-            <p className="text-2xl font-semibold mt-2">{Math.round(confidence * 100)}%</p>
+          <div className="glass-card p-4 border-aurora/20">
+            <p className="text-xs uppercase tracking-[0.25em] text-aurora/70">Confidence</p>
+            <p className="text-2xl font-bold mt-2 text-aurora">{Math.round(confidence * 100)}%</p>
             <p className="text-sm text-white/60">Model certainty in latest assessment</p>
           </div>
-          <div className="rounded-2xl border border-white/10 p-4 bg-white/5">
-            <p className="text-xs uppercase tracking-[0.25em] text-white/50">Stage focus</p>
-            <p className="text-2xl font-semibold mt-2 capitalize">{stage.label}</p>
+          <div className="glass-card p-4 border-abilities/20">
+            <p className="text-xs uppercase tracking-[0.25em] text-abilities/70">Stage focus</p>
+            <p className="text-2xl font-bold mt-2 text-abilities capitalize">{stage.label}</p>
             <p className="text-sm text-white/60">Aligned to KASH trajectory</p>
           </div>
-          <div className="rounded-2xl border border-white/10 p-4 bg-white/5">
-            <p className="text-xs uppercase tracking-[0.25em] text-white/50">Last synced</p>
-            <p className="text-lg font-medium mt-2">{formatDate(lastUpdated)}</p>
+          <div className="glass-card p-4 border-mist/20">
+            <p className="text-xs uppercase tracking-[0.25em] text-mist/70">Last synced</p>
+            <p className="text-lg font-medium mt-2 text-mist">{formatDate(lastUpdated)}</p>
             <p className="text-sm text-white/60">Pulls the freshest insights</p>
           </div>
         </div>

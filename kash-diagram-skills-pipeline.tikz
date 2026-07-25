@@ -1,0 +1,33 @@
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={
+    draw,
+    rounded corners,
+    align=center,
+    minimum height=9mm,
+    minimum width=27mm,
+    text width=28mm,
+    inner sep=2.5mm,
+    line width=0.45pt
+  },
+  arrow/.style={-Latex, thick}
+]
+
+\node[box, fill=kashsecondary!12] (src) {GitHub repo\\ou Code upload};
+\node[box, fill=kashprimary!12, right=11mm of src] (prep) {Extraction\\+ nettoyage du contenu};
+\node[box, fill=kashprimary!12, right=11mm of prep] (repo) {Repo analysis\\(m\'etadonn\'ees)};
+\node[box, fill=kashprimary!12, below=8mm of repo] (code) {Code analysis\\(qualit\'e, skills)};
+\node[box, fill=kashsuccess!12, right=11mm of repo] (agg) {Agr\'egation\\pond\'er\'ee};
+\node[box, fill=kashsuccess!12, right=11mm of agg] (out) {Score final\\+ confiance};
+
+\node[box, fill=kashsecondary!8, below=8mm of agg] (feedback) {Recommandations\\et am\'eliorations};
+
+\draw[arrow] (src) -- (prep);
+\draw[arrow] (prep) -- (repo);
+\draw[arrow] (src) |- (code);
+\draw[arrow] (repo) -- (agg);
+\draw[arrow] (code) -| (agg);
+\draw[arrow] (agg) -- (out);
+\draw[arrow] (out) -- (feedback);
+
+\end{tikzpicture}

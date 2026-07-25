@@ -1,0 +1,19 @@
+[
+  {
+    "trained_at": "2026-07-23T18:34:11.274778",
+    "cv_accuracy": 0.833,
+    "train_accuracy": 0.96,
+    "n_samples": 50,
+    "n_samples_after_smote": 78,
+    "n_features": 703,
+    "n_classes": 6,
+    "best_algorithm": "LogisticRegression",
+    "ensemble_members": [
+      "LogisticRegression",
+      "SVM (RBF)",
+      "RandomForest"
+    ],
+    "smote_applied": true,
+    "model_type": "Ensemble Voting(LogisticRegression, SVM (RBF), RandomForest) + TF-IDF (703 features, trigrams, SMOTE + bilingual stemming, section-weighted)"
+  }
+]

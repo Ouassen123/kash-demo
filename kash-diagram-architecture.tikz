@@ -1,0 +1,31 @@
+\begin{tikzpicture}[
+  font=\small,
+  node/.style={draw, rounded corners, align=center, minimum height=8mm, inner sep=3mm},
+  arrow/.style={-Latex, thick}
+]
+
+\node[node, fill=kashprimary!10] (user) {Utilisateur};
+\node[node, fill=kashsecondary!10, right=16mm of user] (fe) {Frontend\\Next.js};
+\node[node, fill=kashsecondary!10, right=16mm of fe] (api) {Backend\\FastAPI};
+\node[node, fill=black!5, below=12mm of api] (db) {PostgreSQL\\(Neon)};
+
+\node[node, fill=kashsuccess!10, right=16mm of api] (k) {Knowledge};
+\node[node, fill=kashsuccess!10, below=6mm of k] (a) {Abilities};
+\node[node, fill=kashsuccess!10, below=6mm of a] (s) {Skills};
+\node[node, fill=kashsuccess!10, below=6mm of s] (i) {Intelligence};
+
+\draw[arrow] (user) -- (fe);
+\draw[arrow] (fe) -- node[above]{HTTP JSON} (api);
+\draw[arrow] (api) -- (db);
+
+\draw[arrow] (api) -- (k);
+\draw[arrow] (api) -- (a);
+\draw[arrow] (api) -- (s);
+\draw[arrow] (api) -- (i);
+
+\draw[arrow] (k) -- (db);
+\draw[arrow] (a) -- (db);
+\draw[arrow] (s) -- (db);
+\draw[arrow] (i) -- (db);
+
+\end{tikzpicture}

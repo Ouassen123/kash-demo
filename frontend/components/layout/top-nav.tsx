@@ -21,7 +21,7 @@ export function TopNav() {
     <header className="sticky top-0 z-30 border-b border-white/10 bg-[#040814]/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 lg:px-0">
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-sm font-bold tracking-wider text-white">KASH</span>
+          <span className="text-sm font-bold tracking-wider gradient-text">KASH</span>
           <span className="hidden text-xs text-white/40 sm:inline">Intelligence Platform</span>
         </Link>
 
@@ -38,7 +38,7 @@ export function TopNav() {
           {!loading && !user?.is_admin && (
             <Link
               href="/kash/start"
-              className="rounded-full bg-indigo-500 px-4 py-1.5 text-xs font-semibold text-white hover:bg-indigo-400 transition"
+              className="rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-aurora px-4 py-1.5 text-xs font-semibold text-white hover:opacity-90 transition shadow-lg"
             >
               Démarrer KASH
             </Link>
@@ -52,7 +52,7 @@ export function TopNav() {
                 onClick={() => setMenuOpen((v) => !v)}
                 className="flex items-center gap-2 rounded-full border border-white/15 px-3 py-1.5 hover:bg-white/10 transition"
               >
-                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-500 text-[10px] font-bold text-white">
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 via-violet-500 to-aurora text-[10px] font-bold text-white">
                   {initials}
                 </div>
                 <span className="text-xs text-white/80 hidden sm:inline">

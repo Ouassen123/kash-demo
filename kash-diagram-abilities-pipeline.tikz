@@ -1,0 +1,20 @@
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw, rounded corners, align=center, minimum height=8mm, inner sep=2.5mm},
+  arrow/.style={-Latex, thick}
+]
+
+\node[box, fill=kashsecondary!10] (start) {Start assessment};
+\node[box, fill=kashprimary!10, right=10mm of start] (q) {Question\\adaptative};
+\node[box, fill=kashprimary!10, right=10mm of q] (resp) {Submit answer\\+ temps};
+\node[box, fill=kashprimary!10, right=10mm of resp] (adapt) {Update difficulty};
+\node[box, fill=kashsuccess!10, right=10mm of adapt] (done) {Complete\\+ scoring};
+
+\draw[arrow] (start) -- (q);
+\draw[arrow] (q) -- (resp);
+\draw[arrow] (resp) -- (adapt);
+\draw[arrow] (adapt) -- (done);
+
+\draw[arrow] (adapt) .. controls +(0,10mm) and +(0,10mm) .. node[above]{repeat} (q);
+
+\end{tikzpicture}

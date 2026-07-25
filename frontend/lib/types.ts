@@ -126,6 +126,60 @@ export interface SubmitAbilitiesAnswerResponse {
   };
 }
 
+export interface HabitsInterviewAnswer {
+  question_id: string;
+  question_text: string;
+  answer_text: string;
+}
+
+export interface HabitsInterviewRequest {
+  answers: HabitsInterviewAnswer[];
+  audio_base64?: string | null;
+  video_frames_base64?: string[] | null;
+  industry?: string | null;
+}
+
+export interface HabitsVoiceMetrics {
+  speech_rate: number;
+  volume_db: number;
+  pitch_variation: number;
+  pause_ratio: number;
+  fluency_score: number;
+}
+
+export interface HabitsEmotionMetric {
+  emotion: string;
+  confidence: number;
+  timestamp_ms?: number | null;
+}
+
+export interface HabitsBehavioralProfile {
+  communication_style: 'structured' | 'spontaneous' | 'analytical' | 'narrative';
+  motivation_level: 'high' | 'medium' | 'low';
+  self_awareness: 'high' | 'medium' | 'low';
+  stress_indicators: 'low' | 'moderate' | 'high';
+  overall_recommendation: 'recommended' | 'borderline' | 'not_recommended';
+}
+
+export interface HabitsInterviewAnalysisResponse {
+  assessment_id: string;
+  status: string;
+  clarity_score: number;
+  relevance_score: number;
+  confidence_score: number;
+  engagement_score: number;
+  emotions_detected: HabitsEmotionMetric[];
+  voice_metrics?: HabitsVoiceMetrics | null;
+  composite_score: number;
+  score_breakdown: Record<string, number>;
+  strengths: string[];
+  improvement_areas: string[];
+  behavioral_profile: HabitsBehavioralProfile;
+  processing_time_ms: number;
+  modalities_used: string[];
+  created_at: string;
+}
+
 export interface KnowledgeUploadAssessmentResponse {
   assessment_id: string;
   status: string;

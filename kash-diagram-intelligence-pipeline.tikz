@@ -1,0 +1,18 @@
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw, rounded corners, align=center, minimum height=8mm, inner sep=2.5mm},
+  arrow/.style={-Latex, thick}
+]
+
+\node[box, fill=kashsecondary!10] (ass) {Assessments\\K/A/S/E};
+\node[box, fill=kashprimary!10, right=10mm of ass] (weights) {Poids\\(industrie)};
+\node[box, fill=kashprimary!10, right=10mm of weights] (score) {KASHScorer\\score global};
+\node[box, fill=kashsuccess!10, right=10mm of score] (stage) {Career stage\\+ recos};
+\node[box, fill=kashsuccess!10, below=8mm of stage] (exp) {SHAP-like\\explanations};
+
+\draw[arrow] (ass) -- (weights);
+\draw[arrow] (weights) -- (score);
+\draw[arrow] (score) -- (stage);
+\draw[arrow] (score) -- (exp);
+
+\end{tikzpicture}

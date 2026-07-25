@@ -23,3 +23,28 @@ frontend/.env.*.local
 # OS
 .DS_Store
 Thumbs.db
+
+# Build artifacts
+frontend/tsconfig.tsbuildinfo
+*.tsbuildinfo
+
+# Temp test files
+test_knowledge_*.py
+test_knowledge_*.html
+test_knowledge_*.json
+test_ml_predict.py
+
+# Generated models (large binary files)
+models/*.pkl
+models/*.joblib
+models/*.bin
+
+# LaTeX build
+*.aux
+*.pdf
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+
+# Templates (generated)
+templates/

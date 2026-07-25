@@ -19,6 +19,84 @@ body {
   @apply backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl shadow-panel;
 }
 
+.glass-card {
+  @apply backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl;
+}
+
 .section-heading {
   @apply text-sm uppercase tracking-[0.3em] text-mist/70 mb-4;
+}
+
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-aurora via-mist to-corail;
+}
+
+/* Domain-colored card accents */
+.card-knowledge {
+  @apply border-knowledge/30 bg-knowledge/5;
+}
+.card-abilities {
+  @apply border-abilities/30 bg-abilities/5;
+}
+.card-skills {
+  @apply border-skills/30 bg-skills/5;
+}
+.card-habits {
+  @apply border-habits/30 bg-habits/5;
+}
+.card-intelligence {
+  @apply border-intelligence/30 bg-intelligence/5;
+}
+
+/* Colored badge */
+.badge {
+  @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium;
+}
+.badge-knowledge {
+  @apply bg-knowledge/15 text-knowledge;
+}
+.badge-abilities {
+  @apply bg-abilities/15 text-abilities;
+}
+.badge-skills {
+  @apply bg-skills/15 text-skills;
+}
+.badge-habits {
+  @apply bg-habits/15 text-habits;
+}
+.badge-intelligence {
+  @apply bg-intelligence/15 text-intelligence;
+}
+
+/* Progress bar container */
+.progress-bar {
+  @apply h-2 rounded-full bg-white/10 overflow-hidden;
+}
+.progress-fill {
+  @apply h-full rounded-full transition-all duration-700 ease-out;
+}
+
+/* Step indicator dot */
+.step-dot {
+  @apply flex items-center justify-center rounded-full font-bold text-xs transition-all;
+}
+.step-dot-active {
+  @apply bg-indigo-500 text-white shadow-glow scale-110;
+}
+.step-dot-done {
+  @apply bg-emerald-500 text-white;
+}
+.step-dot-pending {
+  @apply bg-white/10 text-white/40;
+}
+
+/* Colored button */
+.btn-primary {
+  @apply inline-flex items-center gap-2 rounded-full bg-indigo-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-400 transition shadow-lg;
+}
+.btn-ghost {
+  @apply inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-sm text-white/80 hover:bg-white/10 transition;
+}
+.btn-gradient {
+  @apply inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-aurora px-6 py-2.5 text-sm font-semibold text-white hover:opacity-90 transition shadow-lg;
 }

@@ -50,15 +50,24 @@ export default function DashboardPage() {
 
   return (
     <main className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-10 lg:px-0">
-      <div className="flex items-center justify-between rounded-2xl border border-indigo-400/30 bg-indigo-500/10 px-6 py-4">
-        <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-indigo-300/70">KASH Assessment</p>
-          <p className="text-lg font-semibold text-white mt-0.5">Passer les 4 tests KASH</p>
-          <p className="text-sm text-white/60 mt-1">Abilities → Knowledge → Entretien → Skills</p>
+      <div className="relative flex items-center justify-between overflow-hidden rounded-2xl border border-indigo-400/30 bg-gradient-to-r from-indigo-500/20 via-violet-500/15 to-aurora/10 px-6 py-5 animate-fade-in">
+        <div className="absolute inset-0 opacity-40" style={{ background: 'radial-gradient(ellipse at left, rgba(91,129,255,0.3), transparent 60%)' }} />
+        <div className="relative z-10">
+          <p className="text-xs uppercase tracking-[0.3em] text-indigo-300/80">KASH Assessment</p>
+          <p className="text-xl font-bold text-white mt-1">Passer les 4 tests KASH</p>
+          <div className="flex items-center gap-2 mt-2 text-sm text-white/70">
+            <span className="badge badge-abilities">Abilities</span>
+            <span className="text-white/30">→</span>
+            <span className="badge badge-knowledge">Knowledge</span>
+            <span className="text-white/30">→</span>
+            <span className="badge badge-habits">Entretien</span>
+            <span className="text-white/30">→</span>
+            <span className="badge badge-skills">Skills</span>
+          </div>
         </div>
         <Link
           href="/kash/start"
-          className="inline-flex items-center gap-2 rounded-full bg-indigo-500 text-white px-6 py-2.5 text-sm font-semibold hover:bg-indigo-400 transition shadow-lg"
+          className="btn-gradient relative z-10"
         >
           Démarrer KASH
           <span aria-hidden>→</span>
@@ -118,80 +127,68 @@ export default function DashboardPage() {
       />
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <div className="glass-panel flex flex-col gap-4 p-6 text-white/80">
+        <div className="glass-card card-abilities flex flex-col gap-4 p-6 text-white/80 animate-fade-in">
           <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-mist/70">KASH Journey</p>
-            <p className="text-2xl font-semibold mt-1 text-white">Pass all 4 tests</p>
-            <p className="text-sm text-white/70 mt-2 max-w-2xl">
+            <span className="badge badge-abilities mb-3">Abilities</span>
+            <p className="text-xl font-bold text-white mt-2">Pass all 4 tests</p>
+            <p className="text-sm text-white/70 mt-2">
               Complete Abilities, CV Knowledge upload, webcam interview questions, and Skills code upload before reviewing
               your global result.
             </p>
           </div>
-          <div>
-            <Link
-              href="/kash/start"
-              className="inline-flex items-center gap-2 rounded-full bg-white text-midnight px-6 py-2 text-sm font-semibold hover:bg-mist transition"
-            >
+          <div className="mt-auto">
+            <Link href="/kash/start" className="btn-ghost">
               Start KASH Journey
               <span aria-hidden>→</span>
             </Link>
           </div>
         </div>
 
-        <div className="glass-panel flex flex-col gap-4 p-6 text-white/80">
+        <div className="glass-card card-skills flex flex-col gap-4 p-6 text-white/80 animate-fade-in">
           <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-mist/70">Skills Deep Dive</p>
-            <p className="text-2xl font-semibold mt-1 text-white">Explore technical intelligence</p>
-            <p className="text-sm text-white/70 mt-2 max-w-2xl">
+            <span className="badge badge-skills mb-3">Skills</span>
+            <p className="text-xl font-bold text-white mt-2">Explore technical intelligence</p>
+            <p className="text-sm text-white/70 mt-2">
               Inspect language distribution, proficiency clusters, project timelines, and personalized recommendations in a
               dedicated workspace.
             </p>
           </div>
-          <div>
-            <Link
-              href="/skills/deep-dive"
-              className="inline-flex items-center gap-2 rounded-full bg-white text-midnight px-6 py-2 text-sm font-semibold hover:bg-mist transition"
-            >
+          <div className="mt-auto">
+            <Link href="/skills/deep-dive" className="btn-ghost">
               View Skills Deep Dive
               <span aria-hidden>→</span>
             </Link>
           </div>
         </div>
 
-        <div className="glass-panel flex flex-col gap-4 p-6 text-white/80">
+        <div className="glass-card card-knowledge flex flex-col gap-4 p-6 text-white/80 animate-fade-in">
           <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-mist/70">Knowledge Deep Dive</p>
-            <p className="text-2xl font-semibold mt-1 text-white">Understand CV + taxonomy signals</p>
-            <p className="text-sm text-white/70 mt-2 max-w-2xl">
+            <span className="badge badge-knowledge mb-3">Knowledge</span>
+            <p className="text-xl font-bold text-white mt-2">Understand CV + taxonomy signals</p>
+            <p className="text-sm text-white/70 mt-2">
               Review normalized CV attributes, ESCO skill mappings, career suggestions, and learning plans grounded in
               occupation coverage.
             </p>
           </div>
-          <div>
-            <Link
-              href="/knowledge/deep-dive"
-              className="inline-flex items-center gap-2 rounded-full bg-white text-midnight px-6 py-2 text-sm font-semibold hover:bg-mist transition"
-            >
+          <div className="mt-auto">
+            <Link href="/knowledge/deep-dive" className="btn-ghost">
               View Knowledge Deep Dive
               <span aria-hidden>→</span>
             </Link>
           </div>
         </div>
 
-        <div className="glass-panel flex flex-col gap-4 p-6 text-white/80">
+        <div className="glass-card card-habits flex flex-col gap-4 p-6 text-white/80 animate-fade-in">
           <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-mist/70">Abilities Deep Dive</p>
-            <p className="text-2xl font-semibold mt-1 text-white">Drill into adaptive assessments</p>
-            <p className="text-sm text-white/70 mt-2 max-w-2xl">
+            <span className="badge badge-habits mb-3">Abilities</span>
+            <p className="text-xl font-bold text-white mt-2">Drill into adaptive assessments</p>
+            <p className="text-sm text-white/70 mt-2">
               Inspect cognitive domain performance, improvement trends, personalized recommendations, and recent quiz
               sessions.
             </p>
           </div>
-          <div>
-            <Link
-              href="/abilities/deep-dive"
-              className="inline-flex items-center gap-2 rounded-full bg-white text-midnight px-6 py-2 text-sm font-semibold hover:bg-mist transition"
-            >
+          <div className="mt-auto">
+            <Link href="/abilities/deep-dive" className="btn-ghost">
               View Abilities Deep Dive
               <span aria-hidden>→</span>
             </Link>

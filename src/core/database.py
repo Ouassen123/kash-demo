@@ -27,6 +27,18 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 
+def ensure_postgres_enum_values() -> None:
+    """Backfill PostgreSQL enum values that may be missing on older volumes."""
+    if engine.dialect.name != "postgresql":
+        return
+
+    try:
+        with engine.begin() as connection:
+            connection.execute(text("ALTER TYPE assessment_type_enum ADD VALUE IF NOT EXISTS 'habits'"))
+    except Exception as exc:
+        logger.debug("Could not ensure assessment_type_enum includes habits: %s", exc)
+
+
 def get_db() -> Generator[Session, None, None]:
     """Get database session with proper cleanup."""
     db = SessionLocal()
@@ -43,6 +55,7 @@ def get_db() -> Generator[Session, None, None]:
 def create_tables() -> None:
     """Create all database tables."""
     try:
+        ensure_postgres_enum_values()
         Base.metadata.create_all(bind=engine)
         logger.info("Database tables created successfully")
     except Exception as e:

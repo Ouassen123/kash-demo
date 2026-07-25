@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth, getStoredToken } from '@/lib/auth-context';
-import { Users, Activity, BarChart3, TrendingUp, Search, Shield, XCircle, CheckCircle, Edit2, Plus, X, Save } from 'lucide-react';
+import { Users, Activity, BarChart3, TrendingUp, Search, Shield, XCircle, CheckCircle, Edit2, Plus, X, Save, Brain, FlaskConical } from 'lucide-react';
+import { getKnowledgeModelStatus, getTrainingHistory } from '@/lib/api';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000/api/v1';
 
@@ -34,6 +35,32 @@ interface Candidate {
 
 interface ActivityPoint { date: string; count: number; }
 
+interface KnowledgeTrainingRun {
+  trained_at: string;
+  cv_accuracy: number;
+  train_accuracy: number;
+  n_samples: number;
+  n_samples_after_smote: number;
+  n_features: number;
+  smote_applied: boolean;
+  best_algorithm: string;
+}
+
+interface KnowledgeStatus {
+  is_trained: boolean;
+  n_features: number;
+  classes: string[];
+  training_report: {
+    cv_accuracy?: number;
+    train_accuracy?: number;
+    best_algorithm?: string;
+    model_type?: string;
+    smote_applied?: boolean;
+    n_samples?: number;
+    n_samples_after_smote?: number;
+  } | null;
+}
+
 function ScoreBadge({ value }: { value: number }) {
   const color = value >= 70 ? 'text-emerald-300' : value >= 40 ? 'text-amber-300' : 'text-rose-300';
   return <span className={`font-semibold ${color}`}>{Math.round(value)}</span>;
@@ -56,6 +83,8 @@ export default function AdminPage() {
   const [newName, setNewName] = useState('');
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
+  const [knowledgeStatus, setKnowledgeStatus] = useState<KnowledgeStatus | null>(null);
+  const [knowledgeHistory, setKnowledgeHistory] = useState<KnowledgeTrainingRun[]>([]);
 
   useEffect(() => {
     // Read directly from localStorage to avoid redirect before AuthProvider hydrates
@@ -89,6 +118,28 @@ export default function AdminPage() {
     };
     load();
   }, [user]);
+
+  useEffect(() => {
+    const loadKnowledge = async () => {
+      const stored = localStorage.getItem('kash_user');
+      if (!stored) return;
+      let isAdmin = false;
+      try { isAdmin = JSON.parse(stored).is_admin; } catch {}
+      if (!isAdmin) return;
+      try {
+        const [status, history] = await Promise.all([
+          getKnowledgeModelStatus(),
+          getTrainingHistory(),
+        ]);
+        setKnowledgeStatus(status as KnowledgeStatus);
+        setKnowledgeHistory(history.history || []);
+      } catch {
+        setKnowledgeStatus(null);
+        setKnowledgeHistory([]);
+      }
+    };
+    loadKnowledge();
+  }, []);
 
   async function loadCandidateDetail(c: Candidate) {
     setSelected(c);
@@ -160,6 +211,7 @@ export default function AdminPage() {
   );
 
   const maxActivity = Math.max(...activity.map(a => a.count), 1);
+  const latestKnowledgeRun = knowledgeHistory[knowledgeHistory.length - 1] ?? null;
 
   if (loading || !user) return null;
 
@@ -174,6 +226,12 @@ export default function AdminPage() {
         <nav className="flex flex-col gap-1">
           <Link href="/admin" className="flex items-center gap-2 rounded-xl bg-white/10 px-3 py-2 text-sm text-white">
             <Users size={15} /> Candidats
+          </Link>
+          <Link href="/admin/model-test" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-white/60 hover:bg-white/5 transition">
+            <FlaskConical size={15} /> Model Test Lab
+          </Link>
+          <Link href="/knowledge/train-model" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-white/60 hover:bg-white/5 transition">
+            <Brain size={15} /> ML Model Training
           </Link>
           <Link href="/" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-white/60 hover:bg-white/5">
             <BarChart3 size={15} /> Dashboard candidat
@@ -205,6 +263,76 @@ export default function AdminPage() {
             ))}
           </div>
         )}
+
+        {/* Knowledge model summary */}
+        <section className="rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-500/15 via-white/5 to-emerald-500/10 p-5 shadow-lg shadow-indigo-950/20">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <div className="flex items-center gap-2 text-indigo-200">
+                <Brain size={18} />
+                <p className="text-xs uppercase tracking-widest">Knowledge ML</p>
+              </div>
+              <h2 className="mt-2 text-2xl font-bold text-white">Model health at a glance</h2>
+              <p className="mt-1 max-w-2xl text-sm text-white/60">
+                Monitor the filiere prediction model, inspect recent training quality, and jump directly to the training console.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <Link href="/knowledge/train-model" className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-indigo-100">
+                <Brain size={15} /> Open training console
+              </Link>
+              <Link href="/knowledge/train-model" className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm text-white transition hover:bg-white/10">
+                <TrendingUp size={15} /> View metrics
+              </Link>
+            </div>
+          </div>
+
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-2xl border border-white/10 bg-black/10 p-4">
+              <p className="text-xs text-white/40">Status</p>
+              <p className="mt-1 text-lg font-semibold text-white">
+                {knowledgeStatus?.is_trained ? 'Trained & ready' : 'Training needed'}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-black/10 p-4">
+              <p className="text-xs text-white/40">CV Accuracy</p>
+              <p className="mt-1 text-lg font-semibold text-emerald-300">
+                {knowledgeStatus?.training_report?.cv_accuracy != null
+                  ? `${(knowledgeStatus.training_report.cv_accuracy * 100).toFixed(1)}%`
+                  : '—'}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-black/10 p-4">
+              <p className="text-xs text-white/40">Best algorithm</p>
+              <p className="mt-1 text-sm font-semibold text-white/90">
+                {knowledgeStatus?.training_report?.best_algorithm ?? '—'}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-black/10 p-4">
+              <p className="text-xs text-white/40">Recent runs</p>
+              <p className="mt-1 text-lg font-semibold text-white">{knowledgeHistory.length}</p>
+            </div>
+          </div>
+
+          {latestKnowledgeRun && (
+            <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                  <p className="text-xs text-white/40">Latest training run</p>
+                  <p className="text-sm text-white/80">
+                    {new Date(latestKnowledgeRun.trained_at).toLocaleString('fr-FR')} · {latestKnowledgeRun.best_algorithm}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2 text-xs text-white/60">
+                  <span className="rounded-full bg-white/5 px-3 py-1">Train {(latestKnowledgeRun.train_accuracy * 100).toFixed(1)}%</span>
+                  <span className="rounded-full bg-white/5 px-3 py-1">CV {(latestKnowledgeRun.cv_accuracy * 100).toFixed(1)}%</span>
+                  <span className="rounded-full bg-white/5 px-3 py-1">SMOTE {latestKnowledgeRun.smote_applied ? 'On' : 'Off'}</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
 
         {/* Activity chart */}
         {activity.length > 0 && (

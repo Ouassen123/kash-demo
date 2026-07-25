@@ -156,7 +156,8 @@ class CVAnalyzer:
             re.compile(r'\b(SQL|PostgreSQL|MySQL|MongoDB|Redis|Elasticsearch|Cassandra|DynamoDB|Firebase)\b', re.IGNORECASE),
             re.compile(r'\b(AWS|Azure|GCP|Google\s+Cloud|Heroku|DigitalOcean|Vercel|Netlify)\b', re.IGNORECASE),
             re.compile(r'\b(Docker|Kubernetes|Jenkins|GitLab|GitHub|CircleCI|TravisCI)\b', re.IGNORECASE),
-            re.compile(r'\b(Agile|Scrum|Kanban|DevOps|CI/CD|TDD|BDD)\b', re.IGNORECASE)
+            re.compile(r'\b(Agile|Scrum|Kanban|DevOps|CI/CD|TDD|BDD)\b', re.IGNORECASE),
+            re.compile(r'\b(TensorFlow|PyTorch|Scikit(?:-learn)?|Pandas|NumPy|Matlab|Simulink|SCADA|PLC|LaTeX|Machine\s+Learning|Deep\s+Learning|Data\s+Science)\b', re.IGNORECASE)
         ]
         
         # Pre-compile education patterns
@@ -289,6 +290,33 @@ class CVAnalyzer:
                         context=match.group(0),
                         position='skills_section',
                         source_text=skills_section
+                    )
+                    skills.append(skill_item)
+
+        # Fallback: if no explicit skills section exists, scan the whole CV text.
+        # This is important for CVs that use French headers or list skills inline.
+        if not skills:
+            text_to_scan = cv_text
+            for pattern in self.skill_patterns:
+                matches = pattern.finditer(text_to_scan)
+                for match in matches:
+                    skill_name = match.group(1) if match.groups() else match.group(0)
+                    if any(skill.name.lower() == skill_name.lower() for skill in skills):
+                        continue
+
+                    skill_data = {
+                        'name': skill_name,
+                        'context': match.group(0),
+                        'position': 'full_text_fallback',
+                        'explicit_mention': False
+                    }
+                    confidence = self.confidence_scorer.calculate_skill_confidence(skill_data)
+                    skill_item = SkillItem(
+                        name=skill_name,
+                        confidence=confidence,
+                        context=match.group(0),
+                        position='full_text_fallback',
+                        source_text=text_to_scan
                     )
                     skills.append(skill_item)
         

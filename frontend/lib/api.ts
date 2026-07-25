@@ -5,6 +5,8 @@ import type {
   IntelligenceAssessmentDetail,
   KnowledgeProfile,
   AbilitiesProfile,
+  HabitsInterviewAnalysisResponse,
+  HabitsInterviewRequest,
   KnowledgeUploadAssessmentResponse,
   SkillsUploadAssessmentResponse,
   CodingChallengeSummary,
@@ -151,6 +153,13 @@ export async function saveInterviewAnswers(payload: { answers: string[] }) {
   });
 }
 
+export async function analyzeHabitsInterview(payload: HabitsInterviewRequest) {
+  return request<HabitsInterviewAnalysisResponse>('/habits/interview/analyze', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
 export async function generateIntelligenceAssessment(payload?: { industry?: string; career_goals?: string[] }) {
   return request<any>(`/intelligence/assess`, {
     method: 'POST',
@@ -159,6 +168,76 @@ export async function generateIntelligenceAssessment(payload?: { industry?: stri
       career_goals: payload?.career_goals ?? ['software_engineer'],
     }),
   });
+}
+
+export async function getKnowledgeModelStatus() {
+  return request<{ is_trained: boolean; classes: string[]; n_features: number; training_report: any | null }>('/knowledge/model-status');
+}
+
+export async function trainKnowledgeModel() {
+  return request<any>('/knowledge/train-model', { method: 'POST' });
+}
+
+export async function predictFiliere(cvText: string) {
+  return request<any>('/knowledge/predict-filiere', {
+    method: 'POST',
+    body: JSON.stringify({ cv_text: cvText }),
+  });
+}
+
+export async function uploadTrainingCv(file: File, filiere: string) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('filiere', filiere);
+  const token = getToken();
+  const res = await fetch(`${API_BASE_URL}/knowledge/upload-training-cv`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'Upload failed' }));
+    throw new Error(err.detail || 'Upload failed');
+  }
+  return res.json();
+}
+
+export async function listTrainingCvs() {
+  return request<{ cvs: { filename: string; filiere: string; skills_count: number; text_length: number }[]; total: number }>('/knowledge/training-cvs');
+}
+
+export async function getTrainingHistory() {
+  return request<{
+    history: {
+      trained_at: string;
+      cv_accuracy: number;
+      train_accuracy: number;
+      n_samples: number;
+      n_samples_after_smote: number;
+      n_features: number;
+      n_classes: number;
+      best_algorithm: string;
+      smote_applied: boolean;
+      model_type: string;
+    }[];
+    total: number;
+  }>('/knowledge/training-history');
+}
+
+export async function predictFilierePdf(file: File) {
+  const formData = new FormData();
+  formData.append('file', file);
+  const token = getToken();
+  const res = await fetch(`${API_BASE_URL}/knowledge/predict-filiere-pdf`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'Prediction failed' }));
+    throw new Error(err.detail || 'Prediction failed');
+  }
+  return res.json();
 }
 
 export type DashboardResponse = {

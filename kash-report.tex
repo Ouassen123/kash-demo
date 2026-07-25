@@ -1,0 +1,384 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\geometry{margin=20mm}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{float}
+
+% Ce package aide à gérer les espaces/points dans les noms de fichiers d'images
+\usepackage[space]{grffile}
+
+% Diagrammes (TikZ) - ne nécessite pas d'images externes
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit}
+
+% Couleurs académiques KASH
+\definecolor{kashprimary}{RGB}{31,58,86}
+\definecolor{kashsecondary}{RGB}{79,110,138}
+\definecolor{kashsuccess}{RGB}{46,117,89}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=kashprimary,
+    urlcolor=blue,
+    pdftitle={Rapport Technique Approfondi - KASH Platform}
+}
+
+\newcommand{\sectionrule}{\par\noindent\rule{\linewidth}{0.4pt}\par}
+
+\titleformat{\section}{\large\bfseries\color{kashprimary}}{\thesection}{1em}{}[{\titlerule[0.5pt]}]
+\titleformat{\subsection}{\normalsize\bfseries\color{kashsecondary}}{\thesubsection}{1em}{}
+
+\begin{document}
+
+% ==========================================
+% PAGE DE GARDE
+% ==========================================
+\begin{titlepage}
+    \centering
+    \vspace*{1.5cm}
+    {\LARGE\bfseries RAPPORT TECHNIQUE ET M\'ETHODOLOGIQUE DE RECHERCHE\par}
+    \vspace{1cm}
+    {\huge\bfseries KASH Platform\par}
+    \vspace{0.4cm}
+    {\Large\itshape Knowledge -- Abilities -- Skills -- Holistic Intelligence\par}
+    \vspace{1.5cm}
+    {\large\bfseries Sp\'ecifications Algorithmiques, Pipelines de Services et Validation Empirique (Cohorte Pilote)\par}
+    \vspace{2.5cm}
+
+    \begin{minipage}{0.85\textwidth}
+        \centering
+        \textbf{Auteur :} Candidat au Doctorat \\
+        \textbf{Architecture Backend :} FastAPI, SQLAlchemy, Neon PostgreSQL, spaCy, scikit-learn \\
+        \textbf{Architecture Frontend :} Next.js 14, Tailwind CSS, Vercel \\
+        \textbf{Date :} \today
+    \end{minipage}
+
+    \vfill
+    {\large Cadre d'\'evaluation de la pr\'eparation carri\`ere (\textit{Career Readiness})\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ==========================================
+% SECTION 1
+% ==========================================
+\section{Objectif du Document et Architecture de Flux}
+Ce document formalise les m\'ethodes et mod\`eles employ\'es par la plateforme \textbf{KASH} afin de produire des scores normalis\'es (0--100) et des indices de confiance (0--1) sur les axes : \textit{Knowledge}, \textit{Abilities}, \textit{Skills} et \textit{Intelligence}.
+
+\subsection{Composants applicatifs}
+L'architecture repose sur un d\'ecoupage modulaire :
+\begin{itemize}
+    \item \textbf{Frontend (Next.js 14)} : collecte les entr\'ees (CV, quiz, code) et affiche scores + explicabilit\'e.
+    \item \textbf{Backend Core (FastAPI)} : orchestre les pipelines de calcul par module.
+    \item \textbf{Base de donn\'ees (Neon PostgreSQL)} : persiste l'historique via l'entit\'e \texttt{UserAssessment}.
+\end{itemize}
+
+\subsection{Diagramme macro-architecture}
+\begin{figure}[H]
+    \centering
+    \input{./kash-diagram-architecture.tikz}
+    \caption{Architecture logique (Frontend/Backend/DB) et modules KASH.}
+    \label{fig:kash_architecture}
+\end{figure}
+
+\subsection{Phase d'authentification et d'acc\`es}
+La plateforme utilise une authentification simplifi\'ee en mode d\'eveloppement pour isoler les sessions d'\'evaluation (Figure~\ref{fig:login_screen}).
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.6\textwidth]{\detokenize{loggin.PNG}}
+    \caption{Interface de connexion (environnement de d\'eveloppement).}
+    \label{fig:login_screen}
+\end{figure}
+
+\sectionrule
+
+% ==========================================
+% SECTION 2
+% ==========================================
+\section{Matrice de Synth\`ese des Services Backend}
+\begin{table}[htbp]
+\centering
+\caption{Matrice d'analyse des modules algorithmiques du backend KASH}
+\label{tab:matrice_complete}
+\vspace{2mm}
+\begin{small}
+\begin{tabular}{lllll}
+\toprule
+\textbf{Domaine} & \textbf{Entr\'ees cl\'es} & \textbf{Mod\`eles / algorithmes} & \textbf{Sorties} & \textbf{Fichiers backend} \\
+\midrule
+\textbf{Knowledge} & Texte de CV & NLP + ESCO/O*NET + \textbf{TF-IDF/KNN (cosine)} & score, confiance, gaps & \texttt{knowledge\_service.py} \\
+\textbf{Abilities} & Quiz adaptatif & QuizEngine + heuristique de confiance & percentage, sous-scores & \texttt{abilities\_service.py} \\
+\textbf{Skills} & Repo / upload & Analyse repo + analyse code + agr\'egation & score, composantes & \texttt{skills\_service.py} \\
+\textbf{Intelligence} & Historique K/A/S/E & \textbf{KASHScorer} + \textbf{SHAP-like} + ML optionnel & score global, stage, explications & \texttt{kash\_scorer.py}, \texttt{shap\_explainer.py} \\
+\bottomrule
+\end{tabular}
+\end{small}
+\end{table}
+
+\sectionrule
+
+% ==========================================
+% SECTION 3
+% ==========================================
+\section{Sp\'ecifications et Mod\'elisation Profonde par Module}
+
+\subsection{Module Knowledge (K) : TF-IDF + KNN et scoring pond\'er\'e}
+Le service \texttt{src/modules/knowledge/knowledge\_service.py} calcule une similarit\'e entre le CV et un corpus de r\'ef\'erence via TF-IDF et KNN (cosinus) :
+\begin{equation}
+S_{\text{knn}} = \frac{1}{k}\sum_{i=1}^{k} \frac{\mathbf{u} \cdot \mathbf{v}_i}{\lVert\mathbf{u}\rVert\, \lVert\mathbf{v}_i\rVert}
+\end{equation}
+Le score brut est une combinaison pond\'er\'ee (align\'ee avec l'impl\'ementation) :
+\begin{equation}
+\text{raw\_score}_K = 0.15\,C_{\text{parsing}} + 0.25\,S_{\text{skill}} + 0.30\,S_{\text{knn}} + 0.15\,S_{\text{occupation}} + 0.10\,S_{\text{exp}} + 0.05\,S_{\text{edu}}
+\end{equation}
+La confiance (0--1) suit :
+\begin{equation}
+C_K = \min\left(1.0,\, 0.3\,C_{\text{parsing}} + 0.4\,Q_{\text{taxonomy}} + 0.3\,S_{\text{knn}}\right)
+\end{equation}
+
+\subsubsection*{Justification de recherche}
+Le couple \textbf{TF-IDF} + similarit\'e cosinus est un standard de la recherche d'information pour comparer des documents textuels. Il est rapide, interpr\'etable (poids de termes) et robuste quand le corpus de comparaison est limit\'e. L'usage d'un \textbf{KNN} sur similarit\'e (top-$k$) r\'esume la proximit\'e d'un CV par rapport \`a des profils de r\'ef\'erence.
+
+ Ce choix a \`et\'e privil\'egi\'e \`a des approches \textit{end-to-end} de type Transformers/embeddings denses pour le MVP, car ces derni\`eres requi\`erent davantage de ressources (GPU), une gestion fine du multilinguisme et id\'ealement un corpus d'apprentissage/validation plus large. Ici, l'objectif de recherche est aussi de conserver une m\'ethode \textbf{reproductible} et \textbf{explicable} (baseline solide) avant d'introduire des repr\'esentations denses.
+
+\subsubsection*{R\'esultats attendus}
+\begin{itemize}
+    \item un score Knowledge normalis\'e (0--100) et une confiance (0--1) exploitables pour l'orientation,
+    \item une d\'ecomposition des facteurs facilitant l'explication (parsing, skills, similarit\'e, exp\'erience, \`education),
+    \item une robustesse relative lorsque l'enrichissement ESCO/O*NET est partiel.
+\end{itemize}
+
+\subsubsection*{Limites}
+TF-IDF capte surtout des co-occurrences lexicales (moins la s\'emantique profonde) et peut \^etre sensible \`a la langue, aux synonymes et au style r\'edactionnel. Une \`evolution vers des embeddings (SBERT) et une recherche vectorielle (FAISS) est justifi\'ee si un jeu de donn\'ees plus large est disponible.
+
+\begin{figure}[H]
+    \centering
+    \input{./kash-diagram-knowledge-pipeline.tikz}
+    \caption{Pipeline du module Knowledge : extraction, enrichissement, similarit\'e et scoring.}
+    \label{fig:knowledge_pipeline}
+\end{figure}
+
+\subsection{Module Abilities (A) : \`evaluation cognitive adaptative}
+Le module \texttt{src/modules/abilities/abilities\_service.py} produit un score normalis\'e en pourcentage et une confiance bas\'ee sur :
+\begin{itemize}
+    \item consistance des temps de r\'eponse (variance),
+    \item incertitude d'aptitude (si disponible dans les r\'esultats adaptatifs).
+\end{itemize}
+Une forme compacte (id\'ee) est :
+\begin{equation}
+C_A = \min\left(1.0,\, 0.7 + \Delta_{\text{temps\_variance}} + (1 - \sigma_{\text{incertitude}})\right)
+\end{equation}
+
+\subsubsection*{Justification de recherche}
+Les \textbf{tests adaptatifs} sont une approche reconnue en psychom\'etrie : l'algorithme ajuste la difficult\'e au niveau estim\'e pour am\'eliorer l'efficacit\'e de mesure. En absence d'une calibration IRT compl\`ete, la plateforme utilise des \textbf{proxys de fiabilit\'e} (stabilit\'e des temps de r\'eponse, incertitude) afin de produire une confiance utile \`a l'interpr\'etation.
+
+ Une alternative plus \og th\'eorique \fg{} serait un mod\`ele IRT complet (2PL/3PL), mais il exige une calibration sur un volume de r\'eponses plus important (cohorte plus large) et une maintenance psychom\'etrique continue. Le choix actuel est un compromis orient\'e \textbf{d\'eploiement pilote} et \textbf{validit\'e pragmatique}.
+
+\subsubsection*{R\'esultats attendus}
+\begin{itemize}
+    \item un score Abilities en pourcentage (0--100) facilement interpr\'etable,
+    \item une confiance plus \`elev\'ee lorsque les r\'eponses sont coh\'erentes et l'incertitude faible,
+    \item des sous-scores (domaines cognitifs) pour guider la rem\'ediation.
+\end{itemize}
+
+\subsubsection*{Limites}
+Les temps de r\'eponse d\'ependent aussi du contexte (fatigue, appareil, environnement) et ne mesurent pas uniquement la capacit\'e. Une calibration IRT (2PL/3PL) renforcerait la comparabilit\'e inter-cohortes.
+
+\begin{figure}[H]
+    \centering
+    \input{./kash-diagram-abilities-pipeline.tikz}
+    \caption{Pipeline du module Abilities : quiz adaptatif, collecte des r\'eponses, scoring et confiance.}
+    \label{fig:abilities_pipeline}
+\end{figure}
+
+\subsection{Module Skills (S) : analyse code + agr\'egation pond\'er\'ee}
+Le module \texttt{src/modules/skills/skills\_service.py} agr\`ege des composantes : qualit\'e du code, proficiency, diversit\'e, collaboration, complexit\'e et activit\'e.
+\begin{equation}
+\text{raw\_score}_S = 0.25\,Q_{\text{code}} + 0.25\,P_{\text{tech}} + 0.15\,D_{\text{tech}} + 0.15\,S_{\text{collab}} + 0.10\,C_{\text{comp}} + 0.10\,A_{\text{activity}}
+\end{equation}
+Cas \og upload \fg{} (sans donn\'ees GitHub), repli :
+\begin{equation}
+\text{raw\_score}_{S_{\text{direct}}} = 0.30\,Q_{\text{code}} + 0.30\,P_{\text{tech}} + 0.20\,D_{\text{tech}} + 0.20\,B_{\text{practices}}
+\end{equation}
+
+\subsubsection*{Justification de recherche}
+L'\'evaluation des comp\'etences techniques \`a partir du code combine des signaux d'ing\'enierie logicielle (qualit\'e, complexit\'e, activit\'e, collaboration). Ce choix offre un compromis entre \textbf{interpr\'etabilit\'e} (d\'ecomposition en composantes) et \textbf{scalabilit\'e} (analyse automatisable), adapt\'e \`a une cohorte pilote.
+
+ Par rapport \`a des approches bas\'ees sur des entretiens manuels, des revues expertes, ou des \textit{LLM-based graders}, cette strat\'egie favorise la \textbf{reproductibilit\'e} (m\^emes r\`egles pour tous) et un co\^ut d'\'evaluation faible, au prix d'une couverture incompl\`ete de certaines comp\'etences non observables dans le code (communication, r\^oles informels, travail non versionn\'e).
+
+\subsubsection*{R\'esultats attendus}
+\begin{itemize}
+    \item un score Skills actionnable via ses composantes (qualit\'e, diversit\'e, activit\'e, collaboration),
+    \item une confiance corr\'el\'ee \`a la quantit\'e/qualit\'e des donn\'ees analys\'ees (fichiers, commits, signaux),
+    \item une stabilit\'e accrue lorsque l'historique du projet augmente.
+\end{itemize}
+
+\subsubsection*{Limites}
+Les m\'etriques GitHub peuvent sous-estimer des comp\'etences acquises hors GitHub et favoriser les projets publics. Les signaux d'activit\'e et de collaboration d\'ependent aussi des pratiques d'\'equipe. Une normalisation par taille de projet et des contr\^oles d'attribution r\'eduiront ces biais.
+
+\begin{figure}[H]
+    \centering
+    \input{./kash-diagram-skills-pipeline.tikz}
+    \caption{Pipeline du module Skills : analyse repo/code, extraction de signaux, agr\'egation et confiance.}
+    \label{fig:skills_pipeline}
+\end{figure}
+
+\subsection{Module Intelligence (I) : agr\'egation holistique et explicabilit\'e}
+\texttt{src/modules/intelligence/kash\_scorer.py} agr\`ege K/A/S/Experience via une somme pond\'er\'ee :
+\begin{equation}
+\text{Score Global KASH} = \sum_{d \in \{K,A,S,E\}} w_d\, \text{normalized\_score}_d
+\end{equation}
+Poids par d\'efaut : $w_K = 0.25$, $w_A = 0.25$, $w_S = 0.30$, $w_E = 0.20$ (normalis\'es), avec ajustements par industrie.
+
+\subsubsection*{Composant Experience (E)}
+Le composant E est calcul\'e dans \texttt{KASHScorer.\_score\_experience} en exploitant (selon disponibilit\'e) :
+\begin{itemize}
+    \item un signal direct \texttt{experience\_score} (ex. issu d'entretien), ou
+    \item des signaux structur\'es : ann\'ees d'exp\'erience, projets, leadership, achievements.
+\end{itemize}
+
+\subsubsection*{Explicabilit\'e (SHAP-like)}
+\texttt{src/modules/intelligence/shap\_explainer.py} g\'en\`ere une importance de variables (top facteurs) pour expliquer la contribution au score.
+
+\subsubsection*{Mod\`eles pr\'edictifs optionnels (scikit-learn)}
+Le service \texttt{src/modules/intelligence/predictive\_model/services/ml\_service.py} permet d'entra\^iner des mod\`eles (RandomForest, GradientBoosting, LogisticRegression, SVM, MLP) en classification/r\'egression, avec \`evaluation (Accuracy/Precision/Recall/F1/AUC ou MSE/R2) et importance de variables.
+
+\subsubsection*{Justification de recherche}
+L'agr\'egation pond\'er\'ee (K/A/S/E) est un sch\'ema classique de d\'ecision multi-crit\`eres : il est transparent (poids explicites), facile \`a adapter (industrie) et stable pour un MVP. L'explicabilit\'e (SHAP-like) r\'epond aux exigences de transparence : identifier les facteurs influents et produire des recommandations tra\c{c}ables.
+
+ Un mod\`ele pr\'edictif unique \og bout-en-bout \fg{} (apprenant directement le score global) pourrait \^etre envisag\'e, mais il requiert une variable cible valid\'ee (ground truth) et un historique de donn\'ees suffisant. Le choix actuel sert de \textbf{baseline scientifique} : explicite, audit\'able, et facilement calibrable ensuite.
+
+\subsubsection*{R\'esultats attendus}
+\begin{itemize}
+    \item un score global coh\'erent et une cat\'egorisation (career stage) utile pour le pilotage,
+    \item des forces/faiblesses et recommandations actionnables,
+    \item une explication des contributions principales pour renforcer la confiance.
+\end{itemize}
+
+\subsubsection*{Limites}
+Des poids fixes peuvent moins bien refl\'eter des profils atypiques. Une calibration sur donn\'ees r\'eelles (apprentissage des poids, validation, contr\^ole du biais de cohorte) am\'eliorerait la g\'en\'eralisation si le volume de donn\'ees le permet.
+
+\begin{figure}[H]
+    \centering
+    \input{./kash-diagram-intelligence-pipeline.tikz}
+    \caption{Pipeline Intelligence : agr\'egation KASH, stage carri\`ere, recommandations, explications.}
+    \label{fig:intelligence_pipeline}
+\end{figure}
+
+\sectionrule
+
+% ==========================================
+% SECTION 4
+% ==========================================
+\section{Validation Exp\'erimentale et Analyse de Cas (Cohorte Pilote)}
+Cette section documente des observations issues de l'interface et des \`etats de donn\'ees.
+
+\subsection{Parcours utilisateur unifi\'e (KASH Journey)}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.45\textwidth]{\detokenize{guide pour les utilsateur.PNG}}
+    \caption{Dialogue d'accueil et d'introduction.}
+    \label{fig:user_guide}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{\detokenize{les option du etudien qu il a.PNG}}
+    \caption{Options du tableau de bord apprenant (Journey / Deep Dive).}
+    \label{fig:student_options}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.55\textwidth]{\detokenize{Test KASH .png}}
+    \caption{Entonnoir d'\'evaluation KASH Journey et sandbox code.}
+    \label{fig:kash_test_view}
+\end{figure}
+
+\subsection{Analyse comparative en base (cas Rida vs profils \`a z\'ero)}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{\detokenize{detai du chaue utilisateur.PNG}}
+    \caption{Vue administrateur : d\'etails utilisateurs et historique de calculs.}
+    \label{fig:admin_detail_view}
+\end{figure}
+
+\begin{enumerate}[label=\alph*)]
+    \item \textbf{Candidat Rida (\texttt{rida@test.com})} : profil asym\'etrique (S \`a 100/100, A \`a 60/100, K \`a 20/100) menant \`a un score global pond\'er\'e d'environ 60/100. Le premier calcul peut \^etre plus bas (ex. 24/100) si l'historique est incomplet.
+
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=0.8\textwidth]{\detokenize{exemple du resulta sur 100.PNG}}
+        \caption{Exemple de visualisation d'un score initial (Explorer Stage).}
+        \label{fig:explorer_stage_view}
+    \end{figure}
+
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=0.8\textwidth]{\detokenize{des recomnadation donne.PNG}}
+        \caption{Breakdown des dimensions cognitives et recommandations.}
+        \label{fig:cognitive_subscores}
+    \end{figure}
+
+    \item \textbf{Profils Salwa / Dev Student} : en l'absence de donn\'ees dans \texttt{UserAssessment}, l'interface peut afficher un \`etat neutre (0/100) sans erreur.
+\end{enumerate}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.45\textwidth]{\detokenize{page home utilisateur .png}}
+    \caption{Vue d'initialisation d'un profil sans donn\'ees.}
+    \label{fig:user_home_empty}
+\end{figure}
+
+\sectionrule
+
+% ==========================================
+% SECTION 5
+% ==========================================
+\section{Pistes de Recherche et Am\'eliorations \`a Moyen Terme}
+\begin{enumerate}[label=\arabic*.]
+    \item \textbf{Embeddings (SBERT) + index vectoriel (FAISS)} : remplacer TF-IDF/KNN par une similarit\'e s\'emantique dense.
+    \item \textbf{Calibration psychom\'etrique IRT} : remplacer des heuristiques par un mod\`ele IRT si la calibration et un dataset suffisant sont disponibles.
+    \item \textbf{SHAP r\'eel sur mod\`ele entra\^in\'e} : expliquer un estimateur scikit-learn (ou LightGBM) via SHAP pour des attributions plus fid\`eles.
+\end{enumerate}
+
+\section{R\'ef\'erences (rep\`eres scientifiques)}
+\begin{thebibliography}{12}
+\bibitem{salton1988}
+G. Salton and C. Buckley. \textit{Term-weighting approaches in automatic text retrieval}. Information Processing \& Management, 1988.
+
+\bibitem{sparckjones1972}
+K. Sp\"arck Jones. \textit{A statistical interpretation of term specificity and its application in retrieval}. Journal of Documentation, 28(1), 1972.
+
+\bibitem{cover1967}
+T. Cover and P. Hart. \textit{Nearest neighbor pattern classification}. IEEE Transactions on Information Theory, 1967.
+
+\bibitem{reimers2019}
+N. Reimers and I. Gurevych. \textit{Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks}. EMNLP-IJCNLP, 2019.
+
+\bibitem{johnson2017}
+J. Johnson, M. Douze, and H. J\'egou. \textit{Billion-scale similarity search with GPUs}. arXiv:1702.08734, 2017.
+
+\bibitem{rasch1960}
+G. Rasch. \textit{Probabilistic Models for Some Intelligence and Attainment Tests}. 1960.
+
+\bibitem{mccabe1976}
+T. McCabe. \textit{A Complexity Measure}. IEEE Transactions on Software Engineering, 1976.
+
+\bibitem{lundberg2017}
+S. Lundberg and S.-I. Lee. \textit{A Unified Approach to Interpreting Model Predictions}. NeurIPS, 2017.
+\end{thebibliography}
+
+\end{document}

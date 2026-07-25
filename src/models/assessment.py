@@ -20,7 +20,7 @@ class UserAssessment(Base):
     
     # Assessment metadata
     assessment_type = Column(
-        ENUM('knowledge', 'abilities', 'skills', 'intelligence', name='assessment_type_enum'),
+        ENUM('knowledge', 'abilities', 'skills', 'intelligence', 'habits', name='assessment_type_enum'),
         nullable=False
     )
     assessment_name = Column(String(200), nullable=False)
@@ -55,6 +55,7 @@ class UserAssessment(Base):
     abilities_assessments = relationship("AbilitiesAssessment", back_populates="assessment", cascade="all, delete-orphan")
     skills_assessments = relationship("SkillsAssessment", back_populates="assessment", cascade="all, delete-orphan")
     intelligence_assessments = relationship("IntelligenceAssessment", back_populates="assessment", cascade="all, delete-orphan")
+    habits_assessments = relationship("HabitsAssessment", back_populates="assessment", cascade="all, delete-orphan")
     
     def __repr__(self):
         return f"<UserAssessment(id={self.id}, type={self.assessment_type}, status={self.status})>"
@@ -194,3 +195,38 @@ class IntelligenceAssessment(Base):
     
     def __repr__(self):
         return f"<IntelligenceAssessment(id={self.id}, model_version={self.model_version})>"
+
+
+class HabitsAssessment(Base):
+    """Habits domain specific assessment data (multimodal interview analysis)."""
+
+    __tablename__ = "habits_assessments"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    assessment_id = Column(UUID(as_uuid=True), ForeignKey("user_assessments.id"), nullable=False)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+
+    # Core result fields
+    composite_score = Column(Float, nullable=False)
+    score_breakdown = Column(JSON, nullable=False)  # clarity, relevance, engagement, confidence
+    strengths = Column(JSON, nullable=True)  # List[str]
+    improvement_areas = Column(JSON, nullable=True)  # List[str]
+    behavioral_profile = Column(JSON, nullable=False)  # BehavioralProfile as JSON
+    modalities_used = Column(JSON, nullable=False)  # e.g. ["text", "voice", "face"]
+
+    # Optional fine-grained scores for later analytics
+    clarity_score = Column(Float, nullable=True)
+    relevance_score = Column(Float, nullable=True)
+    engagement_score = Column(Float, nullable=True)
+    confidence_score = Column(Float, nullable=True)
+
+    # Processing metadata
+    processing_time_ms = Column(Float, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=True)
+
+    # Relationships
+    assessment = relationship("UserAssessment", back_populates="habits_assessments")
+
+    def __repr__(self):
+        return f"<HabitsAssessment(id={self.id}, assessment_id={self.assessment_id}, composite_score={self.composite_score})>"

@@ -1,0 +1,18 @@
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw, rounded corners, align=center, minimum height=8mm, inner sep=2.5mm},
+  arrow/.style={-Latex, thick}
+]
+
+\node[box, fill=kashsecondary!10] (cv) {CV Text};
+\node[box, fill=kashprimary!10, right=10mm of cv] (nlp) {Pr\'e-traitement\\+ NLP extraction};
+\node[box, fill=kashprimary!10, right=10mm of nlp] (tax) {Enrichissement\\ESCO/O*NET};
+\node[box, fill=kashprimary!10, right=10mm of tax] (sim) {TF-IDF\\+ KNN (cosine)};
+\node[box, fill=kashsuccess!10, right=10mm of sim] (score) {Scoring\\+ confiance};
+
+\draw[arrow] (cv) -- (nlp);
+\draw[arrow] (nlp) -- (tax);
+\draw[arrow] (tax) -- (sim);
+\draw[arrow] (sim) -- (score);
+
+\end{tikzpicture}

@@ -52,9 +52,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(91,129,255,0.25),_rgba(4,8,20,0.9))]">
-      <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-white/5 p-8 space-y-6 backdrop-blur">
-        <div className="text-center space-y-1">
-          <h1 className="text-2xl font-bold text-white">KASH Platform</h1>
+      <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-white/5 p-8 space-y-6 backdrop-blur-xl shadow-panel animate-fade-in">
+        <div className="text-center space-y-2">
+          <h1 className="text-2xl font-bold gradient-text">KASH Platform</h1>
           <p className="text-sm text-white/60">Connectez-vous pour accéder à votre espace</p>
         </div>
 
@@ -86,7 +86,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-indigo-500 py-3 text-sm font-semibold text-white hover:bg-indigo-400 transition disabled:opacity-60"
+            className="w-full rounded-xl bg-gradient-to-r from-indigo-500 via-violet-500 to-aurora py-3 text-sm font-semibold text-white hover:opacity-90 transition disabled:opacity-60 shadow-lg"
           >
             {loading ? 'Connexion...' : 'Se connecter'}
           </button>
@@ -94,11 +94,11 @@ export default function LoginPage() {
 
         <div className="border-t border-white/10 pt-4">
           <p className="text-xs text-white/40 text-center">Mode développement — pas de Firebase requis</p>
-          <div className="mt-2 flex flex-col gap-1">
-            <button onClick={() => setEmail('dev.student@kash.local')} className="text-xs text-indigo-300 hover:text-indigo-200 text-center">
+          <div className="mt-3 flex flex-col gap-2">
+            <button onClick={() => setEmail('dev.student@kash.local')} className="rounded-xl border border-aurora/30 bg-aurora/5 px-3 py-2 text-xs text-aurora hover:bg-aurora/10 transition text-center">
               → Candidat test : dev.student@kash.local
             </button>
-            <button onClick={() => setEmail('admin@kash.local')} className="text-xs text-amber-300 hover:text-amber-200 text-center">
+            <button onClick={() => setEmail('admin@kash.local')} className="rounded-xl border border-corail/30 bg-corail/5 px-3 py-2 text-xs text-corail hover:bg-corail/10 transition text-center">
               → Admin test : admin@kash.local
             </button>
           </div>
