@@ -14,10 +14,20 @@ logger = get_logger(__name__)
 
 
 class ScoreComponent(str, Enum):
-    """KASH scoring components."""
+    """KASH scoring components.
+    
+    Aligned with the KASH framework:
+    K = Knowledge (CV analysis, theoretical knowledge)
+    A = Attitude (behavioral interview, mindset, stress management)
+    S = Skills (practical challenges, domain-adaptive)
+    H = Habits (psychometric questionnaire, discipline, routines)
+    """
     KNOWLEDGE = "knowledge"
-    ABILITIES = "abilities" 
+    ATTITUDE = "attitude"
     SKILLS = "skills"
+    HABITS = "habits"
+    # Legacy compatibility
+    ABILITIES = "abilities"
     EXPERIENCE = "experience"
 
 
@@ -39,26 +49,33 @@ class CareerReadinessScore:
     """Career readiness assessment score."""
     overall_score: float
     knowledge_score: float
-    abilities_score: float
+    attitude_score: float
     skills_score: float
-    experience_score: float
-    confidence: float
-    strengths: List[str]
-    improvement_areas: List[str]
-    career_stage: str
-    recommendations: List[str]
+    habits_score: float
+    # Legacy fields (mapped from new ones for backward compatibility)
+    abilities_score: float = 0.0
+    experience_score: float = 0.0
+    confidence: float = 0.0
+    strengths: List[str] = None
+    improvement_areas: List[str] = None
+    career_stage: str = ""
+    recommendations: List[str] = None
 
 
 class KASHScorer:
     """Advanced KASH scoring engine with weighted components and explainability."""
     
     def __init__(self):
-        # KASH domain weights (configurable based on career goals)
+        # KASH domain weights — aligned with KASH framework
+        # K=Knowledge, A=Attitude, S=Skills, H=Habits
         self.default_weights = {
             ScoreComponent.KNOWLEDGE: 0.25,
-            ScoreComponent.ABILITIES: 0.25,
+            ScoreComponent.ATTITUDE: 0.25,
             ScoreComponent.SKILLS: 0.30,
-            ScoreComponent.EXPERIENCE: 0.20
+            ScoreComponent.HABITS: 0.20,
+            # Legacy (kept for backward compatibility)
+            ScoreComponent.ABILITIES: 0.25,
+            ScoreComponent.EXPERIENCE: 0.20,
         }
         
         # Career stage thresholds
@@ -75,35 +92,62 @@ class KASHScorer:
             'technology': {
                 ScoreComponent.SKILLS: 0.35,
                 ScoreComponent.KNOWLEDGE: 0.25,
-                ScoreComponent.ABILITIES: 0.20,
-                ScoreComponent.EXPERIENCE: 0.20
+                ScoreComponent.ATTITUDE: 0.20,
+                ScoreComponent.HABITS: 0.20,
             },
             'healthcare': {
                 ScoreComponent.KNOWLEDGE: 0.35,
-                ScoreComponent.ABILITIES: 0.25,
+                ScoreComponent.ATTITUDE: 0.25,
                 ScoreComponent.SKILLS: 0.20,
-                ScoreComponent.EXPERIENCE: 0.20
+                ScoreComponent.HABITS: 0.20,
             },
             'business': {
-                ScoreComponent.ABILITIES: 0.30,
-                ScoreComponent.EXPERIENCE: 0.25,
+                ScoreComponent.ATTITUDE: 0.30,
+                ScoreComponent.HABITS: 0.25,
                 ScoreComponent.KNOWLEDGE: 0.25,
-                ScoreComponent.SKILLS: 0.20
+                ScoreComponent.SKILLS: 0.20,
             },
             'education': {
                 ScoreComponent.KNOWLEDGE: 0.30,
-                ScoreComponent.ABILITIES: 0.30,
+                ScoreComponent.ATTITUDE: 0.30,
                 ScoreComponent.SKILLS: 0.20,
-                ScoreComponent.EXPERIENCE: 0.20
-            }
+                ScoreComponent.HABITS: 0.20,
+            },
+            'electrical': {
+                ScoreComponent.SKILLS: 0.35,
+                ScoreComponent.KNOWLEDGE: 0.25,
+                ScoreComponent.ATTITUDE: 0.20,
+                ScoreComponent.HABITS: 0.20,
+            },
+            'mechanical': {
+                ScoreComponent.SKILLS: 0.35,
+                ScoreComponent.KNOWLEDGE: 0.25,
+                ScoreComponent.ATTITUDE: 0.20,
+                ScoreComponent.HABITS: 0.20,
+            },
+            'quality': {
+                ScoreComponent.HABITS: 0.30,
+                ScoreComponent.KNOWLEDGE: 0.25,
+                ScoreComponent.SKILLS: 0.25,
+                ScoreComponent.ATTITUDE: 0.20,
+            },
+            'logistics': {
+                ScoreComponent.ATTITUDE: 0.30,
+                ScoreComponent.SKILLS: 0.25,
+                ScoreComponent.KNOWLEDGE: 0.25,
+                ScoreComponent.HABITS: 0.20,
+            },
         }
         
         # Component scoring models
         self.scoring_models = {
             ScoreComponent.KNOWLEDGE: self._score_knowledge,
-            ScoreComponent.ABILITIES: self._score_abilities,
+            ScoreComponent.ATTITUDE: self._score_attitude,
             ScoreComponent.SKILLS: self._score_skills,
-            ScoreComponent.EXPERIENCE: self._score_experience
+            ScoreComponent.HABITS: self._score_habits,
+            # Legacy
+            ScoreComponent.ABILITIES: self._score_abilities,
+            ScoreComponent.EXPERIENCE: self._score_experience,
         }
     
     def calculate_comprehensive_score(
@@ -162,8 +206,11 @@ class KASHScorer:
             return CareerReadinessScore(
                 overall_score=overall_score,
                 knowledge_score=domain_scores[ScoreComponent.KNOWLEDGE].normalized_score,
-                abilities_score=domain_scores[ScoreComponent.ABILITIES].normalized_score,
+                attitude_score=domain_scores[ScoreComponent.ATTITUDE].normalized_score,
                 skills_score=domain_scores[ScoreComponent.SKILLS].normalized_score,
+                habits_score=domain_scores[ScoreComponent.HABITS].normalized_score,
+                # Legacy mapping
+                abilities_score=domain_scores[ScoreComponent.ABILITIES].normalized_score,
                 experience_score=domain_scores[ScoreComponent.EXPERIENCE].normalized_score,
                 confidence=overall_confidence,
                 strengths=strengths,
@@ -414,6 +461,180 @@ class KASHScorer:
             last_updated=datetime.now()
         )
     
+    def _score_attitude(
+        self,
+        assessments: List[Dict[str, Any]],
+        weight: float
+    ) -> KASHScore:
+        """Score attitude domain from behavioral interview assessments.
+        
+        Extracts stress resistance, emotional regulation, adaptability,
+        and communication style from attitude interview results.
+        """
+        if not assessments:
+            return self._empty_score(ScoreComponent.ATTITUDE, weight)
+
+        attitude_scores = []
+        stress_scores = []
+        adaptability_scores = []
+        communication_styles = []
+
+        for assessment in assessments:
+            result_data = assessment.get('result_data', {})
+            
+            if 'overall_attitude_score' in result_data:
+                attitude_scores.append(result_data['overall_attitude_score'])
+            elif 'overall_attitude_score' in assessment:
+                attitude_scores.append(assessment['overall_attitude_score'])
+
+            if 'stress_resistance' in result_data:
+                stress_scores.append(result_data['stress_resistance'])
+            elif 'stress_resistance' in assessment:
+                stress_scores.append(assessment['stress_resistance'])
+
+            if 'adaptability' in result_data:
+                adaptability_scores.append(result_data['adaptability'])
+            elif 'adaptability' in assessment:
+                adaptability_scores.append(assessment['adaptability'])
+
+            style = result_data.get('communication_style') or assessment.get('communication_style')
+            if style:
+                communication_styles.append(style)
+
+        avg_attitude = np.mean(attitude_scores) if attitude_scores else 0
+        avg_stress = np.mean(stress_scores) if stress_scores else 50
+        avg_adaptability = np.mean(adaptability_scores) if adaptability_scores else 50
+
+        attitude_score = (
+            avg_attitude * 0.5 +
+            avg_stress * 0.25 +
+            avg_adaptability * 0.25
+        )
+
+        confidence = min(
+            0.3 + (len(assessments) * 0.2) + (len(attitude_scores) * 0.15),
+            1.0
+        )
+
+        breakdown = {
+            'overall_attitude': avg_attitude,
+            'stress_resistance': avg_stress,
+            'adaptability': avg_adaptability,
+            'communication_styles': list(set(communication_styles)) if communication_styles else [],
+            'assessment_count': len(assessments),
+        }
+
+        evidence = [
+            f"Analyzed {len(attitude_scores)} attitude assessments",
+            f"Average stress resistance: {avg_stress:.1f}/100",
+            f"Average adaptability: {avg_adaptability:.1f}/100",
+        ]
+
+        return KASHScore(
+            domain=ScoreComponent.ATTITUDE,
+            raw_score=attitude_score,
+            normalized_score=min(attitude_score, 100),
+            confidence=confidence,
+            weight=weight,
+            breakdown=breakdown,
+            evidence=evidence,
+            last_updated=datetime.now()
+        )
+
+    def _score_habits(
+        self,
+        assessments: List[Dict[str, Any]],
+        weight: float
+    ) -> KASHScore:
+        """Score habits domain from psychometric questionnaire assessments.
+        
+        Extracts discipline level, routine strength, perseverance,
+        and Big Five dimension scores from psychometric results.
+        """
+        if not assessments:
+            return self._empty_score(ScoreComponent.HABITS, weight)
+
+        habits_scores = []
+        discipline_levels = []
+        routine_scores = []
+        perseverance_scores = []
+        dimension_scores_agg = {}
+
+        for assessment in assessments:
+            result_data = assessment.get('result_data', {})
+            
+            if 'overall_habits_score' in result_data:
+                habits_scores.append(result_data['overall_habits_score'])
+            elif 'overall_habits_score' in assessment:
+                habits_scores.append(assessment['overall_habits_score'])
+
+            if 'routine_strength' in result_data:
+                routine_scores.append(result_data['routine_strength'])
+            elif 'routine_strength' in assessment:
+                routine_scores.append(assessment['routine_strength'])
+
+            if 'perseverance_score' in result_data:
+                perseverance_scores.append(result_data['perseverance_score'])
+            elif 'perseverance_score' in assessment:
+                perseverance_scores.append(assessment['perseverance_score'])
+
+            level = result_data.get('discipline_level') or assessment.get('discipline_level')
+            if level:
+                discipline_levels.append(level)
+
+            dims = result_data.get('dimension_scores') or assessment.get('dimension_scores')
+            if dims and isinstance(dims, dict):
+                for dim, score in dims.items():
+                    if dim not in dimension_scores_agg:
+                        dimension_scores_agg[dim] = []
+                    dimension_scores_agg[dim].append(score)
+
+        avg_habits = np.mean(habits_scores) if habits_scores else 0
+        avg_routine = np.mean(routine_scores) if routine_scores else 50
+        avg_perseverance = np.mean(perseverance_scores) if perseverance_scores else 50
+
+        habits_score = (
+            avg_habits * 0.5 +
+            avg_routine * 0.25 +
+            avg_perseverance * 0.25
+        )
+
+        confidence = min(
+            0.3 + (len(assessments) * 0.2) + (len(habits_scores) * 0.15),
+            1.0
+        )
+
+        dimension_averages = {
+            dim: np.mean(scores) for dim, scores in dimension_scores_agg.items()
+        } if dimension_scores_agg else {}
+
+        breakdown = {
+            'overall_habits': avg_habits,
+            'routine_strength': avg_routine,
+            'perseverance': avg_perseverance,
+            'discipline_levels': list(set(discipline_levels)) if discipline_levels else [],
+            'dimension_averages': dimension_averages,
+            'assessment_count': len(assessments),
+        }
+
+        evidence = [
+            f"Analyzed {len(habits_scores)} psychometric assessments",
+            f"Average routine strength: {avg_routine:.1f}/100",
+            f"Average perseverance: {avg_perseverance:.1f}/100",
+            f"Discipline levels: {', '.join(set(discipline_levels)) if discipline_levels else 'unknown'}",
+        ]
+
+        return KASHScore(
+            domain=ScoreComponent.HABITS,
+            raw_score=habits_score,
+            normalized_score=min(habits_score, 100),
+            confidence=confidence,
+            weight=weight,
+            breakdown=breakdown,
+            evidence=evidence,
+            last_updated=datetime.now()
+        )
+
     def _score_skills(
         self, 
         assessments: List[Dict[str, Any]], 

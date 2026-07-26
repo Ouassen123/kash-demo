@@ -48,3 +48,8 @@ models/*.bin
 
 # Templates (generated)
 templates/
+
+# Temp dev output files
+frontend/build_output.txt
+frontend/dev_*.txt
+frontend/dev_output.txt

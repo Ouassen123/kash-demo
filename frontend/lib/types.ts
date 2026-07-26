@@ -180,14 +180,28 @@ export interface HabitsInterviewAnalysisResponse {
   created_at: string;
 }
 
+export interface KnowledgeScores {
+  normalized_score?: number;
+  overall?: number;
+  raw_score?: number;
+  confidence_score?: number;
+  predicted_filiere?: string;
+  filiere_probabilities?: Array<{ filiere: string; probability: number }>;
+  filiere_confidence?: string;
+  detected_tech_domains?: Record<string, number>;
+  detected_skills_ml?: string[];
+  domain_breakdown?: Record<string, number>;
+  [key: string]: unknown;
+}
+
 export interface KnowledgeUploadAssessmentResponse {
   assessment_id: string;
   status: string;
   confidence_score?: number;
   normalized_score?: number | null;
   raw_score?: number | null;
-  knowledge_scores?: Record<string, number>;
-  skills?: string[];
+  knowledge_scores?: KnowledgeScores;
+  skills?: Array<string | { name: string }>;
   total_experience_years?: number;
 }
 

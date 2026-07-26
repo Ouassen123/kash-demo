@@ -9,9 +9,8 @@ import {
   startAbilitiesAssessment,
   submitAbilitiesAnswer,
   uploadKnowledgeCv,
-  fetchCodingChallenges,
-  submitCodingChallenge,
   generateIntelligenceAssessment,
+  API_BASE_URL,
 } from '@/lib/api';
 import type {
   AbilitiesAssessmentQuestion,
@@ -146,6 +145,14 @@ export function KashJourneyRunner() {
   const [quizLoading, setQuizLoading] = useState(false);
   const [quizError, setQuizError] = useState<string | null>(null);
   const [quizScore, setQuizScore] = useState<number | null>(null);
+
+  // ── Psychometric (Habits) questionnaire state ─────────────────
+  const [psyQuestions, setPsyQuestions] = useState<any[]>([]);
+  const [psyAnswers, setPsyAnswers] = useState<Record<string, number>>({});
+  const [psyStarted, setPsyStarted] = useState(false);
+  const [psySubmitting, setPsySubmitting] = useState(false);
+  const [psyResult, setPsyResult] = useState<any | null>(null);
+  const [psyError, setPsyError] = useState<string | null>(null);
   const knowledgeSectionRef = useRef<HTMLElement | null>(null);
   const skillsSectionRef = useRef<HTMLElement | null>(null);
 
@@ -190,7 +197,20 @@ export function KashJourneyRunner() {
       if (res.quiz_completed) {
         setQuizQuestion(null);
         setQuizScore(res.results?.percentage ?? null);
-        setAbilitiesDone(true);
+        // Don't set abilitiesDone yet — load psychometric questions next
+        try {
+          const psyRes = await fetch(`${API_BASE_URL}/habits/psychometric/questions`);
+          if (psyRes.ok) {
+            const questions = await psyRes.json();
+            setPsyQuestions(questions);
+            setPsyStarted(true);
+          } else {
+            // If psychometric fails, just complete abilities
+            setAbilitiesDone(true);
+          }
+        } catch {
+          setAbilitiesDone(true);
+        }
       } else {
         setQuizQuestion(res.next_question ?? null);
         setQuizIndex(res.question_number + 1);
@@ -202,10 +222,41 @@ export function KashJourneyRunner() {
     }
   }
 
+  async function handleSubmitPsychometric(e: FormEvent) {
+    e.preventDefault();
+    const answered = Object.keys(psyAnswers).length;
+    if (answered < 10) {
+      setPsyError(`Il faut répondre à au moins 10 questions (${answered}/${psyQuestions.length} répondues)`);
+      return;
+    }
+    setPsySubmitting(true);
+    setPsyError(null);
+    try {
+      const responses = Object.entries(psyAnswers).map(([qid, answer]) => ({ question_id: qid, answer }));
+      const res = await fetch(`${API_BASE_URL}/habits/psychometric/submit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ responses }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setPsyResult(data);
+        setAbilitiesDone(true);
+      } else {
+        setPsyError(data.detail ?? 'Erreur soumission psychometric');
+      }
+    } catch (err) {
+      setPsyError(err instanceof Error ? err.message : 'Erreur soumission psychometric');
+    } finally {
+      setPsySubmitting(false);
+    }
+  }
+
   const [knowledgeAssessmentId, setKnowledgeAssessmentId] = useState<string | null>(null);
   const [knowledgeScore, setKnowledgeScore] = useState<number | null>(null);
   const [knowledgeSkills, setKnowledgeSkills] = useState<string[]>([]);
-  const [skillsAssessmentId, setSkillsAssessmentId] = useState<string | null>(null);
+  const [knowledgeFiliere, setKnowledgeFiliere] = useState<string | null>(null);
+  const [knowledgeTechDomains, setKnowledgeTechDomains] = useState<Record<string, number>>({});
 
   const [cvFile, setCvFile] = useState<File | null>(null);
 
@@ -221,19 +272,21 @@ export function KashJourneyRunner() {
   const [currentInterviewIndex, setCurrentInterviewIndex] = useState(0);
   const [interviewAnalysis, setInterviewAnalysis] = useState<HabitsInterviewAnalysisResponse | null>(null);
   const [interviewAnalysisLoading, setInterviewAnalysisLoading] = useState(false);
-  const [interviewCaptureComplete, setInterviewCaptureComplete] = useState(false);
+
+  // Continuous recording: single recorder for all questions
+  const [continuousAudioSegments, setContinuousAudioSegments] = useState<string[]>([]);
+  const [continuousVideoFrames, setContinuousVideoFrames] = useState<string[]>([]);
+  const [isRecordingActive, setIsRecordingActive] = useState(false);
 
   const [loadingStep, setLoadingStep] = useState<'knowledge' | 'skills' | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // ── Coding game state (Skills step) ─────────────────────────
-  const [challengesLoading, setChallengesLoading] = useState(false);
-  const [challenges, setChallenges] = useState<any[]>([]);
-  const [challengeId, setChallengeId] = useState<string>('balanced-brackets-v1');
-  const [language, setLanguage] = useState<'python' | 'java' | 'cpp'>('python');
-  const [code, setCode] = useState<string>('');
-  const [challengeResult, setChallengeResult] = useState<any | null>(null);
-  const [submittingChallenge, setSubmittingChallenge] = useState(false);
+  // ── Practical challenges state (Skills step — domain-adaptive) ────
+  const [practicalChallenges, setPracticalChallenges] = useState<any[]>([]);
+  const [selectedPracticalChallenge, setSelectedPracticalChallenge] = useState<any | null>(null);
+  const [practicalAnswers, setPracticalAnswers] = useState<Record<string, string>>({});
+  const [practicalResult, setPracticalResult] = useState<any | null>(null);
+  const [practicalLoading, setPracticalLoading] = useState(false);
 
   const [generatingInsights, setGeneratingInsights] = useState(false);
 
@@ -244,8 +297,9 @@ export function KashJourneyRunner() {
 
   const interviewReady = useMemo(() => {
     if (!currentInterviewResponse) return false;
-    return currentInterviewResponse.answer_text.trim().length >= 10 && interviewCaptureComplete;
-  }, [currentInterviewResponse, interviewCaptureComplete]);
+    // Ready if text answer is long enough OR audio was captured
+    return currentInterviewResponse.answer_text.trim().length >= 10 || (currentInterviewResponse.audio_base64 !== null);
+  }, [currentInterviewResponse]);
 
   const updateCurrentInterviewResponse = useCallback((patch: Partial<InterviewQuestionState>) => {
     setInterviewResponses((previous) =>
@@ -261,11 +315,14 @@ export function KashJourneyRunner() {
   }, [currentInterviewIndex]);
 
   const handleInterviewCaptureComplete = useCallback((audioBase64: string, videoFramesBase64: string[]) => {
+    // Accumulate segments for continuous recording
+    setContinuousAudioSegments((prev) => audioBase64 ? [...prev, audioBase64] : prev);
+    setContinuousVideoFrames((prev) => [...prev, ...videoFramesBase64]);
     updateCurrentInterviewResponse({
-      audio_base64: audioBase64,
+      audio_base64: audioBase64 || null,
       video_frames_base64: videoFramesBase64,
     });
-    setInterviewCaptureComplete(true);
+    setIsRecordingActive(false);
   }, [updateCurrentInterviewResponse]);
 
   const submitHabitsInterview = useCallback(async () => {
@@ -277,11 +334,12 @@ export function KashJourneyRunner() {
         question_text: response.question_text,
         answer_text: response.answer_text.trim(),
       }));
-      const audioSegments = interviewResponses.map((response) => response.audio_base64 ?? '').filter(Boolean);
-      const videoFramesBase64 = interviewResponses
-        .flatMap((response) => response.video_frames_base64)
-        .slice(-30);
-      const audio_base64 = await mergeAudioBase64SegmentsToBase64(audioSegments);
+      // Use accumulated audio segments from continuous recording
+      const audioSegments = continuousAudioSegments.filter(Boolean);
+      const videoFramesBase64 = continuousVideoFrames.slice(-30);
+      const audio_base64 = audioSegments.length > 0
+        ? await mergeAudioBase64SegmentsToBase64(audioSegments)
+        : '';
 
       const analysis = await analyzeHabitsInterview({
         answers,
@@ -297,7 +355,7 @@ export function KashJourneyRunner() {
     } finally {
       setInterviewAnalysisLoading(false);
     }
-  }, [interviewResponses]);
+  }, [interviewResponses, continuousAudioSegments, continuousVideoFrames]);
 
   const handleNextInterviewQuestion = useCallback(async () => {
     if (!currentInterviewResponse || !currentInterviewQuestion) return;
@@ -305,41 +363,11 @@ export function KashJourneyRunner() {
 
     if (currentInterviewIndex < interviewQuestions.length - 1) {
       setCurrentInterviewIndex((value) => value + 1);
-      setInterviewCaptureComplete(false);
       return;
     }
 
     await submitHabitsInterview();
   }, [currentInterviewIndex, currentInterviewQuestion, currentInterviewResponse, interviewReady, submitHabitsInterview]);
-
-  useEffect(() => {
-    let mounted = true;
-    const load = async () => {
-      setChallengesLoading(true);
-      try {
-        const list = await fetchCodingChallenges();
-        if (!mounted) return;
-        setChallenges(list as any[]);
-        const defaultChallenge = (list as any[]).find((c) => c.id === 'balanced-brackets-v1') ?? (list as any[])[0];
-        if (defaultChallenge) {
-          setChallengeId(defaultChallenge.id);
-        }
-      } catch (e) {
-        // Don't block journey if challenge list fails.
-      } finally {
-        if (mounted) setChallengesLoading(false);
-      }
-    };
-    load();
-    return () => {
-      mounted = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    setChallengeResult(null);
-  }, [challengeId, language]);
 
   async function handleUploadCv(e: FormEvent) {
     e.preventDefault();
@@ -357,7 +385,64 @@ export function KashJourneyRunner() {
         .map((s: { name?: string } | string) => (typeof s === 'string' ? s : s.name))
         .filter((skill): skill is string => Boolean(skill));
       setKnowledgeSkills(extractedSkills);
+      // Extract filiere and tech domains from knowledge scores
+      setKnowledgeFiliere((ks.predicted_filiere as string) ?? null);
+      setKnowledgeTechDomains((ks.detected_tech_domains as Record<string, number>) ?? {});
       setKnowledgeDone(true);
+
+      // Auto-load practical challenges adapted to detected domain
+      try {
+        const domains = ks.detected_tech_domains ?? {};
+        const topDomain = Object.entries(domains)
+          .sort(([, a]: any, [, b]: any) => b - a)[0];
+
+        let challengeDomain = '';
+        if (topDomain) {
+          const domainKey = topDomain[0];
+          const domainMap: Record<string, string> = {
+            electrical: 'electrical', mechanical: 'mechanical',
+            quality: 'quality', logistics: 'logistics', management: 'management',
+            software: 'management',
+          };
+          challengeDomain = domainMap[domainKey] ?? domainKey;
+        }
+
+        const challengesUrl = challengeDomain
+          ? `${API_BASE_URL}/skills/practical/challenges?domain=${challengeDomain}`
+          : `${API_BASE_URL}/skills/practical/challenges`;
+        const token = typeof window !== 'undefined' ? localStorage.getItem('kash_token') : null;
+        const res = await fetch(challengesUrl, {
+          headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        });
+        if (res.ok) {
+          const challenges = await res.json();
+          setPracticalChallenges(challenges);
+          if (challenges.length > 0) {
+            setSelectedPracticalChallenge(challenges[0]);
+            const init: Record<string, string> = {};
+            challenges[0].test_cases?.forEach((tc: any) => { init[tc.name] = ''; });
+            setPracticalAnswers(init);
+          }
+        }
+      } catch (e) {
+        // Fallback: load all practical challenges
+        try {
+          const token2 = typeof window !== 'undefined' ? localStorage.getItem('kash_token') : null;
+          const res = await fetch(`${API_BASE_URL}/skills/practical/challenges`, {
+            headers: { ...(token2 ? { Authorization: `Bearer ${token2}` } : {}) },
+          });
+          if (res.ok) {
+            const challenges = await res.json();
+            setPracticalChallenges(challenges);
+            if (challenges.length > 0) {
+              setSelectedPracticalChallenge(challenges[0]);
+              const init: Record<string, string> = {};
+              challenges[0].test_cases?.forEach((tc: any) => { init[tc.name] = ''; });
+              setPracticalAnswers(init);
+            }
+          }
+        } catch {}
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Échec upload CV');
     } finally {
@@ -365,25 +450,34 @@ export function KashJourneyRunner() {
     }
   }
 
-  async function handleSubmitCodingChallenge(e: FormEvent) {
+  async function handleSubmitPracticalChallenge(e: FormEvent) {
     e.preventDefault();
-    if (!code.trim()) return;
+    if (!selectedPracticalChallenge) return;
 
-    setSubmittingChallenge(true);
+    setPracticalLoading(true);
     setError(null);
     try {
-      const res = await submitCodingChallenge({ challenge_id: challengeId, language, code });
-      setChallengeResult(res);
-      setSkillsAssessmentId(res.assessment_id);
-      if (res.passed === res.total) {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('kash_token') : null;
+      const res = await fetch(`${API_BASE_URL}/skills/practical/submit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          challenge_id: selectedPracticalChallenge.id,
+          answers: practicalAnswers,
+        }),
+      });
+      const data = await res.json();
+      setPracticalResult(data);
+      if (data.passed === data.total) {
         setSkillsDone(true);
-      } else {
-        setSkillsDone(false);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Échec soumission code');
+      setError(err instanceof Error ? err.message : 'Échec soumission challenge');
     } finally {
-      setSubmittingChallenge(false);
+      setPracticalLoading(false);
     }
   }
 
@@ -407,7 +501,7 @@ export function KashJourneyRunner() {
         {[
           { label: 'Abilities', done: abilitiesDone, icon: Brain, color: 'text-abilities' },
           { label: 'Knowledge', done: knowledgeDone, icon: FileText, color: 'text-knowledge' },
-          { label: 'Entretien', done: interviewDone, icon: Video, color: 'text-habits' },
+          { label: 'Habits', done: interviewDone, icon: Video, color: 'text-habits' },
           { label: 'Skills', done: skillsDone, icon: Code, color: 'text-skills' },
         ].map((step, i) => {
           const Icon = step.icon;
@@ -428,20 +522,30 @@ export function KashJourneyRunner() {
           <div className={`step-dot h-8 w-8 ${abilitiesDone ? 'step-dot-done' : 'step-dot-active'}`}>
             {abilitiesDone ? '✓' : '1'}
           </div>
-          <p className="text-sm font-bold text-white">Abilities test (questions adaptatives)</p>
+          <div>
+            <p className="text-sm font-bold text-white">Abilities + Habits (questions adaptatives)</p>
+            <p className="text-xs text-white/50">Quiz cognitif + questionnaire psychométrique (Big Five, Grit, Self-Discipline)</p>
+          </div>
         </div>
 
         {/* Completed state */}
         {abilitiesDone && (
-          <div className="rounded-xl bg-emerald-500/10 border border-emerald-300/30 p-3 text-sm text-emerald-200">
-            ✓ Quiz terminé — Score&nbsp;: {quizScore !== null ? `${Math.round(quizScore)}%` : 'N/A'}
+          <div className="rounded-xl bg-emerald-500/10 border border-emerald-300/30 p-3 space-y-2">
+            <p className="text-sm text-emerald-200">
+              ✓ Quiz cognitif — Score&nbsp;: {quizScore !== null ? `${Math.round(quizScore)}%` : 'N/A'}
+            </p>
+            {psyResult && (
+              <p className="text-sm text-emerald-200">
+                ✓ Habits psychometric — Score&nbsp;: {Math.round(psyResult.overall_habits_score)}/100 ({psyResult.discipline_level})
+              </p>
+            )}
           </div>
         )}
 
         {/* Not started */}
         {!quizStarted && !abilitiesDone && (
           <>
-            <p className="text-xs text-white/60">5 questions adaptatives sur le domaine Mémoire.</p>
+            <p className="text-xs text-white/60">5 questions cognitives adaptatives + 20 questions psychométriques (Likert 1-5).</p>
             <button
               type="button"
               onClick={handleStartQuiz}
@@ -457,7 +561,7 @@ export function KashJourneyRunner() {
         {/* Quiz in progress */}
         {quizStarted && !abilitiesDone && quizQuestion && (
           <form onSubmit={handleSubmitQuizAnswer} className="space-y-3">
-            <p className="text-xs text-white/50 uppercase tracking-widest">Question {quizIndex} / {quizTotal}</p>
+            <p className="text-xs text-white/50 uppercase tracking-widest">Question cognitive {quizIndex} / {quizTotal}</p>
             <p className="text-sm text-white font-medium">{quizQuestion.question_text}</p>
             <div className="space-y-2">
               {quizQuestion.options.map((opt) => (
@@ -482,6 +586,54 @@ export function KashJourneyRunner() {
             {quizError && <p className="text-xs text-rose-300">{quizError}</p>}
           </form>
         )}
+
+        {/* Psychometric questionnaire (after cognitive quiz) */}
+        {psyStarted && !abilitiesDone && psyQuestions.length > 0 && (
+          <form onSubmit={handleSubmitPsychometric} className="space-y-4">
+            <div className="rounded-xl bg-habits/10 border border-habits/30 p-3">
+              <p className="text-xs font-semibold text-habits">Habits — Questionnaire psychométrique</p>
+              <p className="text-xs text-white/50 mt-1">
+                Évalue ton profil comportemental (Big Five, Grit, Self-Discipline). Réponds honnêtement sur l'échelle 1-5.
+              </p>
+            </div>
+            <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
+              {psyQuestions.map((q, idx) => (
+                <div key={q.id} className="rounded-xl border border-white/10 bg-white/5 p-3 space-y-2">
+                  <p className="text-xs text-white/80">
+                    <span className="text-white/40">Q{idx + 1}.</span> {q.text}
+                  </p>
+                  <p className="text-[10px] text-white/30 uppercase tracking-wider">{q.dimension} · {q.subscale}</p>
+                  <div className="flex gap-1.5 flex-wrap">
+                    {q.scale.labels.map((label: string, i: number) => (
+                      <label key={i} className={`flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] cursor-pointer border transition ${psyAnswers[q.id] === i + 1 ? 'border-habits/50 bg-habits/20 text-habits' : 'border-white/10 bg-white/5 text-white/60 hover:bg-white/10'}`}>
+                        <input
+                          type="radio"
+                          name={`psy-${q.id}`}
+                          value={i + 1}
+                          checked={psyAnswers[q.id] === i + 1}
+                          onChange={() => setPsyAnswers((prev) => ({ ...prev, [q.id]: i + 1 }))}
+                          className="hidden"
+                        />
+                        <span>{i + 1}</span>
+                        <span className="hidden sm:inline">{label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                type="submit"
+                disabled={psySubmitting || Object.keys(psyAnswers).length < 10}
+                className="inline-flex rounded-full bg-white text-midnight px-4 py-2 text-xs font-semibold hover:bg-mist transition disabled:opacity-60"
+              >
+                {psySubmitting ? 'Évaluation...' : `Soumettre (${Object.keys(psyAnswers).length}/${psyQuestions.length})`}
+              </button>
+              {psyError && <p className="text-xs text-rose-300">{psyError}</p>}
+            </div>
+          </form>
+        )}
       </article>
 
       <article ref={knowledgeSectionRef} className={`rounded-2xl border p-5 space-y-3 transition-all ${knowledgeDone ? 'border-emerald-400/20 bg-emerald-500/5' : 'border-knowledge/20 bg-knowledge/5'}`}>
@@ -501,10 +653,28 @@ export function KashJourneyRunner() {
             {loadingStep === 'knowledge' ? 'Upload...' : 'Uploader CV'}
           </button>
           {knowledgeDone && (
-            <div className="rounded-xl bg-emerald-500/10 border border-emerald-300/30 p-3 space-y-2">
+            <div className="rounded-xl bg-emerald-500/10 border border-emerald-300/30 p-3 space-y-2 w-full">
               <p className="text-sm text-emerald-200 font-medium">
                 ✓ CV analysé — Score global : {knowledgeScore !== null ? `${Math.round(knowledgeScore)}/100` : 'N/A'}
               </p>
+              {knowledgeFiliere && (
+                <div className="space-y-1">
+                  <p className="text-xs text-white/60">Filière détectée :</p>
+                  <p className="text-sm text-white font-bold">{knowledgeFiliere}</p>
+                </div>
+              )}
+              {Object.keys(knowledgeTechDomains).length > 0 && (
+                <div className="space-y-1">
+                  <p className="text-xs text-white/60">Domaines techniques :</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {Object.entries(knowledgeTechDomains).map(([domain, hits]) => (
+                      <span key={domain} className="rounded-full bg-knowledge/15 px-2.5 py-0.5 text-xs text-knowledge">
+                        {domain}: {hits}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
               <p className="text-xs text-white/50">
                 Pipeline : Data Cleaning → NLTK Tokenization → Stemming → TF-IDF → KNN Similarity
               </p>
@@ -530,8 +700,8 @@ export function KashJourneyRunner() {
               {interviewDone ? '✓' : '3'}
             </div>
             <div>
-              <p className="text-sm font-bold text-white">Entretien multimodal</p>
-              <p className="text-xs text-white/60">Questions séquentielles avec capture audio/vidéo par question.</p>
+              <p className="text-sm font-bold text-white">Habits — Entretien comportemental</p>
+              <p className="text-xs text-white/60">Enregistrement continu. Réponds par texte, oral, ou les deux. La caméra reste active pendant tout l'entretien.</p>
             </div>
           </div>
           <span className="rounded-full border border-white/20 bg-white/5 px-3 py-1 text-[11px] text-white/70">
@@ -541,58 +711,67 @@ export function KashJourneyRunner() {
 
         {interviewAnalysisLoading && (
           <div className="rounded-2xl border border-cyan-300/30 bg-cyan-500/10 p-4 text-sm text-cyan-100">
-            Analyse multimodale en cours...
+            Analyse multimodale Habits en cours...
           </div>
         )}
 
         {!interviewAnalysisLoading && currentInterviewQuestion && currentInterviewResponse && !interviewDone && (
-          <div className="space-y-4 rounded-2xl border border-white/10 bg-black/20 p-4">
-            <div className="space-y-2">
-              <p className="text-xs uppercase tracking-widest text-white/40">
-                Question {currentInterviewIndex + 1} / {interviewQuestions.length}
-              </p>
-              <p className="text-sm font-medium text-white">{currentInterviewQuestion.question_text}</p>
-            </div>
-
-            <label className="block space-y-2 text-xs text-white/70">
-              <span>Réponse textuelle</span>
-              <textarea
-                value={currentInterviewResponse.answer_text}
-                onChange={(e) => {
-                  updateCurrentInterviewResponse({ answer_text: e.target.value });
-                }}
-                className="w-full rounded-2xl border border-white/15 bg-white/5 p-3 text-sm text-white outline-none transition focus:border-cyan-300/50"
-                rows={4}
-                placeholder="Tape ta réponse ou utilise cette zone comme transcription..."
-              />
-            </label>
-
+          <div className="space-y-4">
+            {/* Continuous recorder — no key change, stays mounted */}
             <WebcamAudioRecorder
-              key={currentInterviewQuestion.id}
-              title={`Capture média — question ${currentInterviewIndex + 1}`}
+              key="continuous-habits-recorder"
+              title="Habits — Enregistrement continu"
               onCaptureComplete={handleInterviewCaptureComplete}
             />
 
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              <div className="text-xs text-white/60">
-                {currentInterviewResponse.audio_base64 ? 'Audio capturé' : 'Audio en attente'}
-                {currentInterviewResponse.video_frames_base64.length > 0 ? ` • ${currentInterviewResponse.video_frames_base64.length} frames` : ''}
+            {continuousAudioSegments.length > 0 && (
+              <div className="rounded-xl bg-habits/10 border border-habits/30 p-2 text-xs text-habits">
+                ✓ {continuousAudioSegments.length} segment(s) audio capturé(s) · {continuousVideoFrames.length} frames vidéo
               </div>
-              <button
-                type="button"
-                onClick={handleNextInterviewQuestion}
-                disabled={!interviewReady}
-                className="inline-flex rounded-full bg-white text-midnight px-4 py-2 text-xs font-semibold hover:bg-mist transition disabled:opacity-60"
-              >
-                {currentInterviewIndex < interviewQuestions.length - 1 ? 'Question suivante' : 'Analyser l’entretien'}
-              </button>
-            </div>
-
-            {!interviewReady && (
-              <p className="text-xs text-yellow-300/80">
-                Renseigne une réponse et termine la capture média pour passer à la question suivante.
-              </p>
             )}
+
+            <div className="space-y-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+              <div className="space-y-2">
+                <p className="text-xs uppercase tracking-widest text-habits/60">
+                  Question {currentInterviewIndex + 1} / {interviewQuestions.length}
+                </p>
+                <p className="text-sm font-medium text-white">{currentInterviewQuestion.question_text}</p>
+              </div>
+
+              <label className="block space-y-2 text-xs text-white/70">
+                <span>Réponse (texte et/ou oral)</span>
+                <textarea
+                  value={currentInterviewResponse.answer_text}
+                  onChange={(e) => {
+                    updateCurrentInterviewResponse({ answer_text: e.target.value });
+                  }}
+                  className="w-full rounded-2xl border border-white/15 bg-white/5 p-3 text-sm text-white outline-none transition focus:border-habits/50"
+                  rows={4}
+                  placeholder="Tape ta réponse ici, ou réponds oralement avec le recorder ci-dessus, ou les deux..."
+                />
+              </label>
+
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <div className="text-xs text-white/60">
+                  {currentInterviewResponse.answer_text.trim().length > 0 && `Texte: ${currentInterviewResponse.answer_text.trim().length} chars`}
+                  {currentInterviewResponse.audio_base64 && ' · Audio capturé'}
+                </div>
+                <button
+                  type="button"
+                  onClick={handleNextInterviewQuestion}
+                  disabled={!interviewReady}
+                  className="inline-flex rounded-full bg-white text-midnight px-4 py-2 text-xs font-semibold hover:bg-mist transition disabled:opacity-60"
+                >
+                  {currentInterviewIndex < interviewQuestions.length - 1 ? 'Question suivante' : "Analyser l'entretien"}
+                </button>
+              </div>
+
+              {!interviewReady && (
+                <p className="text-xs text-yellow-300/80">
+                  Réponds par texte (min 10 caractères) ou par oral pour passer à la question suivante.
+                </p>
+              )}
+            </div>
           </div>
         )}
 
@@ -623,124 +802,110 @@ export function KashJourneyRunner() {
           <div className={`step-dot h-8 w-8 ${skillsDone ? 'step-dot-done' : 'step-dot-active'}`}>
             {skillsDone ? '✓' : '4'}
           </div>
-          <p className="text-sm font-bold text-white">Upload projet/code (Skills)</p>
+          <div>
+            <p className="text-sm font-bold text-white">Practical Challenge (Skills)</p>
+            {knowledgeFiliere && (
+              <p className="text-xs text-skills/80">Adapté à ta filière : {knowledgeFiliere}</p>
+            )}
+          </div>
         </div>
         <p className="text-xs text-white/60 ml-11">
-          Coding game : choisis un challenge, un langage, écris ton code, puis on exécute des tests automatiques pour donner un score.
+          Challenge pratique : réponds aux questions techniques liées à ton domaine. Le système évalue tes réponses avec scoring sémantique.
         </p>
 
-        <form className="space-y-3" onSubmit={handleSubmitCodingChallenge}>
-          <div className="grid gap-3 md:grid-cols-3">
-            <label className="block text-xs text-white/70">
+        {!selectedPracticalChallenge && practicalChallenges.length === 0 && (
+          <p className="text-xs text-white/50 ml-11">
+            {knowledgeDone
+              ? 'Chargement des challenges adaptés à ton domaine...'
+              : 'Upload ton CV d\'abord (étape 2) pour recevoir un challenge adapté à ta filière.'}
+          </p>
+        )}
+
+        {practicalChallenges.length > 0 && (
+          <form className="space-y-3" onSubmit={handleSubmitPracticalChallenge}>
+            {/* Challenge selector */}
+            <label className="block text-xs text-white/70 ml-11">
               Challenge
               <select
-                value={challengeId}
-                onChange={(e) => setChallengeId(e.target.value)}
+                value={selectedPracticalChallenge?.id ?? ''}
+                onChange={(e) => {
+                  const ch = practicalChallenges.find((c: any) => c.id === e.target.value);
+                  setSelectedPracticalChallenge(ch ?? null);
+                  if (ch) {
+                    const init: Record<string, string> = {};
+                    ch.test_cases?.forEach((tc: any) => { init[tc.name] = ''; });
+                    setPracticalAnswers(init);
+                  }
+                  setPracticalResult(null);
+                }}
                 className="mt-1 w-full rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm"
-                disabled={challengesLoading}
               >
-                {challenges.map((c: any) => (
-                  <option key={c.id} value={c.id}>{c.title}</option>
+                {practicalChallenges.map((c: any) => (
+                  <option key={c.id} value={c.id}>{c.title} ({c.domain})</option>
                 ))}
               </select>
             </label>
-            <label className="block text-xs text-white/70">
-              Langage
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value as any)}
-                className="mt-1 w-full rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm"
-              >
-                <option value="python">Python</option>
-                <option value="cpp">C++</option>
-                <option value="javascript">JavaScript</option>
-                <option value="java">Java</option>
-              </select>
-              {language === 'java' && (
-                <p className="mt-1 text-[10px] text-amber-300/80">Java peut échouer si le compilateur n'est pas disponible sur le serveur.</p>
-              )}
-            </label>
-            <div className="flex items-end gap-2">
+
+            {/* Challenge statement */}
+            {selectedPracticalChallenge && (
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-2 ml-11">
+                <p className="text-xs uppercase tracking-widest text-white/40">Énoncé</p>
+                <pre className="whitespace-pre-wrap text-xs text-white/70">{selectedPracticalChallenge.statement}</pre>
+                <p className="text-[10px] text-white/40">{selectedPracticalChallenge.domain} · {selectedPracticalChallenge.difficulty} · {selectedPracticalChallenge.estimated_time_minutes}min</p>
+              </div>
+            )}
+
+            {/* Questions */}
+            {selectedPracticalChallenge?.test_cases?.map((tc: any, idx: number) => (
+              <div key={tc.name} className="space-y-2 ml-11">
+                <p className="text-xs text-white/50 uppercase tracking-wider">
+                  Q{idx + 1}: {tc.question}
+                </p>
+                <textarea
+                  value={practicalAnswers[tc.name] ?? ''}
+                  onChange={(e) => setPracticalAnswers((prev) => ({ ...prev, [tc.name]: e.target.value }))}
+                  className="w-full min-h-[80px] rounded-xl border border-white/15 bg-black/20 p-3 text-sm text-white/90"
+                  rows={3}
+                  placeholder="Votre réponse..."
+                />
+              </div>
+            ))}
+
+            <div className="ml-11">
               <button
                 type="submit"
-                disabled={!code.trim() || submittingChallenge}
-                className="inline-flex flex-1 justify-center rounded-full bg-white text-midnight px-4 py-2 text-xs font-semibold hover:bg-mist transition disabled:opacity-60"
+                disabled={practicalLoading || !selectedPracticalChallenge}
+                className="inline-flex rounded-full bg-white text-midnight px-4 py-2 text-xs font-semibold hover:bg-mist transition disabled:opacity-60"
               >
-                {submittingChallenge ? 'Exécution...' : 'Exécuter & scorer'}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  const ch = challenges.find((c: any) => c.id === challengeId) as any;
-                  if (ch?.templates?.[language]) setCode(ch.templates[language]);
-                }}
-                className="inline-flex justify-center rounded-full border border-white/20 px-3 py-2 text-xs text-white/80 hover:bg-white/10 transition"
-              >
-                Template
+                {practicalLoading ? 'Évaluation...' : 'Soumettre & Évaluer'}
               </button>
             </div>
-          </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-2">
-            <p className="text-xs uppercase tracking-widest text-white/40">Énoncé</p>
-            <pre className="whitespace-pre-wrap text-xs text-white/70">{(challenges.find((c: any) => c.id === challengeId) as any)?.statement ?? ''}</pre>
-            <div className="grid gap-3 md:grid-cols-2">
-              <div className="rounded-xl border border-white/10 bg-black/20 p-3">
-                <p className="text-[10px] uppercase tracking-widest text-white/40">Sample input</p>
-                <pre className="text-xs text-white/70 mt-1">{(challenges.find((c: any) => c.id === challengeId) as any)?.sample_input ?? ''}</pre>
+            {/* Results */}
+            {practicalResult && (
+              <div className={`rounded-2xl border p-4 ml-11 ${practicalResult.passed === practicalResult.total ? 'border-emerald-300/40 bg-emerald-500/10' : 'border-amber-300/40 bg-amber-500/10'}`}>
+                <p className="text-sm font-semibold text-white">
+                  Score : {Math.round(practicalResult.overall_score * 100)}% — Tests : {practicalResult.passed}/{practicalResult.total}
+                </p>
+                <p className="text-xs text-white/60 mt-1">{practicalResult.recommendation}</p>
+                <div className="mt-3 space-y-2">
+                  {Array.isArray(practicalResult.results) && practicalResult.results.map((r: any) => (
+                    <div key={r.name} className="rounded-xl border border-white/10 bg-white/5 p-3">
+                      <p className="text-xs text-white/80 font-medium">
+                        {r.passed ? '✓' : '✗'} {r.name} <span className="text-white/40">({Math.round(r.score * 100)}%)</span>
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="rounded-xl border border-white/10 bg-black/20 p-3">
-                <p className="text-[10px] uppercase tracking-widest text-white/40">Sample output</p>
-                <pre className="text-xs text-white/70 mt-1">{(challenges.find((c: any) => c.id === challengeId) as any)?.sample_output ?? ''}</pre>
-              </div>
-            </div>
-          </div>
+            )}
 
-          <label className="block text-xs text-white/70">
-            Code
-            <textarea
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              className="mt-1 w-full min-h-[260px] rounded-xl border border-white/15 bg-black/30 p-3 font-mono text-xs text-white/80"
-              spellCheck={false}
-            />
-          </label>
-
-          {challengeResult && (
-            <div className={`rounded-2xl border p-4 ${challengeResult.passed === challengeResult.total ? 'border-emerald-300/40 bg-emerald-500/10' : 'border-amber-300/40 bg-amber-500/10'}`}>
-              <p className="text-sm font-semibold text-white">
-                Score : {Math.round(challengeResult.score)}% — Tests : {challengeResult.passed}/{challengeResult.total}
-              </p>
-              {challengeResult.compile_output && (
-                <pre className="mt-2 whitespace-pre-wrap text-xs text-white/70">{challengeResult.compile_output}</pre>
-              )}
-              <div className="mt-3 space-y-2">
-                {Array.isArray(challengeResult.tests) && challengeResult.tests.slice(0, 6).map((t: any) => (
-                  <div key={t.name} className="rounded-xl border border-white/10 bg-white/5 p-3">
-                    <p className="text-xs text-white/80 font-medium">{t.passed ? '✓' : '✗'} {t.name} <span className="text-white/40">({t.runtime_ms} ms)</span></p>
-                    {!t.passed && (
-                      <div className="mt-2 grid gap-2 md:grid-cols-2">
-                        <div>
-                          <p className="text-[10px] uppercase tracking-widest text-white/40">Expected</p>
-                          <pre className="text-xs text-white/70 whitespace-pre-wrap">{t.expected}</pre>
-                        </div>
-                        <div>
-                          <p className="text-[10px] uppercase tracking-widest text-white/40">Actual</p>
-                          <pre className="text-xs text-white/70 whitespace-pre-wrap">{t.actual}</pre>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {skillsDone && <span className="text-emerald-300 text-xs">Terminé ({skillsAssessmentId})</span>}
-          {!skillsDone && challengeResult && (
-            <span className="text-amber-200 text-xs">Corrige ton code pour passer tous les tests et valider l'étape.</span>
-          )}
-        </form>
+            {skillsDone && <span className="text-emerald-300 text-xs ml-11">Terminé ✓</span>}
+            {!skillsDone && practicalResult && practicalResult.passed < practicalResult.total && (
+              <span className="text-amber-200 text-xs ml-11">Améliore tes réponses pour passer tous les tests.</span>
+            )}
+          </form>
+        )}
       </article>
 
       {allDone && (

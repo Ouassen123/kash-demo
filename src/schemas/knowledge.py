@@ -40,6 +40,14 @@ class KnowledgeScoreResponse(BaseModel):
     normalized_score: float = Field(..., ge=0.0, le=100.0)
     confidence_score: float = Field(..., ge=0.0, le=1.0)
     domain_breakdown: Dict[str, float]
+    predicted_filiere: Optional[str] = None
+    filiere_probabilities: Optional[List[Dict[str, Any]]] = None
+    filiere_confidence: Optional[str] = None
+    detected_tech_domains: Optional[Dict[str, int]] = None
+    detected_skills_ml: Optional[List[str]] = None
+
+    class Config:
+        extra = 'allow'
 
 
 class CVAnalysisResponse(BaseModel):

@@ -152,12 +152,38 @@ class CVAnalyzer:
         
         # Pre-compile skill patterns
         self.skill_patterns = [
-            re.compile(r'\b(Python|JavaScript|Java|C\+\+|React|Angular|Vue\.js|Node\.js|Django|Flask|FastAPI|Spring|\.NET|PHP|Ruby|Go|Rust|Swift|Kotlin|Scala)\b', re.IGNORECASE),
+            # Software / Programming
+            re.compile(r'\b(Python|JavaScript|Java|C\+\+|C#|React|Angular|Vue\.js|Node\.js|Django|Flask|FastAPI|Spring|\.NET|PHP|Ruby|Go|Rust|Swift|Kotlin|Scala)\b', re.IGNORECASE),
             re.compile(r'\b(SQL|PostgreSQL|MySQL|MongoDB|Redis|Elasticsearch|Cassandra|DynamoDB|Firebase)\b', re.IGNORECASE),
             re.compile(r'\b(AWS|Azure|GCP|Google\s+Cloud|Heroku|DigitalOcean|Vercel|Netlify)\b', re.IGNORECASE),
             re.compile(r'\b(Docker|Kubernetes|Jenkins|GitLab|GitHub|CircleCI|TravisCI)\b', re.IGNORECASE),
             re.compile(r'\b(Agile|Scrum|Kanban|DevOps|CI/CD|TDD|BDD)\b', re.IGNORECASE),
-            re.compile(r'\b(TensorFlow|PyTorch|Scikit(?:-learn)?|Pandas|NumPy|Matlab|Simulink|SCADA|PLC|LaTeX|Machine\s+Learning|Deep\s+Learning|Data\s+Science)\b', re.IGNORECASE)
+            re.compile(r'\b(TensorFlow|PyTorch|Scikit(?:-learn)?|Pandas|NumPy|Matlab|Simulink|Machine\s+Learning|Deep\s+Learning|Data\s+Science|NLP|Computer\s+Vision)\b', re.IGNORECASE),
+            # Electrical / Electronics / Automation
+            re.compile(r'\b(PLC|SCADA|HMI|VHDL|Verilog|FPGA|Arduino|Raspberry\s*Pi|ESP32|STM32|Microcontroller|Microcontr[oô]leur)\b', re.IGNORECASE),
+            re.compile(r'\b(Altium|KiCad|Eagle|Proteus|Multisim|PSpice|LTspice|MATLAB\s*Simulink|LabVIEW|Dspace)\b', re.IGNORECASE),
+            re.compile(r'\b(PCB|Circuit|Electr(?:ic|onique|ical)|Power\s*Electronics|[EÉ]lectronique\s*de\s*puissance|Embedded\s*System|Syst[eè]me\s*embarqu[eé])\b', re.IGNORECASE),
+            re.compile(r'\b(Automation|Automatisme|Control\s*System|Syst[eè]me\s*de\s*contr[oô]le|Motor|Moteur|Drive|Variateur|Onduleur|Convertisseur|Transformer|Transformateur)\b', re.IGNORECASE),
+            re.compile(r'\b(Renewable\s*Energy|[EÉ]nergie\s*renouvelable|Solar|Solaire|Wind|[EÉ]olien|Battery|Batterie|Power\s*System|R[eé]seau\s*[eé]lectrique)\b', re.IGNORECASE),
+            # Mechanical / Design / Manufacturing
+            re.compile(r'\b(SolidWorks|CATIA|AutoCAD|Inventor|Creo|NX|ANSYS|Abaqus|COMSOL|Adams)\b', re.IGNORECASE),
+            re.compile(r'\b(CNC|CAM|FAO|CAO|CAD|Manufacturing|Fabrication|Usinage|Fraisage|Tournage|Soudage|Fonderie|Emboutissage)\b', re.IGNORECASE),
+            re.compile(r'\b(Thermodynamics|Thermodynamique|Heat\s*Transfer|Transfert\s*de\s*chaleur|Fluid\s*Mechanics|M[eé]canique\s*des\s*fluides|Finite\s*Element|[EÉ]l[eé]ments\s*finis)\b', re.IGNORECASE),
+            re.compile(r'\b(Mechanical|M[eé]canique|Structural|Structure|Materials?|Mat[eé]riaux?|Metal|M[eé]tal|Plastic|Plastique|Composite|Fatigue|R[eé]sistance)\b', re.IGNORECASE),
+            re.compile(r'\b(Maintenance|Lubrification|Vibration|Rotor|Arbre\s*de\s*transmission|Engrenage|Roulement|Couple|Torque|Bearing)\b', re.IGNORECASE),
+            # Quality / Maintenance / Continuous Improvement
+            re.compile(r'\b(ISO\s*9001|ISO\s*14001|ISO\s*45001|ISO\s*TS|Six\s*Sigma|Lean|Kaizen|5S|PDCA|DMAIC|Ishikawa|Pareto|SPC|MSP)\b', re.IGNORECASE),
+            re.compile(r'\b(Quality|Qualit[eé]|QMS|Audit|Compliance|Conformit[eé]|Corrective|Corrective\s*Action|Action\s*corrective|Preventive)\b', re.IGNORECASE),
+            re.compile(r'\b(Reliability|Fiabilit[eé]|Maintenance\s*pr[eé]ventive|Maintenance\s*corrective|TPM|RCM|FMEA|AMDEC)\b', re.IGNORECASE),
+            re.compile(r'\b(Root\s*Cause|Cause\s*racine|Nonconformity|Non-conformit[eé]|Defect|D[eé]faut|Scrap|Rebut|Yield|Rendement)\b', re.IGNORECASE),
+            # Logistics / Supply Chain
+            re.compile(r'\b(Supply\s*Chain|Cha[iî]ne\s*logistique|Logistics|Logistique|Inventory|Stock|Inventaire|Warehouse|Entrep[oô]t|Procurement|Approvisionnement)\b', re.IGNORECASE),
+            re.compile(r'\b(Transportation|Transport|Distribution|ERP|SAP|MRP|WMS|FIFO|LIFO|Lean\s*Manufacturing|Just[- ]in[- ]Time)\b', re.IGNORECASE),
+            re.compile(r'\b(Demand\s*Forecasting|Pr[eé]vision\s*de\s*la\s*demande|Routing|Tourn[eé]es|Optimization|Optimisation|Cost\s*Reduction|R[eé]duction\s*des\s*co[uû]ts)\b', re.IGNORECASE),
+            # Management / Project
+            re.compile(r'\b(Project\s*Management|Gestion\s*de\s*projet|Leadership|Stakeholder|Budget|Risk\s*Management|Gestion\s*des\s*risques|Planning|Planification)\b', re.IGNORECASE),
+            re.compile(r'\b(MS\s*Project|Primavera|Gantt|PERT|Critical\s*Path|Chemin\s*critique|Milestone|Jalons|Deliverable|Livrable)\b', re.IGNORECASE),
+            re.compile(r'\b(Team\s*Management|Gestion\s*d[\x27\x60][eé]quipe|Change\s*Management|Gestion\s*du\s*changement|Strategic|Strat[eé]gique|KPI|OKR)\b', re.IGNORECASE),
         ]
         
         # Pre-compile education patterns

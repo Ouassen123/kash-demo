@@ -12,13 +12,22 @@ from .config import settings
 logger = logging.getLogger(__name__)
 
 # Create engine with connection pooling
-engine = create_engine(
-    settings.database_url,
-    pool_size=settings.database_pool_size,
-    max_overflow=settings.database_max_overflow,
-    echo=settings.debug,
-    pool_pre_ping=True,
-)
+# SQLite doesn't support pool_size/max_overflow, use StaticPool for SQLite
+if settings.database_url.startswith("sqlite"):
+    engine = create_engine(
+        settings.database_url,
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+        echo=settings.debug,
+    )
+else:
+    engine = create_engine(
+        settings.database_url,
+        pool_size=settings.database_pool_size,
+        max_overflow=settings.database_max_overflow,
+        echo=settings.debug,
+        pool_pre_ping=True,
+    )
 
 # Create session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

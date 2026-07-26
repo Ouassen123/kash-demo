@@ -223,12 +223,66 @@ class KnowledgeService:
             # Run NLP analysis (no persistence here)
             cv_analysis = self.cv_analyzer.analyze_cv(cv_text, user_id=user_id, persist=False)
             
+            # Predict filiere using the trained ML model
+            ml_filiere_result = None
+            try:
+                from src.modules.knowledge.ml.knowledge_model import get_knowledge_model, _TECH_KEYWORDS
+                model = get_knowledge_model()
+                if model.is_trained:
+                    try:
+                        ml_filiere_result = model.predict(cv_text)
+                        logger.info(f"ML filiere prediction: {ml_filiere_result.get('predicted_filiere')} "
+                                    f"(confidence: {ml_filiere_result.get('confidence')})")
+                    except Exception as pred_err:
+                        logger.warning(f"ML model predict() failed (version incompatibility?), using keyword fallback: {pred_err}")
+                        # Fallback: keyword-based domain detection
+                        cv_lower = cv_text.lower()
+                        tech_domains = {}
+                        for domain, keywords in _TECH_KEYWORDS.items():
+                            hits = sum(1 for kw in keywords if kw in cv_lower)
+                            if hits > 0:
+                                tech_domains[domain] = hits
+                        detected_skills = []
+                        for domain, keywords in _TECH_KEYWORDS.items():
+                            for kw in keywords:
+                                if kw in cv_lower and kw not in detected_skills:
+                                    detected_skills.append(kw)
+                        # Map domain to filiere name
+                        domain_to_filiere = {
+                            'electrical': 'Génie Électrique',
+                            'mechanical': 'Génie Mécanique',
+                            'quality': 'Qualité & Maintenance (QMSI)',
+                            'logistics': 'Logistique',
+                            'management': 'Génie Industriel',
+                            'software': 'Génie Industriel',
+                        }
+                        sorted_domains = sorted(tech_domains.items(), key=lambda x: x[1], reverse=True)
+                        predicted = domain_to_filiere.get(sorted_domains[0][0], 'Génie Industriel') if sorted_domains else 'Unknown'
+                        ml_filiere_result = {
+                            'predicted_filiere': predicted,
+                            'probabilities': [{'filiere': domain_to_filiere.get(d, d), 'probability': h / max(sum(tech_domains.values()), 1)} for d, h in sorted_domains[:5]],
+                            'confidence': 'medium' if sorted_domains else 'low',
+                            'detected_tech_domains': tech_domains,
+                            'detected_skills': detected_skills[:20],
+                        }
+                        logger.info(f"Keyword fallback filiere: {predicted} (domains: {tech_domains})")
+            except Exception as e:
+                logger.warning(f"Filiere detection completely failed, continuing without it: {e}")
+            
             # Enrich with taxonomy data
             enriched_analysis = await self.enrichment_service.enrich_cv_analysis(cv_analysis)
             taxonomy_summary = self._build_taxonomy_summary(enriched_analysis)
             
             # Calculate knowledge scores (TF-IDF/KNN pipeline)
             knowledge_scores = self._calculate_knowledge_scores(enriched_analysis, taxonomy_summary, cv_text=cv_text)
+            
+            # Add ML filiere prediction to results
+            if ml_filiere_result:
+                knowledge_scores['predicted_filiere'] = ml_filiere_result.get('predicted_filiere')
+                knowledge_scores['filiere_probabilities'] = ml_filiere_result.get('probabilities', [])
+                knowledge_scores['filiere_confidence'] = ml_filiere_result.get('confidence')
+                knowledge_scores['detected_tech_domains'] = ml_filiere_result.get('detected_tech_domains', {})
+                knowledge_scores['detected_skills_ml'] = ml_filiere_result.get('detected_skills', [])
             
             # Create user assessment record
             assessment = UserAssessment(

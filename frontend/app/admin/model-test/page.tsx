@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -8,13 +8,14 @@ import {
   PlayCircle, Loader2, CheckCircle2, XCircle, ArrowLeft,
   Activity, Clock, Target, TrendingUp, AlertTriangle,
   Camera, CameraOff, VideoOff,
+  Heart, ClipboardList, Wrench,
 } from 'lucide-react';
 import { useAuth, getStoredToken } from '@/lib/auth-context';
 import { getKnowledgeModelStatus, getTrainingHistory } from '@/lib/api';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000/api/v1';
 
-type ModelKey = 'knowledge' | 'abilities' | 'habits' | 'skills' | 'intelligence';
+type ModelKey = 'knowledge' | 'abilities' | 'habits' | 'skills' | 'intelligence' | 'attitude' | 'psychometric' | 'practical';
 
 interface TestResult {
   success: boolean;
@@ -94,6 +95,30 @@ const MODEL_CONFIG: Record<ModelKey, {
     cardClass: 'card-intelligence',
     badgeClass: 'badge-intelligence',
     description: 'KASH scoring global — SHAP + career path analysis',
+  },
+  attitude: {
+    label: 'Attitude',
+    icon: Heart,
+    color: 'text-abilities',
+    cardClass: 'card-abilities',
+    badgeClass: 'badge-abilities',
+    description: 'Entretien vidéo — mindset, stress, comportement (Big Five signals)',
+  },
+  psychometric: {
+    label: 'Habits (Psy)',
+    icon: ClipboardList,
+    color: 'text-habits',
+    cardClass: 'card-habits',
+    badgeClass: 'badge-habits',
+    description: 'Questionnaire psychométrique — Big Five + Grit + Discipline',
+  },
+  practical: {
+    label: 'Skills (Practical)',
+    icon: Wrench,
+    color: 'text-skills',
+    cardClass: 'card-skills',
+    badgeClass: 'badge-skills',
+    description: 'Exercices pratiques adaptatifs — électricité, mécanique, qualité, logistique',
   },
 };
 
@@ -200,6 +225,9 @@ export default function ModelTestPage() {
         {activeTab === 'habits' && <HabitsTester />}
         {activeTab === 'skills' && <SkillsTester />}
         {activeTab === 'intelligence' && <IntelligenceTester />}
+        {activeTab === 'attitude' && <AttitudeTester />}
+        {activeTab === 'psychometric' && <PsychometricTester />}
+        {activeTab === 'practical' && <PracticalTester />}
       </main>
     </div>
   );
@@ -1058,6 +1086,563 @@ function IntelligenceTester() {
       </div>
 
       <ResultCard result={result} title="Intelligence — KASH Assessment Result" />
+    </div>
+  );
+}
+
+// ─── Attitude Tester (A) — Video Interview ─────────────────────────
+
+function AttitudeTester() {
+  const [questions, setQuestions] = useState<any[]>([]);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [result, setResult] = useState<TestResult | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [cameraOn, setCameraOn] = useState(false);
+  const [capturedFrames, setCapturedFrames] = useState<string[]>([]);
+  const [videoEl, setVideoEl] = useState<HTMLVideoElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/attitude/questions`)
+      .then(r => r.json())
+      .then(data => {
+        setQuestions(data);
+        const init: Record<string, string> = {};
+        data.forEach((q: any) => { init[q.id] = ''; });
+        setAnswers(init);
+      })
+      .catch(() => {});
+  }, []);
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      streamRef.current = stream;
+      if (videoEl) videoEl.srcObject = stream;
+      setCameraOn(true);
+    } catch (e: any) {
+      setCameraOn(false);
+    }
+  };
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t: MediaStreamTrack) => t.stop());
+      streamRef.current = null;
+    }
+    setCameraOn(false);
+  };
+
+  const captureFrame = () => {
+    if (!videoEl) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = 320;
+    canvas.height = 240;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.drawImage(videoEl, 0, 0, 320, 240);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+    setCapturedFrames(prev => [...prev, dataUrl]);
+  };
+
+  const clearFrames = () => setCapturedFrames([]);
+
+  const runTest = useCallback(async () => {
+    setLoading(true);
+    setResult(null);
+    const t0 = performance.now();
+    try {
+      const token = getStoredToken();
+      const res = await fetch(`${API_BASE}/attitude/interview/analyze`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          answers: questions.map(q => ({
+            question_id: q.id,
+            question_text: q.text,
+            answer_text: answers[q.id] || '',
+          })),
+          video_frames_base64: capturedFrames.map(f => f.split(',')[1] || ''),
+          audio_base64: '',
+          industry: 'technology',
+        }),
+      });
+      const data = await res.json();
+      setResult({
+        success: res.ok,
+        data: res.ok ? data : null,
+        error: res.ok ? null : safeError(data.detail ?? `HTTP ${res.status}`),
+        durationMs: performance.now() - t0,
+      });
+    } catch (e: any) {
+      setResult({ success: false, data: null, error: e.message, durationMs: performance.now() - t0 });
+    } finally {
+      setLoading(false);
+    }
+  }, [questions, answers, capturedFrames]);
+
+  return (
+    <div className="space-y-6 animate-fade-in">
+      <div className="glass-card card-abilities p-5 space-y-4">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <Heart className="text-abilities" size={20} />
+              <h2 className="text-xl font-bold text-white">Attitude Model (A)</h2>
+            </div>
+            <p className="text-sm text-white/60 mt-1">{MODEL_CONFIG.attitude.description}</p>
+          </div>
+          <ModelStatusBadge trained={true} label="Ready (Behavioral + NLP)" />
+        </div>
+      </div>
+
+      <div className="glass-card p-5 space-y-4">
+        <p className="text-sm font-semibold text-white">Entretien comportemental — répondez aux questions</p>
+        {questions.map((q, idx) => (
+          <div key={q.id} className="space-y-2">
+            <p className="text-xs text-white/50 uppercase tracking-wider">Q{idx + 1} [{q.category}]: {q.text}</p>
+            <textarea
+              value={answers[q.id] || ''}
+              onChange={(e) => setAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
+              className="w-full min-h-[80px] rounded-xl border border-white/15 bg-black/20 p-3 text-sm text-white/90"
+              rows={3}
+              placeholder="Tapez votre réponse..."
+            />
+          </div>
+        ))}
+
+        <div className="border-t border-white/10 pt-4 space-y-3">
+          <p className="text-sm font-semibold text-white">Webcam (optionnel — capture des frames pour analyse faciale)</p>
+          <div className="flex items-center gap-3 flex-wrap">
+            {!cameraOn ? (
+              <button onClick={startCamera} className="flex items-center gap-2 rounded-lg bg-abilities/20 px-3 py-2 text-sm text-abilities hover:bg-abilities/30">
+                <Camera size={16} /> Activer caméra
+              </button>
+            ) : (
+              <button onClick={stopCamera} className="flex items-center gap-2 rounded-lg bg-red-500/20 px-3 py-2 text-sm text-red-400 hover:bg-red-500/30">
+                <CameraOff size={16} /> Arrêter caméra
+              </button>
+            )}
+            {cameraOn && (
+              <button onClick={captureFrame} className="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-sm text-white hover:bg-white/20">
+                <Video size={16} /> Capturer frame
+              </button>
+            )}
+            {capturedFrames.length > 0 && (
+              <button onClick={clearFrames} className="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-sm text-white/60 hover:bg-white/20">
+                Clear ({capturedFrames.length})
+              </button>
+            )}
+          </div>
+          <video
+            ref={(el) => { if (el && el !== videoEl) setVideoEl(el); }}
+            autoPlay
+            playsInline
+            muted
+            className={`w-full max-w-xs rounded-xl border border-white/15 ${cameraOn ? '' : 'hidden'}`}
+          />
+          {capturedFrames.length > 0 && (
+            <div className="flex gap-2 flex-wrap">
+              {capturedFrames.map((f, i) => (
+                <img key={i} src={f} alt={`Frame ${i}`} className="w-20 h-16 rounded-lg border border-white/15 object-cover" />
+              ))}
+            </div>
+          )}
+        </div>
+
+        <TestButton onClick={runTest} loading={loading} label="Run Attitude Analysis" />
+      </div>
+
+      <ResultCard result={result} title="Attitude — Behavioral Interview Result" />
+    </div>
+  );
+}
+
+// ─── Psychometric Tester (H) — Questionnaire ──────────────────────
+
+function PsychometricTester() {
+  const [questions, setQuestions] = useState<any[]>([]);
+  const [responses, setResponses] = useState<Record<string, number>>({});
+  const [result, setResult] = useState<TestResult | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/habits/psychometric/questions`)
+      .then(r => r.json())
+      .then(data => {
+        setQuestions(data);
+        const init: Record<string, number> = {};
+        data.forEach((q: any) => { init[q.id] = 3; });
+        setResponses(init);
+      })
+      .catch(() => {});
+  }, []);
+
+  const runTest = useCallback(async () => {
+    setLoading(true);
+    setResult(null);
+    const t0 = performance.now();
+    try {
+      const token = getStoredToken();
+      const res = await fetch(`${API_BASE}/habits/psychometric/submit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          responses: Object.entries(responses).map(([question_id, answer]) => ({ question_id, answer })),
+        }),
+      });
+      const data = await res.json();
+      setResult({
+        success: res.ok,
+        data: res.ok ? data : null,
+        error: res.ok ? null : safeError(data.detail ?? `HTTP ${res.status}`),
+        durationMs: performance.now() - t0,
+      });
+    } catch (e: any) {
+      setResult({ success: false, data: null, error: e.message, durationMs: performance.now() - t0 });
+    } finally {
+      setLoading(false);
+    }
+  }, [responses]);
+
+  const scaleLabels = ['Pas du tout d\'accord', 'Pas d\'accord', 'Neutre', 'D\'accord', 'Tout à fait d\'accord'];
+
+  return (
+    <div className="space-y-6 animate-fade-in">
+      <div className="glass-card card-habits p-5 space-y-4">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <ClipboardList className="text-habits" size={20} />
+              <h2 className="text-xl font-bold text-white">Habits — Psychometric Questionnaire</h2>
+            </div>
+            <p className="text-sm text-white/60 mt-1">{MODEL_CONFIG.psychometric.description}</p>
+          </div>
+          <ModelStatusBadge trained={true} label="Validated (Big Five + Grit)" />
+        </div>
+      </div>
+
+      <div className="glass-card p-5 space-y-4">
+        <p className="text-sm font-semibold text-white">Questionnaire psychométrique — 20 questions</p>
+        {questions.map((q, idx) => (
+          <div key={q.id} className="space-y-2">
+            <p className="text-sm text-white/80">
+              <span className="text-white/40 text-xs mr-2">Q{idx + 1}</span>
+              {q.text}
+              <span className="ml-2 text-xs text-white/30">[{q.dimension}]</span>
+            </p>
+            <div className="flex gap-1">
+              {[1, 2, 3, 4, 5].map(val => (
+                <button
+                  key={val}
+                  onClick={() => setResponses(prev => ({ ...prev, [q.id]: val }))}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+                    responses[q.id] === val
+                      ? 'bg-habits/30 text-habits border border-habits/40'
+                      : 'bg-white/5 text-white/50 hover:bg-white/10 border border-white/10'
+                  }`}
+                  title={scaleLabels[val - 1]}
+                >
+                  {val}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+        <TestButton onClick={runTest} loading={loading} label="Submit & Score Questionnaire" />
+      </div>
+
+      <ResultCard result={result} title="Habits — Psychometric Profile Result" />
+    </div>
+  );
+}
+
+// ─── Practical Tester (S) — Domain-Adaptive Challenges ────────────
+
+function PracticalTester() {
+  const [challenges, setChallenges] = useState<any[]>([]);
+  const [selectedChallenge, setSelectedChallenge] = useState<any | null>(null);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [result, setResult] = useState<TestResult | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [domainFilter, setDomainFilter] = useState('');
+  const [cvText, setCvText] = useState('');
+  const [recommendation, setRecommendation] = useState<any | null>(null);
+  const [cvLoading, setCvLoading] = useState(false);
+  const [cvFile, setCvFile] = useState<File | null>(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
+
+  useEffect(() => {
+    const url = domainFilter
+      ? `${API_BASE}/skills/practical/challenges?domain=${domainFilter}`
+      : `${API_BASE}/skills/practical/challenges`;
+    fetch(url)
+      .then(r => r.json())
+      .then(data => setChallenges(data))
+      .catch(() => setChallenges([]));
+  }, [domainFilter]);
+
+  const analyzePDF = useCallback(async () => {
+    if (!cvFile) return;
+    setPdfLoading(true);
+    setRecommendation(null);
+    try {
+      const formData = new FormData();
+      formData.append('file', cvFile);
+      const res = await fetch(`${API_BASE}/skills/practical/recommend-pdf?top_n=3`, {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setRecommendation(data);
+        setChallenges(data.recommended_challenges || []);
+      } else {
+        console.error('PDF recommendation failed:', data.detail);
+      }
+    } catch (e: any) {
+      console.error('PDF upload failed:', e);
+    } finally {
+      setPdfLoading(false);
+    }
+  }, [cvFile]);
+
+  const analyzeCV = useCallback(async () => {
+    if (cvText.trim().length < 50) return;
+    setCvLoading(true);
+    setRecommendation(null);
+    try {
+      const res = await fetch(`${API_BASE}/skills/practical/recommend`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cv_text: cvText, top_n: 3 }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setRecommendation(data);
+        setChallenges(data.recommended_challenges || []);
+      }
+    } catch (e: any) {
+      console.error('CV recommendation failed:', e);
+    } finally {
+      setCvLoading(false);
+    }
+  }, [cvText]);
+
+  const selectChallenge = async (id: string) => {
+    try {
+      const res = await fetch(`${API_BASE}/skills/practical/challenges/${id}`);
+      const data = await res.json();
+      setSelectedChallenge(data);
+      const init: Record<string, string> = {};
+      data.test_cases?.forEach((tc: any) => { init[tc.name] = ''; });
+      setAnswers(init);
+      setResult(null);
+    } catch {}
+  };
+
+  const runTest = useCallback(async () => {
+    if (!selectedChallenge) return;
+    setLoading(true);
+    setResult(null);
+    const t0 = performance.now();
+    try {
+      const token = getStoredToken();
+      const res = await fetch(`${API_BASE}/skills/practical/submit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          challenge_id: selectedChallenge.id,
+          answers,
+        }),
+      });
+      const data = await res.json();
+      setResult({
+        success: res.ok,
+        data: res.ok ? data : null,
+        error: res.ok ? null : safeError(data.detail ?? `HTTP ${res.status}`),
+        durationMs: performance.now() - t0,
+      });
+    } catch (e: any) {
+      setResult({ success: false, data: null, error: e.message, durationMs: performance.now() - t0 });
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedChallenge, answers]);
+
+  const domains = ['', 'electrical', 'mechanical', 'quality', 'logistics', 'management'];
+
+  return (
+    <div className="space-y-6 animate-fade-in">
+      <div className="glass-card card-skills p-5 space-y-4">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <Wrench className="text-skills" size={20} />
+              <h2 className="text-xl font-bold text-white">Skills — Practical Challenges</h2>
+            </div>
+            <p className="text-sm text-white/60 mt-1">{MODEL_CONFIG.practical.description}</p>
+          </div>
+          <ModelStatusBadge trained={true} label="Domain-Adaptive" />
+        </div>
+      </div>
+
+      {/* CV → Domain detection → Recommended challenges */}
+      <div className="glass-card p-5 space-y-4">
+        <div className="flex items-center gap-2">
+          <FileText className="text-skills" size={18} />
+          <p className="text-sm font-semibold text-white">Détection de domaine depuis CV</p>
+        </div>
+
+        {/* PDF Upload */}
+        <div className="rounded-xl border border-skills/20 bg-skills/5 p-4 space-y-3">
+          <p className="text-xs font-medium text-skills">Upload PDF / DOCX / TXT</p>
+          <div className="flex items-center gap-3">
+            <input
+              type="file"
+              accept=".pdf,.docx,.txt"
+              onChange={(e) => setCvFile(e.target.files?.[0] ?? null)}
+              className="text-xs text-white/70 file:mr-3 file:rounded-lg file:border-0 file:bg-skills/20 file:px-4 file:py-2 file:text-skills hover:file:bg-skills/30"
+            />
+            <button
+              onClick={analyzePDF}
+              disabled={!cvFile || pdfLoading}
+              className="px-4 py-2 rounded-xl text-sm font-medium bg-skills/20 text-skills border border-skills/40 hover:bg-skills/30 transition disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {pdfLoading ? <Loader2 className="animate-spin" size={16} /> : 'Uploader & Analyser'}
+            </button>
+          </div>
+          {cvFile && (
+            <p className="text-xs text-white/40">Fichier sélectionné : {cvFile.name} ({Math.round(cvFile.size / 1024)} KB)</p>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2 text-xs text-white/40">
+          <div className="h-px flex-1 bg-white/10" />
+          OU
+          <div className="h-px flex-1 bg-white/10" />
+        </div>
+
+        {/* Text paste */}
+        <p className="text-xs text-white/50">Collez le texte du CV — le système détectera la filière (ex: Génie Électrique) et proposera les exercices adaptés.</p>
+        <textarea
+          value={cvText}
+          onChange={(e) => setCvText(e.target.value)}
+          className="w-full min-h-[120px] rounded-xl border border-white/15 bg-black/20 p-3 text-sm text-white/90"
+          rows={5}
+          placeholder="Collez ici le texte du CV de l'étudiant..."
+        />
+        <div className="flex items-center gap-3">
+          <button
+            onClick={analyzeCV}
+            disabled={cvLoading || cvText.trim().length < 50}
+            className="px-4 py-2 rounded-xl text-sm font-medium bg-skills/20 text-skills border border-skills/40 hover:bg-skills/30 transition disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {cvLoading ? <Loader2 className="animate-spin" size={16} /> : 'Analyser le texte & Recommander'}
+          </button>
+          {cvText.trim().length > 0 && cvText.trim().length < 50 && (
+            <span className="text-xs text-white/40">Minimum 50 caractères</span>
+          )}
+        </div>
+        {recommendation && (
+          <div className="rounded-xl bg-skills/10 border border-skills/20 p-4 space-y-3">
+            {recommendation.predicted_filiere && (
+              <div className="space-y-1">
+                <p className="text-xs font-semibold text-skills">Filière détectée :</p>
+                <p className="text-sm text-white font-bold">{recommendation.predicted_filiere}</p>
+              </div>
+            )}
+            <div className="space-y-1">
+              <p className="text-xs font-semibold text-skills">Domaines techniques détectés :</p>
+              <div className="flex gap-2 flex-wrap">
+                {Object.entries(recommendation.detected_tech_domains || {}).map(([domain, hits]: any) => (
+                  <span key={domain} className="px-2 py-1 rounded-lg text-xs bg-skills/20 text-skills border border-skills/30">
+                    {domain}: {hits} hits
+                  </span>
+                ))}
+              </div>
+            </div>
+            {recommendation.detected_skills && recommendation.detected_skills.length > 0 && (
+              <div className="space-y-1">
+                <p className="text-xs font-semibold text-skills">Skills extraits ({recommendation.detected_skills.length}) :</p>
+                <div className="flex gap-1.5 flex-wrap">
+                  {recommendation.detected_skills.map((s: string) => (
+                    <span key={s} className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-white/60">{s}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+            <p className="text-xs text-white/50">{recommendation.recommended_challenges?.length} challenge(s) recommandé(s) pour ce profil</p>
+          </div>
+        )}
+      </div>
+
+      <div className="glass-card p-5 space-y-4">
+        <div className="flex gap-2 flex-wrap">
+          {domains.map(d => (
+            <button
+              key={d}
+              onClick={() => { setDomainFilter(d); setRecommendation(null); }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+                domainFilter === d
+                  ? 'bg-skills/30 text-skills border border-skills/40'
+                  : 'bg-white/5 text-white/50 hover:bg-white/10 border border-white/10'
+              }`}
+            >
+              {d || 'Tous domaines'}
+            </button>
+          ))}
+        </div>
+
+        {!selectedChallenge && (
+          <div className="grid gap-3 md:grid-cols-2">
+            {challenges.map(c => (
+              <button
+                key={c.id}
+                onClick={() => selectChallenge(c.id)}
+                className="text-left rounded-xl border border-white/10 bg-white/5 p-4 hover:bg-white/10 transition"
+              >
+                <p className="text-sm font-semibold text-white">{c.title}</p>
+                <p className="text-xs text-white/40 mt-1">{c.domain} · {c.difficulty} · {c.estimated_time_minutes}min</p>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {selectedChallenge && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-white">{selectedChallenge.title}</p>
+                <p className="text-xs text-white/40">{selectedChallenge.domain} · {selectedChallenge.difficulty}</p>
+              </div>
+              <button onClick={() => setSelectedChallenge(null)} className="text-xs text-white/50 hover:text-white">
+                ← Retour à la liste
+              </button>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-black/20 p-4">
+              <p className="text-sm text-white/80 whitespace-pre-wrap">{selectedChallenge.statement}</p>
+            </div>
+            {selectedChallenge.test_cases?.map((tc: any, idx: number) => (
+              <div key={tc.name} className="space-y-2">
+                <p className="text-xs text-white/50 uppercase tracking-wider">
+                  Q{idx + 1}: {tc.question}
+                </p>
+                <textarea
+                  value={answers[tc.name] || ''}
+                  onChange={(e) => setAnswers(prev => ({ ...prev, [tc.name]: e.target.value }))}
+                  className="w-full min-h-[80px] rounded-xl border border-white/15 bg-black/20 p-3 text-sm text-white/90"
+                  rows={3}
+                  placeholder="Votre réponse..."
+                />
+              </div>
+            ))}
+            <TestButton onClick={runTest} loading={loading} label="Submit & Score Challenge" />
+          </div>
+        )}
+      </div>
+
+      <ResultCard result={result} title="Skills — Practical Challenge Result" />
     </div>
   );
 }
