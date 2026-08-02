@@ -1,8 +1,8 @@
-interface AbilitiesRecommendationsProps {
+interface AttitudeRecommendationsProps {
   recommendations: string[];
 }
 
-export function AbilitiesRecommendations({ recommendations }: AbilitiesRecommendationsProps) {
+export function AttitudeRecommendations({ recommendations }: AttitudeRecommendationsProps) {
   return (
     <section className="glass-panel p-6 flex flex-col gap-4">
       <div>
@@ -17,9 +17,11 @@ export function AbilitiesRecommendations({ recommendations }: AbilitiesRecommend
             </article>
           ))
         ) : (
-          <p className="text-sm text-white/60">No recommendations yet. Complete an abilities quiz to generate insights.</p>
+          <p className="text-sm text-white/60">No recommendations yet. Complete the Attitude quiz to generate insights.</p>
         )}
       </div>
     </section>
   );
 }
+
+export { AttitudeRecommendations as AbilitiesRecommendations };

@@ -10,7 +10,7 @@ export function DomainScoresGrid({ scores }: DomainScoresProps) {
   return (
     <section className="glass-panel p-6 space-y-4">
       <div>
-        <p className="text-sm uppercase tracking-[0.3em] text-mist/70">Cognitive domains</p>
+        <p className="text-sm uppercase tracking-[0.3em] text-mist/70">Attitude domains</p>
         <p className="text-2xl font-semibold mt-1">Score distribution</p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">

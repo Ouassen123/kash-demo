@@ -1,10 +1,10 @@
-import { AbilitiesRecentActivityItem } from '@/lib/types';
+import { AttitudeRecentActivityItem } from '@/lib/types';
 
-export function AbilitiesRecentActivity({ items }: { items: AbilitiesRecentActivityItem[] }) {
+export function AttitudeRecentActivity({ items }: { items: AttitudeRecentActivityItem[] }) {
   if (!items.length) {
     return (
       <section className="glass-panel p-6">
-        <p className="text-sm text-white/70">No recent abilities assessments yet.</p>
+        <p className="text-sm text-white/70">No recent Attitude assessments yet.</p>
       </section>
     );
   }
@@ -31,3 +31,5 @@ export function AbilitiesRecentActivity({ items }: { items: AbilitiesRecentActiv
     </section>
   );
 }
+
+export { AttitudeRecentActivity as AbilitiesRecentActivity };

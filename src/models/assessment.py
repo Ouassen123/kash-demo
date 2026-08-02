@@ -53,6 +53,7 @@ class UserAssessment(Base):
     user = relationship("User", back_populates="assessments")
     knowledge_assessments = relationship("KnowledgeAssessment", back_populates="assessment", cascade="all, delete-orphan")
     abilities_assessments = relationship("AbilitiesAssessment", back_populates="assessment", cascade="all, delete-orphan")
+    attitude_assessments = abilities_assessments
     skills_assessments = relationship("SkillsAssessment", back_populates="assessment", cascade="all, delete-orphan")
     intelligence_assessments = relationship("IntelligenceAssessment", back_populates="assessment", cascade="all, delete-orphan")
     habits_assessments = relationship("HabitsAssessment", back_populates="assessment", cascade="all, delete-orphan")
@@ -230,3 +231,8 @@ class HabitsAssessment(Base):
 
     def __repr__(self):
         return f"<HabitsAssessment(id={self.id}, assessment_id={self.assessment_id}, composite_score={self.composite_score})>"
+
+
+# Backward-compatible / forward-looking aliases
+AttitudeAssessment = AbilitiesAssessment
+AttitudeAssessmentModel = AbilitiesAssessment

@@ -1,4 +1,4 @@
-"""Extended Abilities service with transcription integration."""
+"""Extended Attitude service with transcription integration."""
 
 import asyncio
 from typing import Dict, Any, Optional
@@ -8,18 +8,18 @@ import uuid
 
 from src.core.database import get_db
 from src.core.logging import get_logger
-from .abilities_service import AbilitiesService
+from .abilities_service import AttitudeService, AbilitiesService
 from .transcription.integration import TranscriptionIntegration
 from .audio.qa_manager import QAManager
 
 logger = get_logger(__name__)
 
 
-class AbilitiesServiceWithTranscription(AbilitiesService):
-    """Extended abilities service with speech-to-text transcription capabilities."""
+class AttitudeServiceWithTranscription(AttitudeService):
+    """Extended attitude service with speech-to-text transcription capabilities."""
 
     def __init__(self, db: Session):
-        """Initialize extended abilities service."""
+        """Initialize extended attitude service."""
         super().__init__(db)
         
         # Initialize transcription components
@@ -143,7 +143,6 @@ class AbilitiesServiceWithTranscription(AbilitiesService):
                 "error": str(e),
                 "session_id": session_id,
             }
-
     async def get_session_with_transcripts(
         self,
         user_id: str,
@@ -257,3 +256,7 @@ class AbilitiesServiceWithTranscription(AbilitiesService):
                 "error": str(e),
                 "session_id": session_id,
             }
+
+
+# Backward-compatible alias
+AbilitiesServiceWithTranscription = AttitudeServiceWithTranscription

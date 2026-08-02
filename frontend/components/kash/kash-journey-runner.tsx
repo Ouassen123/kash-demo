@@ -6,17 +6,13 @@ import { Brain, FileText, Video, Code, CheckCircle2, Circle, Loader2 } from 'luc
 
 import {
   analyzeHabitsInterview,
-  startAbilitiesAssessment,
-  submitAbilitiesAnswer,
   uploadKnowledgeCv,
   generateIntelligenceAssessment,
   API_BASE_URL,
 } from '@/lib/api';
 import type {
-  AbilitiesAssessmentQuestion,
   HabitsInterviewAnalysisResponse,
   HabitsInterviewAnswer,
-  SubmitAbilitiesAnswerResponse,
 } from '@/lib/types';
 import { WebcamAudioRecorder } from './WebcamAudioRecorder';
 import { HabitsResultsView } from './HabitsResultsView';
@@ -128,105 +124,53 @@ async function mergeAudioBase64SegmentsToBase64(segments: string[]): Promise<str
 
 export function KashJourneyRunner() {
   // ── Step state ──────────────────────────────────────────────
-  const [abilitiesDone, setAbilitiesDone] = useState(false);
+  const [attitudeDone, setAttitudeDone] = useState(false);
   const [knowledgeDone, setKnowledgeDone] = useState(false);
   const [interviewDone, setInterviewDone] = useState(false);
   const [skillsDone, setSkillsDone] = useState(false);
-
-  // ── Abilities quiz state ─────────────────────────────────────
-  const [quizStarted, setQuizStarted] = useState(false);
-  const [quizSessionId, setQuizSessionId] = useState<string | null>(null);
-  const [quizAssessmentId, setQuizAssessmentId] = useState<string | null>(null);
-  const [quizQuestion, setQuizQuestion] = useState<AbilitiesAssessmentQuestion | null>(null);
-  const [quizIndex, setQuizIndex] = useState(0);
-  const [quizTotal, setQuizTotal] = useState(0);
-  const [quizAnswer, setQuizAnswer] = useState('');
-  const [quizLastResult, setQuizLastResult] = useState<SubmitAbilitiesAnswerResponse | null>(null);
-  const [quizLoading, setQuizLoading] = useState(false);
-  const [quizError, setQuizError] = useState<string | null>(null);
-  const [quizScore, setQuizScore] = useState<number | null>(null);
-
-  // ── Psychometric (Habits) questionnaire state ─────────────────
   const [psyQuestions, setPsyQuestions] = useState<any[]>([]);
   const [psyAnswers, setPsyAnswers] = useState<Record<string, number>>({});
-  const [psyStarted, setPsyStarted] = useState(false);
+  const [psyLoading, setPsyLoading] = useState(true);
   const [psySubmitting, setPsySubmitting] = useState(false);
   const [psyResult, setPsyResult] = useState<any | null>(null);
   const [psyError, setPsyError] = useState<string | null>(null);
+
   const knowledgeSectionRef = useRef<HTMLElement | null>(null);
   const skillsSectionRef = useRef<HTMLElement | null>(null);
 
+  const loadPsychometricQuestions = useCallback(async () => {
+    setPsyLoading(true);
+    setPsyError(null);
+    try {
+      const res = await fetch(`${API_BASE_URL}/habits/psychometric/questions`);
+      if (!res.ok) {
+        throw new Error(`Erreur chargement questionnaire Likert (${res.status})`);
+      }
+      const questions = await res.json();
+      setPsyQuestions(Array.isArray(questions) ? questions : []);
+    } catch (err) {
+      setPsyError(err instanceof Error ? err.message : 'Erreur chargement questionnaire Likert');
+    } finally {
+      setPsyLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadPsychometricQuestions();
+  }, [loadPsychometricQuestions]);
+
   // Auto-scroll to Knowledge section when abilities done
   useEffect(() => {
-    if (abilitiesDone && knowledgeSectionRef.current) {
+    if (attitudeDone && knowledgeSectionRef.current) {
       setTimeout(() => knowledgeSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
     }
-  }, [abilitiesDone]);
-
-  async function handleStartQuiz() {
-    setQuizLoading(true);
-    setQuizError(null);
-    try {
-      const res = await startAbilitiesAssessment({ quiz_type: 'cognitive', domain: 'memory', num_questions: 5, adaptive: true });
-      setQuizSessionId(res.session_id);
-      setQuizAssessmentId(res.assessment_id);
-      setQuizQuestion(res.current_question);
-      setQuizIndex(1);
-      setQuizTotal(res.total_questions);
-      setQuizStarted(true);
-    } catch (e) {
-      setQuizError(e instanceof Error ? e.message : 'Erreur démarrage quiz');
-    } finally {
-      setQuizLoading(false);
-    }
-  }
-
-  async function handleSubmitQuizAnswer(e: FormEvent) {
-    e.preventDefault();
-    if (!quizSessionId || !quizQuestion || !quizAnswer) return;
-    setQuizLoading(true);
-    try {
-      const res = await submitAbilitiesAnswer({
-        session_id: quizSessionId,
-        question_id: quizQuestion.id,
-        answer: quizAnswer,
-        response_time_ms: 3000,
-      });
-      setQuizLastResult(res);
-      setQuizAnswer('');
-      if (res.quiz_completed) {
-        setQuizQuestion(null);
-        setQuizScore(res.results?.percentage ?? null);
-        // Don't set abilitiesDone yet — load psychometric questions next
-        try {
-          const psyRes = await fetch(`${API_BASE_URL}/habits/psychometric/questions`);
-          if (psyRes.ok) {
-            const questions = await psyRes.json();
-            setPsyQuestions(questions);
-            setPsyStarted(true);
-          } else {
-            // If psychometric fails, just complete abilities
-            setAbilitiesDone(true);
-          }
-        } catch {
-          setAbilitiesDone(true);
-        }
-      } else {
-        setQuizQuestion(res.next_question ?? null);
-        setQuizIndex(res.question_number + 1);
-      }
-    } catch (e) {
-      setQuizError(e instanceof Error ? e.message : 'Erreur soumission');
-    } finally {
-      setQuizLoading(false);
-    }
-  }
+  }, [attitudeDone]);
 
   async function handleSubmitPsychometric(e: FormEvent) {
     e.preventDefault();
     const answered = Object.keys(psyAnswers).length;
-    if (answered < 10) {
-      setPsyError(`Il faut répondre à au moins 10 questions (${answered}/${psyQuestions.length} répondues)`);
+    if (answered < psyQuestions.length) {
+      setPsyError(`Il faut répondre aux ${psyQuestions.length} questions Likert (${answered}/${psyQuestions.length} répondues)`);
       return;
     }
     setPsySubmitting(true);
@@ -241,7 +185,7 @@ export function KashJourneyRunner() {
       const data = await res.json();
       if (res.ok) {
         setPsyResult(data);
-        setAbilitiesDone(true);
+        setAttitudeDone(true);
       } else {
         setPsyError(data.detail ?? 'Erreur soumission psychometric');
       }
@@ -292,7 +236,7 @@ export function KashJourneyRunner() {
 
   const currentInterviewQuestion = interviewQuestions[currentInterviewIndex] ?? null;
   const currentInterviewResponse = interviewResponses[currentInterviewIndex] ?? null;
-  const completedCount = [abilitiesDone, knowledgeDone, interviewDone, skillsDone].filter(Boolean).length;
+  const completedCount = [attitudeDone, knowledgeDone, interviewDone, skillsDone].filter(Boolean).length;
   const allDone = completedCount === 4;
 
   const interviewReady = useMemo(() => {
@@ -488,7 +432,7 @@ export function KashJourneyRunner() {
           <p className="text-sm uppercase tracking-[0.3em] text-mist/70">KASH full journey</p>
           <h1 className="text-2xl font-bold text-white mt-2">Passer les 4 tests avant le résultat final</h1>
           <p className="text-sm text-white/70 mt-2">
-            Ordre recommandé: Abilities test → Upload CV (Knowledge) → Entretien webcam → Upload code (Skills) → Résultat.
+            Ordre recommandé: Attitude test → Upload CV (Knowledge) → Entretien webcam → Upload code (Skills) → Résultat.
           </p>
         </div>
         <span className="rounded-full border border-white/20 bg-white/5 px-4 py-1 text-xs text-white/80">
@@ -499,7 +443,7 @@ export function KashJourneyRunner() {
       {/* Progress bar */}
       <div className="flex items-center gap-2">
         {[
-          { label: 'Abilities', done: abilitiesDone, icon: Brain, color: 'text-abilities' },
+          { label: 'Attitude', done: attitudeDone, icon: Brain, color: 'text-abilities' },
           { label: 'Knowledge', done: knowledgeDone, icon: FileText, color: 'text-knowledge' },
           { label: 'Habits', done: interviewDone, icon: Video, color: 'text-habits' },
           { label: 'Skills', done: skillsDone, icon: Code, color: 'text-skills' },
@@ -517,122 +461,88 @@ export function KashJourneyRunner() {
         })}
       </div>
 
-      <article className={`rounded-2xl border p-5 space-y-3 transition-all ${abilitiesDone ? 'border-emerald-400/20 bg-emerald-500/5' : 'border-abilities/20 bg-abilities/5'}`}>
+      <article className={`rounded-2xl border p-5 space-y-3 transition-all ${attitudeDone ? 'border-emerald-400/20 bg-emerald-500/5' : 'border-abilities/20 bg-abilities/5'}`}>
         <div className="flex items-center gap-3">
-          <div className={`step-dot h-8 w-8 ${abilitiesDone ? 'step-dot-done' : 'step-dot-active'}`}>
-            {abilitiesDone ? '✓' : '1'}
+          <div className={`step-dot h-8 w-8 ${attitudeDone ? 'step-dot-done' : 'step-dot-active'}`}>
+            {attitudeDone ? '✓' : '1'}
           </div>
           <div>
-            <p className="text-sm font-bold text-white">Abilities + Habits (questions adaptatives)</p>
-            <p className="text-xs text-white/50">Quiz cognitif + questionnaire psychométrique (Big Five, Grit, Self-Discipline)</p>
+            <p className="text-sm font-bold text-white">Attitude</p>
+            <p className="text-xs text-white/50">20 questions Likert 1-5.</p>
           </div>
         </div>
 
-        {/* Completed state */}
-        {abilitiesDone && (
+        {attitudeDone && psyResult ? (
           <div className="rounded-xl bg-emerald-500/10 border border-emerald-300/30 p-3 space-y-2">
             <p className="text-sm text-emerald-200">
-              ✓ Quiz cognitif — Score&nbsp;: {quizScore !== null ? `${Math.round(quizScore)}%` : 'N/A'}
+              ✓ Questionnaire Likert terminé — Score&nbsp;: {Math.round(psyResult.overall_habits_score)}/100 ({psyResult.discipline_level})
             </p>
-            {psyResult && (
-              <p className="text-sm text-emerald-200">
-                ✓ Habits psychometric — Score&nbsp;: {Math.round(psyResult.overall_habits_score)}/100 ({psyResult.discipline_level})
-              </p>
-            )}
+            <p className="text-xs text-emerald-100/80">Tes réponses ont bien été enregistrées.</p>
           </div>
-        )}
-
-        {/* Not started */}
-        {!quizStarted && !abilitiesDone && (
+        ) : (
           <>
-            <p className="text-xs text-white/60">5 questions cognitives adaptatives + 20 questions psychométriques (Likert 1-5).</p>
-            <button
-              type="button"
-              onClick={handleStartQuiz}
-              disabled={quizLoading}
-              className="inline-flex rounded-full bg-white text-midnight px-4 py-2 text-xs font-semibold hover:bg-mist transition disabled:opacity-60"
-            >
-              {quizLoading ? 'Démarrage...' : 'Commencer le test'}
-            </button>
-            {quizError && <p className="text-xs text-rose-300">{quizError}</p>}
-          </>
-        )}
-
-        {/* Quiz in progress */}
-        {quizStarted && !abilitiesDone && quizQuestion && (
-          <form onSubmit={handleSubmitQuizAnswer} className="space-y-3">
-            <p className="text-xs text-white/50 uppercase tracking-widest">Question cognitive {quizIndex} / {quizTotal}</p>
-            <p className="text-sm text-white font-medium">{quizQuestion.question_text}</p>
-            <div className="space-y-2">
-              {quizQuestion.options.map((opt) => (
-                <label key={opt} className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs cursor-pointer">
-                  <input type="radio" name="quiz-ans" value={opt} checked={quizAnswer === opt} onChange={() => setQuizAnswer(opt)} />
-                  <span>{opt}</span>
-                </label>
-              ))}
-            </div>
-            {quizLastResult && !quizLastResult.quiz_completed && (
-              <p className="text-xs text-white/50">
-                Dernière réponse : {quizLastResult.is_correct ? '✓ correcte' : '✗ incorrecte'}
-              </p>
-            )}
-            <button
-              type="submit"
-              disabled={!quizAnswer || quizLoading}
-              className="inline-flex rounded-full bg-white text-midnight px-4 py-2 text-xs font-semibold hover:bg-mist transition disabled:opacity-60"
-            >
-              {quizLoading ? 'Envoi...' : 'Valider'}
-            </button>
-            {quizError && <p className="text-xs text-rose-300">{quizError}</p>}
-          </form>
-        )}
-
-        {/* Psychometric questionnaire (after cognitive quiz) */}
-        {psyStarted && !abilitiesDone && psyQuestions.length > 0 && (
-          <form onSubmit={handleSubmitPsychometric} className="space-y-4">
-            <div className="rounded-xl bg-habits/10 border border-habits/30 p-3">
-              <p className="text-xs font-semibold text-habits">Habits — Questionnaire psychométrique</p>
-              <p className="text-xs text-white/50 mt-1">
-                Évalue ton profil comportemental (Big Five, Grit, Self-Discipline). Réponds honnêtement sur l'échelle 1-5.
-              </p>
-            </div>
-            <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
-              {psyQuestions.map((q, idx) => (
-                <div key={q.id} className="rounded-xl border border-white/10 bg-white/5 p-3 space-y-2">
-                  <p className="text-xs text-white/80">
-                    <span className="text-white/40">Q{idx + 1}.</span> {q.text}
+            {psyLoading ? (
+              <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-white/60">
+                Chargement des 20 questions Likert...
+              </div>
+            ) : psyError ? (
+              <div className="rounded-xl border border-rose-400/30 bg-rose-500/10 p-3 space-y-2">
+                <p className="text-xs text-rose-200">{psyError}</p>
+                <button
+                  type="button"
+                  onClick={() => void loadPsychometricQuestions()}
+                  className="inline-flex rounded-full bg-white text-midnight px-4 py-2 text-xs font-semibold hover:bg-mist transition"
+                >
+                  Réessayer
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmitPsychometric} className="space-y-4">
+                <div className="rounded-xl bg-habits/10 border border-habits/30 p-3">
+                  <p className="text-xs font-semibold text-habits">Habits</p>
+                  <p className="text-xs text-white/50 mt-1">
+                    Réponds honnêtement sur l'échelle 1-5.
                   </p>
-                  <p className="text-[10px] text-white/30 uppercase tracking-wider">{q.dimension} · {q.subscale}</p>
-                  <div className="flex gap-1.5 flex-wrap">
-                    {q.scale.labels.map((label: string, i: number) => (
-                      <label key={i} className={`flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] cursor-pointer border transition ${psyAnswers[q.id] === i + 1 ? 'border-habits/50 bg-habits/20 text-habits' : 'border-white/10 bg-white/5 text-white/60 hover:bg-white/10'}`}>
-                        <input
-                          type="radio"
-                          name={`psy-${q.id}`}
-                          value={i + 1}
-                          checked={psyAnswers[q.id] === i + 1}
-                          onChange={() => setPsyAnswers((prev) => ({ ...prev, [q.id]: i + 1 }))}
-                          className="hidden"
-                        />
-                        <span>{i + 1}</span>
-                        <span className="hidden sm:inline">{label}</span>
-                      </label>
-                    ))}
-                  </div>
                 </div>
-              ))}
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                type="submit"
-                disabled={psySubmitting || Object.keys(psyAnswers).length < 10}
-                className="inline-flex rounded-full bg-white text-midnight px-4 py-2 text-xs font-semibold hover:bg-mist transition disabled:opacity-60"
-              >
-                {psySubmitting ? 'Évaluation...' : `Soumettre (${Object.keys(psyAnswers).length}/${psyQuestions.length})`}
-              </button>
-              {psyError && <p className="text-xs text-rose-300">{psyError}</p>}
-            </div>
-          </form>
+                <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
+                  {psyQuestions.map((q, idx) => (
+                    <div key={q.id} className="rounded-xl border border-white/10 bg-white/5 p-3 space-y-2">
+                      <p className="text-xs text-white/80">
+                        <span className="text-white/40">Q{idx + 1}.</span> {q.text}
+                      </p>
+                      <p className="text-[10px] text-white/30 uppercase tracking-wider">{q.dimension} · {q.subscale}</p>
+                      <div className="flex gap-1.5 flex-wrap">
+                        {q.scale.labels.map((label: string, i: number) => (
+                          <label key={i} className={`flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] cursor-pointer border transition ${psyAnswers[q.id] === i + 1 ? 'border-habits/50 bg-habits/20 text-habits' : 'border-white/10 bg-white/5 text-white/60 hover:bg-white/10'}`}>
+                            <input
+                              type="radio"
+                              name={`psy-${q.id}`}
+                              value={i + 1}
+                              checked={psyAnswers[q.id] === i + 1}
+                              onChange={() => setPsyAnswers((prev) => ({ ...prev, [q.id]: i + 1 }))}
+                              className="hidden"
+                            />
+                            <span>{i + 1}</span>
+                            <span className="hidden sm:inline">{label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="submit"
+                    disabled={psySubmitting || psyQuestions.length === 0 || Object.keys(psyAnswers).length < psyQuestions.length}
+                    className="inline-flex rounded-full bg-white text-midnight px-4 py-2 text-xs font-semibold hover:bg-mist transition disabled:opacity-60"
+                  >
+                    {psySubmitting ? 'Évaluation...' : `Soumettre (${Object.keys(psyAnswers).length}/${psyQuestions.length})`}
+                  </button>
+                  {psyError && <p className="text-xs text-rose-300">{psyError}</p>}
+                </div>
+              </form>
+            )}
+          </>
         )}
       </article>
 

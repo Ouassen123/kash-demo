@@ -19,7 +19,7 @@
 | Frontend `/kash/start` | ✅ Corrigé | Filière + challenges s'affichent après upload CV |
 | Admin Model Test Lab | ✅ Fonctionnel | Upload PDF, prediction filière, recommandation challenges |
 
-### A — Abilities (Quiz cognitif + Psychometric)
+### A — Attitude (Quiz cognitif + Psychometric)
 
 | Composant | Statut | Détails |
 |-----------|--------|---------|
@@ -51,7 +51,7 @@
 
 | Composant | Statut | Détails |
 |-----------|--------|---------|
-| KASH scoring | ✅ Fonctionnel | Pondération Knowledge 30% + Abilities 40% + Skills 30% |
+| KASH scoring | ✅ Fonctionnel | Pondération Knowledge 30% + Attitude 40% + Skills 30% |
 | SHAP explanations | ✅ Backend | Feature importance calculé |
 | Frontend insights | ✅ Basique | Redirection vers `/intelligence/insights` |
 
@@ -97,7 +97,7 @@
 
 6. **Module Attitude non intégré au journey frontend**
    - Backend complet (questions, analyse multimodale, scoring)
-   - Mais **pas utilisé** dans `/kash/start` — le journey saute d'Abilities → Knowledge → Habits → Skills
+   - Mais **pas utilisé** dans `/kash/start` — le journey saute d'Attitude → Knowledge → Habits → Skills
    - L'Attitude est un des 4 piliers KASH mais n'est pas évalué dans le flow étudiant
 
 7. **Dépendances manquantes (aiohttp)**
@@ -175,7 +175,7 @@
 ```
 /kash/start
     │
-    ├─ 1. Abilities (quiz cognitif 5 questions)
+    ├─ 1. Attitude (quiz cognitif 5 questions)
     │      └─ + Habits Psychometric (20 questions Likert)
     │
     ├─ 2. Knowledge (upload CV)
@@ -194,7 +194,7 @@
     │      └─ Scoring sémantique (keyword + overlap)
     │
     └─ Intelligence (scoring global KASH)
-           ├─ Knowledge 30% + Abilities 40% + Skills 30%
+           ├─ Knowledge 30% + Attitude 40% + Skills 30%
            └─ Redirection /intelligence/insights
 ```
 

@@ -1,7 +1,7 @@
-"""Abilities module package."""
+"""Attitude module package."""
 
 from .quiz_engine import QuizEngine, QuizSession, CognitiveDomain, QuestionType, DifficultyLevel
-from .abilities_service import AbilitiesService
+from .abilities_service import AttitudeService, AbilitiesService
 
 __all__ = [
     "QuizEngine", 
@@ -9,5 +9,6 @@ __all__ = [
     "CognitiveDomain", 
     "QuestionType", 
     "DifficultyLevel",
+    "AttitudeService",
     "AbilitiesService"
 ]

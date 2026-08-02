@@ -126,6 +126,15 @@ export interface SubmitAbilitiesAnswerResponse {
   };
 }
 
+// Attitude aliases for the frontend refactor while keeping legacy abilities names.
+export type AttitudeRecentActivityItem = AbilitiesRecentActivityItem;
+export type AttitudeProfile = AbilitiesProfile;
+export type AttitudeAssessmentQuestion = AbilitiesAssessmentQuestion;
+export type StartAttitudeAssessmentPayload = StartAbilitiesAssessmentPayload;
+export type StartAttitudeAssessmentResponse = StartAbilitiesAssessmentResponse;
+export type SubmitAttitudeAnswerPayload = SubmitAbilitiesAnswerPayload;
+export type SubmitAttitudeAnswerResponse = SubmitAbilitiesAnswerResponse;
+
 export interface HabitsInterviewAnswer {
   question_id: string;
   question_text: string;

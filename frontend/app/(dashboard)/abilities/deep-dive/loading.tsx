@@ -1,4 +1,4 @@
-export default function AbilitiesDeepDiveLoading() {
+export default function AttitudeDeepDiveLoading() {
   return (
     <main className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-10 lg:px-0">
       <div className="h-5 w-60 rounded-full bg-white/10 animate-pulse" />
@@ -11,3 +11,5 @@ export default function AbilitiesDeepDiveLoading() {
     </main>
   );
 }
+
+export { AttitudeDeepDiveLoading as AbilitiesDeepDiveLoading };

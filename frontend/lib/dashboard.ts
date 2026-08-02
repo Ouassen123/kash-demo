@@ -11,7 +11,7 @@ import {
 
 const domainLabels: Record<string, string> = {
   knowledge: 'Knowledge',
-  abilities: 'Abilities',
+  abilities: 'Attitude',
   skills: 'Skills',
   experience: 'Experience',
 };

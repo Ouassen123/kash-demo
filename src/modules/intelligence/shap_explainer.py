@@ -80,6 +80,16 @@ class SHAPExplainer:
                 'industry_knowledge': 0.15,
                 'theoretical_understanding': 0.15
             },
+            'attitude': {
+                'problem_solving': 0.20,
+                'critical_thinking': 0.15,
+                'creativity': 0.15,
+                'communication': 0.15,
+                'leadership': 0.10,
+                'teamwork': 0.10,
+                'adaptability': 0.10,
+                'emotional_intelligence': 0.05
+            },
             'abilities': {
                 'problem_solving': 0.20,
                 'critical_thinking': 0.15,
@@ -122,6 +132,7 @@ class SHAPExplainer:
                 },
                 'preferred_kash_weights': {
                     'knowledge': 0.2,
+                    'attitude': 0.25,
                     'abilities': 0.25,
                     'skills': 0.4,
                     'experience': 0.15
@@ -152,6 +163,7 @@ class SHAPExplainer:
                 },
                 'preferred_kash_weights': {
                     'knowledge': 0.25,
+                    'attitude': 0.4,
                     'abilities': 0.4,
                     'skills': 0.2,
                     'experience': 0.15
@@ -167,6 +179,7 @@ class SHAPExplainer:
                 },
                 'preferred_kash_weights': {
                     'knowledge': 0.3,
+                    'attitude': 0.35,
                     'abilities': 0.35,
                     'skills': 0.25,
                     'experience': 0.1
@@ -469,9 +482,9 @@ class SHAPExplainer:
                     explanation = self._explain_knowledge_recommendation(
                         recommendation, domain_scores.get('knowledge', 0), user_profile
                     )
-                elif rec_type == 'abilities':
-                    explanation = self._explain_abilities_recommendation(
-                        recommendation, domain_scores.get('abilities', 0), user_profile
+                elif rec_type == 'attitude':
+                    explanation = self._explain_attitude_recommendation(
+                        recommendation, domain_scores.get('attitude', domain_scores.get('abilities', 0)), user_profile
                     )
                 elif rec_type == 'skills':
                     explanation = self._explain_skills_recommendation(
@@ -622,8 +635,8 @@ class SHAPExplainer:
         domain_scores = user_profile.get('domain_scores', {})
         if domain_scores.get('skills', 0) >= 70:
             reasons.append("Strong technical foundation")
-        if domain_scores.get('abilities', 0) >= 70:
-            reasons.append("Well-developed cognitive abilities")
+        if domain_scores.get('attitude', domain_scores.get('abilities', 0)) >= 70:
+            reasons.append("Well-developed attitude skills")
         if domain_scores.get('knowledge', 0) >= 70:
             reasons.append("Solid theoretical knowledge")
         
@@ -683,6 +696,7 @@ class SHAPExplainer:
         """Get weight for assessment type."""
         weights = {
             'knowledge': 0.25,
+            'attitude': 0.25,
             'abilities': 0.25,
             'skills': 0.30,
             'experience': 0.20
@@ -695,8 +709,8 @@ class SHAPExplainer:
         
         if any(keyword in recommendation_lower for keyword in ['knowledge', 'learn', 'study', 'education']):
             return 'knowledge'
-        elif any(keyword in recommendation_lower for keyword in ['abilities', 'skills', 'practice', 'develop']):
-            return 'abilities'
+        elif any(keyword in recommendation_lower for keyword in ['attitude', 'abilities', 'skills', 'practice', 'develop']):
+            return 'attitude'
         elif any(keyword in recommendation_lower for keyword in ['technical', 'programming', 'code', 'project']):
             return 'skills'
         elif any(keyword in recommendation_lower for keyword in ['experience', 'work', 'internship', 'real-world']):
@@ -718,19 +732,28 @@ class SHAPExplainer:
         else:
             return f"Your strong knowledge foundation ({knowledge_score:.1f}/100) suggests you're ready for advanced topics in this area"
     
-    def _explain_abilities_recommendation(
+    def _explain_attitude_recommendation(
         self, 
         recommendation: str, 
-        abilities_score: float, 
+        attitude_score: float, 
         user_profile: Dict[str, Any]
     ) -> str:
-        """Explain abilities-based recommendation."""
-        if abilities_score < 50:
-            return f"Your abilities score ({abilities_score:.1f}/100) shows room for developing core cognitive and soft skills"
-        elif abilities_score < 70:
-            return f"Improving your abilities from {abilities_score:.1f}/100 will enhance your problem-solving and adaptability"
+        """Explain attitude-based recommendation."""
+        if attitude_score < 50:
+            return f"Your attitude score ({attitude_score:.1f}/100) shows room for developing core behavioral and soft skills"
+        elif attitude_score < 70:
+            return f"Improving your attitude from {attitude_score:.1f}/100 will enhance your problem-solving and adaptability"
         else:
-            return f"Your strong abilities ({abilities_score:.1f}/100) indicate readiness for leadership and complex challenges"
+            return f"Your strong attitude ({attitude_score:.1f}/100) indicates readiness for leadership and complex challenges"
+
+    def _explain_abilities_recommendation(
+        self,
+        recommendation: str,
+        abilities_score: float,
+        user_profile: Dict[str, Any]
+    ) -> str:
+        """Backward-compatible alias for _explain_attitude_recommendation."""
+        return self._explain_attitude_recommendation(recommendation, abilities_score, user_profile)
     
     def _explain_skills_recommendation(
         self, 

@@ -4,7 +4,7 @@ import type {
   SkillsProfile,
   IntelligenceAssessmentDetail,
   KnowledgeProfile,
-  AbilitiesProfile,
+  AttitudeProfile,
   HabitsInterviewAnalysisResponse,
   HabitsInterviewRequest,
   KnowledgeUploadAssessmentResponse,
@@ -12,10 +12,10 @@ import type {
   CodingChallengeSummary,
   CodingChallengeSubmissionRequest,
   CodingChallengeSubmissionResponse,
-  StartAbilitiesAssessmentPayload,
-  StartAbilitiesAssessmentResponse,
-  SubmitAbilitiesAnswerPayload,
-  SubmitAbilitiesAnswerResponse,
+  StartAttitudeAssessmentPayload,
+  StartAttitudeAssessmentResponse,
+  SubmitAttitudeAnswerPayload,
+  SubmitAttitudeAnswerResponse,
 } from './types';
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000/api/v1';
@@ -63,22 +63,34 @@ export async function fetchSkillsProfile() {
   return request<SkillsProfile>('/skills/profile');
 }
 
+export async function fetchAttitudeProfile() {
+  return request<AttitudeProfile>('/abilities/profile');
+}
+
 export async function fetchAbilitiesProfile() {
-  return request<AbilitiesProfile>('/abilities/profile');
+  return fetchAttitudeProfile();
 }
 
-export async function startAbilitiesAssessment(payload: StartAbilitiesAssessmentPayload) {
-  return request<StartAbilitiesAssessmentResponse>('/abilities/start', {
+export async function startAttitudeAssessment(payload: StartAttitudeAssessmentPayload) {
+  return request<StartAttitudeAssessmentResponse>('/abilities/start', {
     method: 'POST',
     body: JSON.stringify(payload),
   });
 }
 
-export async function submitAbilitiesAnswer(payload: SubmitAbilitiesAnswerPayload) {
-  return request<SubmitAbilitiesAnswerResponse>('/abilities/submit-answer', {
+export async function startAbilitiesAssessment(payload: StartAttitudeAssessmentPayload) {
+  return startAttitudeAssessment(payload);
+}
+
+export async function submitAttitudeAnswer(payload: SubmitAttitudeAnswerPayload) {
+  return request<SubmitAttitudeAnswerResponse>('/abilities/submit-answer', {
     method: 'POST',
     body: JSON.stringify(payload),
   });
+}
+
+export async function submitAbilitiesAnswer(payload: SubmitAttitudeAnswerPayload) {
+  return submitAttitudeAnswer(payload);
 }
 
 export async function uploadKnowledgeCv(file: File) {
@@ -244,16 +256,17 @@ export type DashboardResponse = {
   intelligenceProfile: IntelligenceProfile | null;
   intelligenceAssessments: IntelligenceAssessmentSummaryApi[];
   skillsProfile?: SkillsProfile | null;
+  attitudeProfile?: unknown;
   abilitiesProfile?: unknown;
   knowledgeProfile?: unknown;
 };
 
 export async function fetchDashboardData(): Promise<DashboardResponse> {
-  const [intelligenceProfile, intelligenceAssessments, skillsProfile, abilitiesProfile, knowledgeProfile] = await Promise.all([
+  const [intelligenceProfile, intelligenceAssessments, skillsProfile, attitudeProfile, knowledgeProfile] = await Promise.all([
     fetchIntelligenceProfile().catch(() => null),
     fetchIntelligenceAssessments(6).catch(() => [] as IntelligenceAssessmentSummaryApi[]),
     fetchSkillsProfile().catch(() => null),
-    fetchAbilitiesProfile().catch(() => null),
+    fetchAttitudeProfile().catch(() => null),
     fetchKnowledgeProfile().catch(() => null),
   ]);
 
@@ -261,7 +274,8 @@ export async function fetchDashboardData(): Promise<DashboardResponse> {
     intelligenceProfile,
     intelligenceAssessments,
     skillsProfile: skillsProfile ?? null,
-    abilitiesProfile,
+    attitudeProfile,
+    abilitiesProfile: attitudeProfile,
     knowledgeProfile,
   };
 }

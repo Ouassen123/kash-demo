@@ -56,7 +56,7 @@ export default function DashboardPage() {
           <p className="text-xs uppercase tracking-[0.3em] text-indigo-300/80">KASH Assessment</p>
           <p className="text-xl font-bold text-white mt-1">Passer les 4 tests KASH</p>
           <div className="flex items-center gap-2 mt-2 text-sm text-white/70">
-            <span className="badge badge-abilities">Abilities</span>
+            <span className="badge badge-abilities">Attitude</span>
             <span className="text-white/30">→</span>
             <span className="badge badge-knowledge">Knowledge</span>
             <span className="text-white/30">→</span>
@@ -129,10 +129,10 @@ export default function DashboardPage() {
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <div className="glass-card card-abilities flex flex-col gap-4 p-6 text-white/80 animate-fade-in">
           <div>
-            <span className="badge badge-abilities mb-3">Abilities</span>
+            <span className="badge badge-abilities mb-3">Attitude</span>
             <p className="text-xl font-bold text-white mt-2">Pass all 4 tests</p>
             <p className="text-sm text-white/70 mt-2">
-              Complete Abilities, CV Knowledge upload, webcam interview questions, and Skills code upload before reviewing
+              Complete Attitude, CV Knowledge upload, webcam interview questions, and Skills code upload before reviewing
               your global result.
             </p>
           </div>
@@ -180,7 +180,7 @@ export default function DashboardPage() {
 
         <div className="glass-card card-habits flex flex-col gap-4 p-6 text-white/80 animate-fade-in">
           <div>
-            <span className="badge badge-habits mb-3">Abilities</span>
+            <span className="badge badge-habits mb-3">Attitude</span>
             <p className="text-xl font-bold text-white mt-2">Drill into adaptive assessments</p>
             <p className="text-sm text-white/70 mt-2">
               Inspect cognitive domain performance, improvement trends, personalized recommendations, and recent quiz
@@ -189,7 +189,7 @@ export default function DashboardPage() {
           </div>
           <div className="mt-auto">
             <Link href="/abilities/deep-dive" className="btn-ghost">
-              View Abilities Deep Dive
+              View Attitude Deep Dive
               <span aria-hidden>→</span>
             </Link>
           </div>

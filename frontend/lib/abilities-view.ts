@@ -1,6 +1,6 @@
-import { AbilitiesProfile } from './types';
+import { AttitudeProfile } from './types';
 
-export interface AbilitiesDeepDiveView {
+export interface AttitudeDeepDiveView {
   hero: {
     averageScore: number;
     bestScore: number;
@@ -9,10 +9,13 @@ export interface AbilitiesDeepDiveView {
   };
   domainScores: Array<{ domain: string; score: number }>;
   recommendations: string[];
-  recentActivity: AbilitiesProfile['recent_activity'];
+  recentActivity: AttitudeProfile['recent_activity'];
 }
 
-const fallbackProfile: AbilitiesProfile = {
+export type AbilitiesDeepDiveView = AttitudeDeepDiveView;
+export type AttitudeDeepDiveViewModel = AttitudeDeepDiveView;
+
+const fallbackProfile: AttitudeProfile = {
   user_id: 'placeholder',
   total_assessments: 0,
   domain_scores: {
@@ -35,7 +38,7 @@ const fallbackProfile: AbilitiesProfile = {
   last_assessment: undefined,
 };
 
-export function buildAbilitiesDeepDiveView(profile?: AbilitiesProfile | null): AbilitiesDeepDiveView {
+export function buildAttitudeDeepDiveView(profile?: AttitudeProfile | null): AttitudeDeepDiveView {
   const data = profile ?? fallbackProfile;
   const overall = data.overall_performance ?? {};
 
@@ -60,3 +63,6 @@ export function buildAbilitiesDeepDiveView(profile?: AbilitiesProfile | null): A
     recentActivity: data.recent_activity?.length ? data.recent_activity : fallbackProfile.recent_activity,
   };
 }
+
+export { buildAttitudeDeepDiveView as buildAbilitiesDeepDiveView };
+export { buildAttitudeDeepDiveView as buildAttitudeDeepDiveModel };

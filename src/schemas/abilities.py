@@ -258,8 +258,8 @@ class AbilitiesProfileResponse(BaseModel):
 
 class AvailableAssessment(BaseModel):
     """Information about available assessments."""
-    domain: CognitiveDomainEnum
-    display_name: str
+    assessment_type: str
+    title: str
     description: str
     estimated_time_minutes: int
     question_count: int
@@ -350,3 +350,16 @@ class AbilitiesInsight(BaseModel):
     confidence: float = Field(..., ge=0.0, le=1.0)
     actionable: bool
     recommendations: List[str]
+
+
+# Attitude aliases for backward-compatible refactoring
+AttitudeAssessmentSummary = AbilitiesAssessmentSummary
+AttitudeProfileResponse = AbilitiesProfileResponse
+AttitudeStartAssessmentRequest = StartAssessmentRequest
+AttitudeAssessmentStartResponse = AssessmentStartResponse
+AttitudeSubmitAnswerRequest = SubmitAnswerRequest
+AttitudeSubmitAnswerResponse = SubmitAnswerResponse
+AttitudeAssessmentStatus = AssessmentStatus
+AttitudeInsight = AbilitiesInsight
+AttitudeAvailableAssessmentsResponse = AvailableAssessmentsResponse
+AttitudeQuizSessionInfo = QuizSessionInfo

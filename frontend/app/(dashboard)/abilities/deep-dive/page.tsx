@@ -1,25 +1,25 @@
 import Link from 'next/link';
 
-import { fetchAbilitiesProfile } from '@/lib/api';
-import { buildAbilitiesDeepDiveView } from '@/lib/abilities-view';
-import { AbilitiesHero } from '@/components/abilities/abilities-hero';
-import { AbilitiesAssessmentRunner } from '@/components/abilities/assessment-runner';
+import { fetchAttitudeProfile } from '@/lib/api';
+import { buildAttitudeDeepDiveView } from '@/lib/abilities-view';
+import { AttitudeHero } from '@/components/abilities/abilities-hero';
+import { AttitudeAssessmentRunner } from '@/components/abilities/assessment-runner';
 import { DomainScoresGrid } from '@/components/abilities/domain-scores';
-import { AbilitiesRecommendations } from '@/components/abilities/recommendations';
-import { AbilitiesRecentActivity } from '@/components/abilities/recent-activity';
+import { AttitudeRecommendations } from '@/components/abilities/recommendations';
+import { AttitudeRecentActivity } from '@/components/abilities/recent-activity';
 
-async function loadAbilitiesProfile() {
+async function loadAttitudeProfile() {
   try {
-    const profile = await fetchAbilitiesProfile();
-    return buildAbilitiesDeepDiveView(profile);
+    const profile = await fetchAttitudeProfile();
+    return buildAttitudeDeepDiveView(profile);
   } catch (error) {
-    console.error('Failed to load abilities profile', error);
-    return buildAbilitiesDeepDiveView(null);
+    console.error('Failed to load attitude profile', error);
+    return buildAttitudeDeepDiveView(null);
   }
 }
 
-export default async function AbilitiesDeepDivePage() {
-  const view = await loadAbilitiesProfile();
+export default async function AttitudeDeepDivePage() {
+  const view = await loadAttitudeProfile();
 
   return (
     <main className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-10 lg:px-0">
@@ -33,16 +33,16 @@ export default async function AbilitiesDeepDivePage() {
         </div>
       </div>
 
-      <AbilitiesHero data={view.hero} />
+      <AttitudeHero data={view.hero} />
 
-      <AbilitiesAssessmentRunner />
+      <AttitudeAssessmentRunner />
 
       <section className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
         <DomainScoresGrid scores={view.domainScores} />
-        <AbilitiesRecommendations recommendations={view.recommendations} />
+        <AttitudeRecommendations recommendations={view.recommendations} />
       </section>
 
-      <AbilitiesRecentActivity items={view.recentActivity} />
+      <AttitudeRecentActivity items={view.recentActivity} />
     </main>
   );
 }

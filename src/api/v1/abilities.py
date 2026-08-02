@@ -10,22 +10,22 @@ from src.core.auth import get_current_user
 from src.core.logging import get_logger
 from src.models.user import User
 from src.models.assessment import UserAssessment
-from src.modules.abilities.abilities_service import AbilitiesService
+from src.modules.abilities.abilities_service import AttitudeService
 from src.modules.abilities.quiz_engine import CognitiveDomain
 from src.schemas.abilities import (
-    StartAssessmentRequest,
-    AssessmentStartResponse,
-    SubmitAnswerRequest,
-    SubmitAnswerResponse,
-    AssessmentStatus,
-    AbilitiesAssessmentSummary,
-    AbilitiesProfileResponse,
-    AvailableAssessmentsResponse,
-    QuizSessionInfo,
+    AttitudeStartAssessmentRequest as StartAssessmentRequest,
+    AttitudeAssessmentStartResponse as AssessmentStartResponse,
+    AttitudeSubmitAnswerRequest as SubmitAnswerRequest,
+    AttitudeSubmitAnswerResponse as SubmitAnswerResponse,
+    AttitudeAssessmentStatus as AssessmentStatus,
+    AttitudeAssessmentSummary as AbilitiesAssessmentSummary,
+    AttitudeProfileResponse as AbilitiesProfileResponse,
+    AttitudeAvailableAssessmentsResponse as AvailableAssessmentsResponse,
+    AttitudeQuizSessionInfo as QuizSessionInfo,
     ErrorResponse
 )
 
-router = APIRouter(prefix="/abilities", tags=["abilities"])
+router = APIRouter(prefix="/abilities", tags=["attitude", "abilities"])
 logger = get_logger(__name__)
 
 
@@ -46,12 +46,12 @@ async def start_assessment(
     Creates a new assessment session and returns the first question.
     """
     try:
-        abilities_service = AbilitiesService(db)
+        attitude_service = AttitudeService(db)
         
         # Convert string enums to proper enums
         domain = CognitiveDomain(request.domain.value)
         
-        result = await abilities_service.start_assessment(
+        result = await attitude_service.start_assessment(
             user_id=str(current_user.id),
             quiz_type=request.quiz_type.value,
             domain=domain,
@@ -97,9 +97,9 @@ async def submit_answer(
     Returns answer result and next question or final results.
     """
     try:
-        abilities_service = AbilitiesService(db)
+        attitude_service = AttitudeService(db)
         
-        result = await abilities_service.submit_answer(
+        result = await attitude_service.submit_answer(
             user_id=str(current_user.id),
             session_id=request.session_id,
             question_id=request.question_id,
@@ -197,8 +197,8 @@ async def get_assessment_status(
     - **assessment_id**: UUID of the assessment
     """
     try:
-        abilities_service = AbilitiesService(db)
-        status = await abilities_service.get_assessment_status(
+        attitude_service = AttitudeService(db)
+        status = await attitude_service.get_assessment_status(
             user_id=str(current_user.id),
             assessment_id=assessment_id
         )
@@ -233,8 +233,8 @@ async def get_assessment_results(
     - **assessment_id**: UUID of the assessment
     """
     try:
-        abilities_service = AbilitiesService(db)
-        results = await abilities_service.get_assessment_results(
+        attitude_service = AttitudeService(db)
+        results = await attitude_service.get_assessment_results(
             user_id=str(current_user.id),
             assessment_id=assessment_id
         )
@@ -258,28 +258,28 @@ async def get_assessment_results(
 
 
 @router.get("/profile", response_model=AbilitiesProfileResponse)
-async def get_abilities_profile(
+async def get_attitude_profile(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
-    Get comprehensive abilities profile for the current user.
+    Get comprehensive attitude profile for the current user.
     
-    Aggregates data from all abilities assessments.
+    Aggregates data from all attitude assessments.
     """
     try:
-        abilities_service = AbilitiesService(db)
-        profile = await abilities_service.get_user_abilities_profile(
+        attitude_service = AttitudeService(db)
+        profile = await attitude_service.get_user_attitude_profile(
             user_id=str(current_user.id)
         )
         
         return AbilitiesProfileResponse(**profile)
         
     except Exception as e:
-        logger.error(f"Failed to get abilities profile for user {current_user.id}: {e}")
+        logger.error(f"Failed to get attitude profile for user {current_user.id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve abilities profile"
+            detail="Failed to retrieve attitude profile"
         )
 
 
@@ -294,8 +294,8 @@ async def get_available_assessments(
     Returns all available cognitive domain assessments with descriptions.
     """
     try:
-        abilities_service = AbilitiesService(db)
-        assessments = await abilities_service.get_available_assessments()
+        attitude_service = AttitudeService(db)
+        assessments = await attitude_service.get_available_assessments()
         
         return AvailableAssessmentsResponse(
             assessments=assessments,
@@ -337,7 +337,7 @@ async def get_quiz_session(
             )
         
         # Get session status
-        status = await abilities_service.get_assessment_status(
+        status = await attitude_service.get_assessment_status(
             user_id=str(current_user.id),
             assessment_id=str(assessment.id)
         )
@@ -397,7 +397,7 @@ async def continue_quiz_session(
             )
         
         # Get session status
-        status = await abilities_service.get_assessment_status(
+        status = await attitude_service.get_assessment_status(
             user_id=str(current_user.id),
             assessment_id=str(assessment.id)
         )

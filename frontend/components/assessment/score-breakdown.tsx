@@ -3,7 +3,7 @@ import { Fragment } from 'react';
 
 const domainTokens = [
   { key: 'knowledge', label: 'Knowledge', gradient: 'from-[#4AE3B5] to-[#178F66]' },
-  { key: 'abilities', label: 'Abilities', gradient: 'from-[#8E7CFF] to-[#4C3BCE]' },
+  { key: 'abilities', label: 'Attitude', gradient: 'from-[#8E7CFF] to-[#4C3BCE]' },
   { key: 'skills', label: 'Skills', gradient: 'from-[#FFB347] to-[#FF7C6E]' },
   { key: 'experience', label: 'Experience', gradient: 'from-[#6FB1FC] to-[#365CFF]' },
 ] as const;

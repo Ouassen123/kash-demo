@@ -109,7 +109,7 @@ export default function ProfilePage() {
               {[
                 { label: 'Global', value: scores.overall, color: 'from-indigo-500 to-violet-500', text: 'text-indigo-300' },
                 { label: 'Knowledge', value: scores.knowledge, color: 'from-knowledge to-[#178F66]', text: 'text-knowledge' },
-                { label: 'Abilities', value: scores.abilities, color: 'from-abilities to-[#4C3BCE]', text: 'text-abilities' },
+                { label: 'Attitude', value: scores.abilities, color: 'from-abilities to-[#4C3BCE]', text: 'text-abilities' },
                 { label: 'Skills', value: scores.skills, color: 'from-skills to-corail', text: 'text-skills' },
               ].map(({ label, value, color, text }) => (
                 <div key={label} className="glass-card p-4 text-center">

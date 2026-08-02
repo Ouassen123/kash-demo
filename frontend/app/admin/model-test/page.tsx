@@ -65,12 +65,12 @@ const MODEL_CONFIG: Record<ModelKey, {
     description: 'Analyse CV — TF-IDF + KNN + ESCO mapping',
   },
   abilities: {
-    label: 'Abilities',
+    label: 'Attitude Quiz',
     icon: Brain,
     color: 'text-abilities',
     cardClass: 'card-abilities',
     badgeClass: 'badge-abilities',
-    description: 'Quiz cognitif adaptatif — IRT + difficulté dynamique',
+    description: 'Entretien comportemental adaptatif — mindset, stress, communication',
   },
   habits: {
     label: 'Habits',
@@ -221,7 +221,7 @@ export default function ModelTestPage() {
 
         {/* Active model panel */}
         {activeTab === 'knowledge' && <KnowledgeTester status={knowledgeStatus} history={knowledgeHistory} />}
-        {activeTab === 'abilities' && <AbilitiesTester />}
+        {activeTab === 'abilities' && <AttitudeQuizTester />}
         {activeTab === 'habits' && <HabitsTester />}
         {activeTab === 'skills' && <SkillsTester />}
         {activeTab === 'intelligence' && <IntelligenceTester />}
@@ -515,9 +515,9 @@ Skills: Python, JavaScript, React, Docker, AWS, Git, SQL, TensorFlow, NLP`);
   );
 }
 
-// ─── Abilities Tester ────────────────────────────────────────────
+// ─── Attitude Quiz Tester ──────────────────────────────────────
 
-function AbilitiesTester() {
+function AttitudeQuizTester() {
   const [domain, setDomain] = useState('memory');
   const [numQuestions, setNumQuestions] = useState(5);
   const [result, setResult] = useState<TestResult | null>(null);
@@ -620,7 +620,7 @@ function AbilitiesTester() {
           <div>
             <div className="flex items-center gap-2">
               <Brain className="text-abilities" size={20} />
-              <h2 className="text-xl font-bold text-white">Abilities Model</h2>
+              <h2 className="text-xl font-bold text-white">Attitude Model</h2>
             </div>
             <p className="text-sm text-white/60 mt-1">{MODEL_CONFIG.abilities.description}</p>
           </div>
@@ -652,10 +652,10 @@ function AbilitiesTester() {
             </select>
           </label>
         </div>
-        <TestButton onClick={startTest} loading={loading} label="Start Quiz Test" />
+        <TestButton onClick={startTest} loading={loading} label="Start Attitude Test" />
       </div>
 
-      <ResultCard result={result} title="Abilities — Quiz Started" />
+      <ResultCard result={result} title="Attitude — Quiz Started" />
 
       {/* Interactive quiz */}
       {currentQ && sessionInfo && (
@@ -681,7 +681,7 @@ function AbilitiesTester() {
         </div>
       )}
 
-      <ResultCard result={finalResult} title="Abilities — Quiz Final Results" />
+      <ResultCard result={finalResult} title="Attitude — Quiz Final Results" />
     </div>
   );
 }
@@ -1068,7 +1068,7 @@ function IntelligenceTester() {
       <div className="glass-card p-5 space-y-4">
         <p className="text-sm font-semibold text-white">Test: Generate intelligence assessment</p>
         <div className="rounded-xl bg-intelligence/10 border border-intelligence/20 p-3 text-xs text-white/60">
-          This requires that the current user has at least one assessment in each KASH domain (Knowledge, Abilities, Skills, Habits).
+          This requires that the current user has at least one assessment in each KASH domain (Knowledge, Attitude, Skills, Habits).
           The model aggregates all scores and produces the final KASH composite with SHAP explanations.
         </div>
         <label className="block text-xs text-white/70">

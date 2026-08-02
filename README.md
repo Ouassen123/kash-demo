@@ -11,8 +11,8 @@ app_port: 7860
 - **Knowledge Deep Dive UI**
   - `frontend/app/(dashboard)/knowledge/deep-dive` shows CV/ESCO insights sourced from `GET /knowledge/profile`.
   - Includes hero, skill categories, top skills, gap analysis, and learning plan components.
-- **Abilities Deep Dive UI**
-  - `frontend/app/(dashboard)/abilities/deep-dive` visualizes adaptive quiz analytics via `GET /abilities/profile`.
+- **Attitude Deep Dive UI**
+  - `frontend/app/(dashboard)/abilities/deep-dive` visualizes adaptive attitude analytics via `GET /abilities/profile`.
   - Features domain score grid, recommendations, and assessment activity panels.
 - **Intelligence Insights UI**
   - `frontend/app/(dashboard)/intelligence/insights` aggregates `/intelligence/profile` + assessments for SHAP explainability.
@@ -36,7 +36,7 @@ app_port: 7860
 
 # KASH Career Intelligence Platform
 
-A comprehensive platform for analyzing and developing student career intelligence through Knowledge, Abilities, Skills, and Intelligence (KASH) assessment.
+A comprehensive platform for analyzing and developing student career intelligence through Knowledge, Attitude, Skills, and Habits (KASH) assessment.
 
 ## 🏗️ Architecture
 

@@ -18,7 +18,7 @@ api_router = APIRouter(prefix="/api/v1")
 # Include sub-routers
 api_router.include_router(auth_router, tags=["authentication"])
 api_router.include_router(knowledge_router, tags=["knowledge"])
-api_router.include_router(abilities_router, tags=["abilities"])
+api_router.include_router(abilities_router, tags=["attitude", "abilities"])
 api_router.include_router(habits_router, tags=["habits"])
 api_router.include_router(skills_router, tags=["skills"])
 api_router.include_router(intelligence_router, tags=["intelligence"])

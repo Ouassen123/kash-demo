@@ -2,8 +2,8 @@
 
 import { FormEvent, useMemo, useState } from 'react';
 
-import { startAbilitiesAssessment, submitAbilitiesAnswer } from '@/lib/api';
-import type { AbilitiesAssessmentQuestion, SubmitAbilitiesAnswerResponse } from '@/lib/types';
+import { startAttitudeAssessment, submitAttitudeAnswer } from '@/lib/api';
+import type { AttitudeAssessmentQuestion, SubmitAttitudeAnswerResponse } from '@/lib/types';
 
 const domainOptions = [
   { value: 'memory', label: 'Memory' },
@@ -16,20 +16,20 @@ const domainOptions = [
   { value: 'creativity', label: 'Creativity' },
 ] as const;
 
-export function AbilitiesAssessmentRunner() {
+export function AttitudeAssessmentRunner() {
   const [domain, setDomain] = useState<(typeof domainOptions)[number]['value']>('memory');
   const [numQuestions, setNumQuestions] = useState(10);
   const [adaptive, setAdaptive] = useState(true);
 
   const [assessmentId, setAssessmentId] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [question, setQuestion] = useState<AbilitiesAssessmentQuestion | null>(null);
+  const [question, setQuestion] = useState<AttitudeAssessmentQuestion | null>(null);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [totalQuestions, setTotalQuestions] = useState(0);
 
   const [selectedAnswer, setSelectedAnswer] = useState<string>('');
   const [questionStartMs, setQuestionStartMs] = useState<number>(0);
-  const [lastResult, setLastResult] = useState<SubmitAbilitiesAnswerResponse | null>(null);
+  const [lastResult, setLastResult] = useState<SubmitAttitudeAnswerResponse | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,7 +49,7 @@ export function AbilitiesAssessmentRunner() {
     setLastResult(null);
 
     try {
-      const response = await startAbilitiesAssessment({
+      const response = await startAttitudeAssessment({
         quiz_type: 'cognitive',
         domain,
         num_questions: numQuestions,
@@ -78,7 +78,7 @@ export function AbilitiesAssessmentRunner() {
     setError(null);
 
     try {
-      const response = await submitAbilitiesAnswer({
+      const response = await submitAttitudeAnswer({
         session_id: sessionId,
         question_id: question.id,
         answer: selectedAnswer,
@@ -114,9 +114,9 @@ export function AbilitiesAssessmentRunner() {
     <section className="glass-panel p-6 space-y-5">
       <div>
         <p className="text-sm uppercase tracking-[0.3em] text-mist/70">Start assessment</p>
-        <p className="text-2xl font-semibold mt-1 text-white">Lancer un test adaptatif</p>
+        <p className="text-2xl font-semibold mt-1 text-white">Lancer le test Attitude</p>
         <p className="text-sm text-white/70 mt-2">
-          Configure le domaine, lance le quiz, réponds aux questions, puis récupère le score final.
+          Configure le domaine, lance le quiz Attitude, réponds aux questions, puis récupère le score final.
         </p>
       </div>
 
@@ -234,3 +234,5 @@ export function AbilitiesAssessmentRunner() {
     </section>
   );
 }
+
+export { AttitudeAssessmentRunner as AbilitiesAssessmentRunner };

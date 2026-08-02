@@ -7,14 +7,14 @@ const STEPS = [
   {
     icon: <Trophy size={28} className="text-amber-300" />,
     title: 'Bienvenue sur KASH !',
-    description: 'KASH mesure ton profil professionnel en 4 dimensions : Knowledge, Abilities, Skills, et Holistic Intelligence.',
+    description: 'KASH mesure ton profil professionnel en 4 dimensions : Knowledge, Attitude, Skills, et Holistic Intelligence.',
     tip: 'Le résultat final donne un score sur 100 avec des recommandations personnalisées.',
     color: 'border-amber-400/30 bg-amber-500/5',
   },
   {
     icon: <Brain size={28} className="text-violet-300" />,
-    title: '1) Abilities — Quiz cognitif',
-    description: 'Un quiz adaptatif de 5 questions qui mesure ta mémoire, logique, attention et raisonnement spatial.',
+    title: '1) Attitude — Questions adaptatives',
+    description: 'Un parcours adaptatif de 5 questions qui explore ton comportement, ta communication et ta gestion du stress.',
     tip: '💡 Réponds sérieusement — le système adapte la difficulté selon tes réponses (algorithme IRT).',
     color: 'border-violet-400/30 bg-violet-500/5',
   },

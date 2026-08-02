@@ -35,6 +35,18 @@ __all__ = [
     "AbilitiesProfileResponse",
     "AvailableAssessmentsResponse",
     "QuizSessionInfo",
+
+    # Attitude aliases for gradual migration
+    "AttitudeAssessmentSummary",
+    "AttitudeProfileResponse",
+    "AttitudeStartAssessmentRequest",
+    "AttitudeAssessmentStartResponse",
+    "AttitudeSubmitAnswerRequest",
+    "AttitudeSubmitAnswerResponse",
+    "AttitudeAssessmentStatus",
+    "AttitudeInsight",
+    "AttitudeAvailableAssessmentsResponse",
+    "AttitudeQuizSessionInfo",
     
     # Skills schemas
     "GitHubAnalysisRequest",

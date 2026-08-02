@@ -1,4 +1,4 @@
-"""Abilities module service for adaptive assessments and cognitive evaluation."""
+"""Attitude module service for adaptive assessments and cognitive evaluation."""
 
 import asyncio
 from typing import Dict, List, Any, Optional
@@ -32,8 +32,8 @@ def _get_quiz_engine() -> QuizEngine:
     return _quiz_engine_instance
 
 
-class AbilitiesService:
-    """Service for abilities domain operations including adaptive assessments."""
+class AttitudeService:
+    """Service for attitude domain operations including adaptive assessments."""
     
     def __init__(self, db: Session):
         self.db = db
@@ -48,7 +48,7 @@ class AbilitiesService:
         adaptive: bool = True
     ) -> Dict[str, Any]:
         """
-        Start a new abilities assessment.
+        Start a new attitude assessment.
         
         Args:
             user_id: User UUID
@@ -60,7 +60,7 @@ class AbilitiesService:
         Returns:
             Dictionary with session information and first question
         """
-        logger.info(f"Starting abilities assessment for user {user_id} in domain {domain}")
+        logger.info(f"Starting attitude assessment for user {user_id} in domain {domain}")
         
         try:
             # Create quiz session
@@ -94,7 +94,7 @@ class AbilitiesService:
             self.db.add(assessment)
             self.db.flush()  # Get the assessment ID
             
-            # Create abilities-specific assessment record
+            # Create attitude-specific assessment record
             abilities_assessment = AbilitiesAssessment(
                 id=uuid.uuid4(),
                 assessment_id=assessment.id,
@@ -122,7 +122,7 @@ class AbilitiesService:
             }
             
         except Exception as e:
-            logger.error(f"Failed to start abilities assessment for user {user_id}: {e}")
+            logger.error(f"Failed to start attitude assessment for user {user_id}: {e}")
             self.db.rollback()
             raise
     
@@ -163,7 +163,7 @@ class AbilitiesService:
             if not session:
                 raise ValueError(f"Session {session_id} not found")
             
-            # Update assessment record - find the in-progress abilities assessment for this user
+            # Update assessment record - find the in-progress attitude assessment for this user
             assessment = self.db.query(UserAssessment).filter(
                 UserAssessment.user_id == user_id,
                 UserAssessment.assessment_type == 'abilities',
@@ -292,14 +292,14 @@ class AbilitiesService:
         if not assessment or assessment.status != 'completed':
             return None
         
-        # Get abilities assessment details
+        # Get attitude assessment details
         abilities_assessment = self.db.query(AbilitiesAssessment).filter(
             AbilitiesAssessment.assessment_id == assessment.id
         ).first()
         
         results = assessment.result_data or {}
         
-        # Add detailed abilities assessment data
+        # Add detailed attitude assessment data
         if abilities_assessment:
             results['abilities_details'] = {
                 'quiz_type': abilities_assessment.quiz_type,
@@ -314,15 +314,15 @@ class AbilitiesService:
         
         return results
     
-    async def get_user_abilities_profile(self, user_id: str) -> Dict[str, Any]:
+    async def get_user_attitude_profile(self, user_id: str) -> Dict[str, Any]:
         """
-        Get comprehensive abilities profile for a user.
+        Get comprehensive attitude profile for a user.
         
         Args:
             user_id: User UUID
             
         Returns:
-            User's abilities profile with aggregated data
+            User's attitude profile with aggregated data
         """
         assessments = self.db.query(UserAssessment).filter(
             UserAssessment.user_id == user_id,
@@ -392,6 +392,10 @@ class AbilitiesService:
             'recent_activity': recent_activity,
             'last_assessment': assessments[0].completed_at.isoformat() if assessments[0].completed_at else None
         }
+
+    async def get_user_abilities_profile(self, user_id: str) -> Dict[str, Any]:
+        """Backward-compatible alias for get_user_attitude_profile."""
+        return await self.get_user_attitude_profile(user_id)
     
     async def get_available_assessments(self) -> List[Dict[str, Any]]:
         """
@@ -430,7 +434,7 @@ class AbilitiesService:
             assessment.confidence_score = self._calculate_confidence_score(session, results)
             assessment.result_data = results
             
-            # Update abilities assessment
+            # Update attitude assessment
             abilities_assessment = self.db.query(AbilitiesAssessment).filter(
                 AbilitiesAssessment.assessment_id == assessment.id
             ).first()
@@ -471,7 +475,7 @@ class AbilitiesService:
                         }
             
             self.db.commit()
-            logger.info(f"Finalized abilities assessment {assessment.id}")
+            logger.info(f"Finalized attitude assessment {assessment.id}")
             
         except Exception as e:
             logger.error(f"Failed to finalize assessment {assessment.id}: {e}")
@@ -554,12 +558,12 @@ class AbilitiesService:
         elif avg_score >= 55:
             recommendations.append("Fair performance. Focus on weaker domains.")
         else:
-            recommendations.append("Consider foundational exercises to build core abilities.")
+            recommendations.append("Consider foundational exercises to build core attitudes.")
         
         # Domain-specific recommendations
         for domain, score in domain_scores.items():
             if score < 60:
-                recommendations.append(f"Focus on improving {domain} abilities with targeted practice.")
+                recommendations.append(f"Focus on improving {domain} skills with targeted practice.")
             elif score > 85:
                 recommendations.append(f"Excellent {domain} skills! Consider advanced challenges.")
         
@@ -599,3 +603,7 @@ class AbilitiesService:
             CognitiveDomain.CREATIVITY: "Measures divergent thinking and innovative capabilities"
         }
         return descriptions.get(domain, "Assessment of cognitive abilities")
+
+
+# Backward-compatible alias
+AbilitiesService = AttitudeService

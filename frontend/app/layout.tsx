@@ -12,7 +12,7 @@ const jetBrains = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' }
 
 export const metadata: Metadata = {
   title: 'KASH Intelligence Platform',
-  description: 'Career intelligence scoring and insights across Knowledge, Abilities, Skills, and Holistic Intelligence.',
+  description: 'Career intelligence scoring and insights across Knowledge, Attitude, Skills, and Holistic Intelligence.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

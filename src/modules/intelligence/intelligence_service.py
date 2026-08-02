@@ -63,6 +63,7 @@ class IntelligenceService:
             feature_values = await self._extract_feature_values(user_assessments)
             domain_scores = {
                 'knowledge': kash_score.knowledge_score,
+                'attitude': kash_score.attitude_score,
                 'abilities': kash_score.abilities_score,
                 'skills': kash_score.skills_score,
                 'experience': kash_score.experience_score
@@ -123,6 +124,7 @@ class IntelligenceService:
                     'kash_score': {
                         'overall_score': kash_score.overall_score,
                         'knowledge_score': kash_score.knowledge_score,
+                        'attitude_score': kash_score.attitude_score,
                         'abilities_score': kash_score.abilities_score,
                         'skills_score': kash_score.skills_score,
                         'experience_score': kash_score.experience_score,
@@ -311,6 +313,7 @@ class IntelligenceService:
         current_scores = {
             'overall': kash_score.get('overall_score', 0),
             'knowledge': kash_score.get('knowledge_score', 0),
+            'attitude': kash_score.get('attitude_score', kash_score.get('abilities_score', 0)),
             'abilities': kash_score.get('abilities_score', 0),
             'skills': kash_score.get('skills_score', 0),
             'experience': kash_score.get('experience_score', 0)
@@ -377,6 +380,7 @@ class IntelligenceService:
             user_profile = {
                 'domain_scores': {
                     'knowledge': kash_score.get('knowledge_score', 0),
+                    'attitude': kash_score.get('attitude_score', kash_score.get('abilities_score', 0)),
                     'abilities': kash_score.get('abilities_score', 0),
                     'skills': kash_score.get('skills_score', 0),
                     'experience': kash_score.get('experience_score', 0)
@@ -463,6 +467,7 @@ class IntelligenceService:
         # Group by assessment type
         grouped_assessments = {
             'knowledge': [],
+            'attitude': [],
             'abilities': [],
             'skills': [],
             # Experience is derived from the interview step and stored in user.profile_data.
@@ -480,6 +485,15 @@ class IntelligenceService:
                     'result_data': assessment.result_data or {},
                     'created_at': assessment.created_at
                 })
+                if assessment_type == 'abilities':
+                    grouped_assessments['attitude'].append({
+                        'id': str(assessment.id),
+                        'assessment_name': assessment.assessment_name,
+                        'normalized_score': assessment.normalized_score or 0,
+                        'confidence_score': assessment.confidence_score or 0,
+                        'result_data': assessment.result_data or {},
+                        'created_at': assessment.created_at
+                    })
 
         # Experience signal (4th test) derived from the interview step saved into user.profile_data.
         # We do this instead of persisting a new DB enum value, to avoid enum migrations.
@@ -534,13 +548,17 @@ class IntelligenceService:
             feature_values['knowledge_education_level'] = 0.7  # Placeholder
             feature_values['knowledge_certification_count'] = min(len(knowledge_assessments) * 0.1, 1.0)
         
-        # Abilities features
-        abilities_assessments = user_assessments.get('abilities', [])
-        if abilities_assessments:
-            feature_values['abilities_problem_solving'] = 0.7  # Placeholder
-            feature_values['abilities_critical_thinking'] = 0.6  # Placeholder
-            feature_values['abilities_creativity'] = 0.5  # Placeholder
-            feature_values['abilities_communication'] = 0.6  # Placeholder
+        # Attitude features (legacy abilities key still accepted)
+        attitude_assessments = user_assessments.get('attitude', user_assessments.get('abilities', []))
+        if attitude_assessments:
+            feature_values['attitude_problem_solving'] = 0.7  # Placeholder
+            feature_values['attitude_critical_thinking'] = 0.6  # Placeholder
+            feature_values['attitude_creativity'] = 0.5  # Placeholder
+            feature_values['attitude_communication'] = 0.6  # Placeholder
+            feature_values['abilities_problem_solving'] = feature_values['attitude_problem_solving']
+            feature_values['abilities_critical_thinking'] = feature_values['attitude_critical_thinking']
+            feature_values['abilities_creativity'] = feature_values['attitude_creativity']
+            feature_values['abilities_communication'] = feature_values['attitude_communication']
         
         # Skills features
         skills_assessments = user_assessments.get('skills', [])
@@ -596,6 +614,7 @@ class IntelligenceService:
         user_profile = {
             'domain_scores': {
                 'knowledge': kash_score.knowledge_score,
+                'attitude': kash_score.attitude_score,
                 'abilities': kash_score.abilities_score,
                 'skills': kash_score.skills_score,
                 'experience': kash_score.experience_score
@@ -670,6 +689,7 @@ class IntelligenceService:
                 'date': assessment.created_at.isoformat(),
                 'overall_score': kash_score.get('overall_score', 0),
                 'knowledge_score': kash_score.get('knowledge_score', 0),
+                'attitude_score': kash_score.get('attitude_score', kash_score.get('abilities_score', 0)),
                 'abilities_score': kash_score.get('abilities_score', 0),
                 'skills_score': kash_score.get('skills_score', 0),
                 'experience_score': kash_score.get('experience_score', 0)
@@ -740,6 +760,7 @@ class IntelligenceService:
             'overall_improvement': latest_kash.get('overall_score', 0) - earliest_kash.get('overall_score', 0),
             'domain_progress': {
                 'knowledge': latest_kash.get('knowledge_score', 0) - earliest_kash.get('knowledge_score', 0),
+                'attitude': latest_kash.get('attitude_score', latest_kash.get('abilities_score', 0)) - earliest_kash.get('attitude_score', earliest_kash.get('abilities_score', 0)),
                 'abilities': latest_kash.get('abilities_score', 0) - earliest_kash.get('abilities_score', 0),
                 'skills': latest_kash.get('skills_score', 0) - earliest_kash.get('skills_score', 0),
                 'experience': latest_kash.get('experience_score', 0) - earliest_kash.get('experience_score', 0)

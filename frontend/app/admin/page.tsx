@@ -468,7 +468,7 @@ export default function AdminPage() {
                   {[
                     { l: 'KASH', v: selected.kash_score },
                     { l: 'Knowledge', v: selected.knowledge_score },
-                    { l: 'Abilities', v: selected.abilities_score },
+                    { l: 'Attitude', v: selected.abilities_score },
                     { l: 'Skills', v: selected.skills_score },
                   ].map(({ l, v }) => (
                     <div key={l} className="rounded-xl bg-white/5 border border-white/10 p-3">
